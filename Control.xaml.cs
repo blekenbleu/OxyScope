@@ -9,22 +9,22 @@ using System.Windows.Controls;
 
 namespace OxyPlotPlugin
 {
-    /// <summary>
-    /// Control.xaml interaction logic
-    /// </summary>
-    public partial class Control : UserControl
-    {
-        public Plugin Plugin { get; }
+	/// <summary>
+	/// Control.xaml interaction logic
+	/// </summary>
+	public partial class Control : UserControl
+	{
+		public Plugin Plugin { get; }
 
-        public Control()
-        {
-            InitializeComponent();
-        }
+		public Control()
+		{
+			InitializeComponent();
+		}
 
-        public Control(Plugin plugin) : this()
-        {
-            this.Plugin = plugin;
-        }
+		public Control(Plugin plugin) : this()
+		{
+			this.Plugin = plugin;
+		}
 
 		private void ScatterSeries_Click(object sender, RoutedEventArgs e)
 		{
@@ -48,18 +48,18 @@ namespace OxyPlotPlugin
 			model.LegendFontSize = 12;
 			model.LegendBorder = OxyColors.Black;
 
-    		model.LegendBorderThickness = 1;
-    		plot.Model = model;
+			model.LegendBorderThickness = 1;
+			plot.Model = model;
 		}
 
 		private PlotModel AddScatter(PlotModel model, double[] x, double[] y, int size, OxyColor color)
-        {
-            var scatterSeries = new ScatterSeries { MarkerType = MarkerType.Circle };
-            for (int i = 0; i < x.Length; i++)
-                scatterSeries.Points.Add(new ScatterPoint(x[i], y[i], size));
-            scatterSeries.MarkerFill = color;
-            model.Series.Add(scatterSeries);
-            return model;
-        } 
-    }	// class
+		{
+			var scatterSeries = new ScatterSeries { MarkerType = MarkerType.Circle };
+			for (int i = 0; i < x.Length; i++)
+				scatterSeries.Points.Add(new ScatterPoint(x[i], y[i], size));
+			scatterSeries.MarkerFill = color;
+			model.Series.Add(scatterSeries);
+			return model;
+		} 
+	}	// class
 }

@@ -26,8 +26,11 @@
 	...
 	public string LeftMenuTitle => "OxyPlot plugin";
 ```
+- added OxyPlot stuff for scatter plot
+	![](Doc/pasted.png)  
 ### To Do
-- add OxyPlot stuff
+- break out scatterplot method from keypress event
+- update plot data from Plugin.cs
 - update plotted property value array at run time
 
 

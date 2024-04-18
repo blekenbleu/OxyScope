@@ -1,10 +1,10 @@
 ﻿namespace OxyPlotPlugin
 {
-    /// <summary>
-    /// Settings class, make sure it can be correctly serialized using JSON.net
-    /// </summary>
-    public class Settings
-    {
-        public int SpeedWarningLevel = 100;
-    }
+	/// <summary>
+	/// Settings class, make sure it can be correctly serialized using JSON.net
+	/// </summary>
+	public class Settings
+	{
+		public int SpeedWarningLevel = 100;
+	}
 }
