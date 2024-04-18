@@ -2,12 +2,6 @@
 - Create a new WPF project named `OxyPlotPlugin` in Visual Studio, then quit.  
 - delete (or move away) all but `OxyPlotPlugin.sln` and `OxyPlotPlugin.csproj`  
 - copy all but .sln and .csproj from SimHubPluginSdk
-- in Plugin.cs, change:  
-```
-    [PluginDescription("An XY OxyPlot of 2 SimHub properties")]
-    [PluginAuthor("blekenbleu")]
-    [PluginName("OxyPlot plugin")]
-```
 - split diff edit OxyPlotPlugin.sln and SimHubPluginSdk.sln
 	- delete `GlobalSection(ExtensibilityGlobals) = postSolution` from OxyPlotPlugin.sln
 - split diff edit OxyPlotPlugin.csproj and SimHubPluginSdk.csproj; changes in OxyPlotPlugin.csproj:
@@ -20,6 +14,23 @@
 	- insert unique SimHubPluginSdk Compile ItemGroups
 	- delete unique OxyPlotPlugin lines  
 
+### Done
+- convert content from SimHubPluginSdk namespace `Sdk.Plugin` to `OxyPlotPlugin`
+	Control.xaml (2x), Control.xaml.cs, Plugin.cs, Settings.cs
+- in Plugin.cs, changed:  
+```
+    [PluginDescription("An XY OxyPlot of 2 SimHub properties")]
+    [PluginAuthor("blekenbleu")]
+    [PluginName("OxyPlot plugin")]
+	...
+	...
+	public string LeftMenuTitle => "OxyPlot plugin";
+```
+### To Do
+- add OxyPlot stuff
+- update plotted property value array at run time
+
+
 <details><summary>click for Properties folder differences</summary>
 <ul>
 <li>delete <code>Settings.Designer.cs<code> and <code>Settings.settings</code>
@@ -30,5 +41,3 @@
 </ul>
 </details>
 
-- convert content from SimHubPluginSdk namespace `Sdk.Plugin` to `OxyPlotPlugin`
-	Control.xaml (2x), Control.xaml.cs, Plugin.cs, Settings.cs
