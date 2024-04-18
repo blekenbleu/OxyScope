@@ -67,5 +67,15 @@ namespace OxyPlotPlugin.Properties
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        /// Searches for a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap sdkmenuicon {
+            get {
+                object obj = ResourceManager.GetObject("sdkmenuicon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }
