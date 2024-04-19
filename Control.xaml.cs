@@ -19,6 +19,15 @@ namespace OxyPlotPlugin
 		public Control()
 		{
 			InitializeComponent();
+			Random rnd=new Random();
+			x = new double[200];
+			y = new double[200];
+			for (int i = 0; i < 100;)
+			{
+				y[i] = 100 * rnd.NextDouble();
+				x[i] = ++i;
+			}
+			ScatterPlot();
 		}
 
 		public Control(Plugin plugin) : this()
@@ -28,22 +37,29 @@ namespace OxyPlotPlugin
 
 		private void ScatterSeries_Click(object sender, RoutedEventArgs e)
 		{
-			Random rnd=new Random();
-			double[] x = { 1.2, 2.1, 2.9, 4.5, 5, 5.7, 6.9, 8.3, 9.12, 10.0 };
-			double[] y = new double[x.Length].Select(v => 10 * rnd.NextDouble()).ToArray();
-			var model = new PlotModel { Title = "OxyPlot - Scatter Series" };
+			ScatterPlot();
+		}
+
+		public double[] x;
+		public double[] y;
+		public string variables = "OxyPlot - Scatter Series";
+
+
+        public void ScatterPlot()
+		{
+			var model = new PlotModel { Title = variables };
 			model.Axes.Add(new LinearAxis
 			{
 				Position = AxisPosition.Left,
-				Title = "Y",
+				Title = "Grip",
 			});
 			model.Axes.Add(new LinearAxis
 			{
 				Position = AxisPosition.Bottom,
-				Title = "Number of items",
+				Title = "Slip",
 			});
-			model = AddScatter(model, x, y, 5, OxyColors.Red);
-			model.Series[model.Series.Count - 1].Title = "X2 Data";
+			model = AddScatter(model, x, y, 3, OxyColors.Red);
+			model.Series[model.Series.Count - 1].Title = "60Hz sample";
 			model.LegendPosition = LegendPosition.TopLeft;
 			model.LegendFontSize = 12;
 			model.LegendBorder = OxyColors.Black;

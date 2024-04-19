@@ -28,9 +28,11 @@
 ```
 - added OxyPlot stuff for scatter plot
 	![](Doc/pasted.png)  
-### To Do
 - break out scatterplot method from keypress event
-- update plot data from Plugin.cs
+- update plot data from Plugin.cs  
+	![](Doc/proto.png)
+### To Do
+- interactively capture names and validate values of selected properties
 - update plotted property value array at run time
 
 

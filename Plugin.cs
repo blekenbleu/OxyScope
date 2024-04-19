@@ -1,7 +1,9 @@
 ﻿using GameReaderCommon;
 using SimHub.Plugins;
+using SimHub.Plugins.DataPlugins.ShakeItV3;
 using System;
 using System.Windows.Media;
+using System.Xml;
 
 namespace OxyPlotPlugin
 {
@@ -36,14 +38,22 @@ namespace OxyPlotPlugin
 		/// </summary>
 		/// <param name="pluginManager"></param>
 		/// <param name="data">Current game data, including current and previous data frame.</param>
-		public void DataUpdate(PluginManager pluginManager, ref GameData data)
+		private int i;
+        private string xprop = "ShakeITBSV3Plugin.Export.ProxyS.FrontLeft";
+        private string yprop = "ShakeITBSV3Plugin.Export.Grip.FrontLeft";
+
+        public void DataUpdate(PluginManager pluginManager, ref GameData data)
 		{
 			// Define the value of our property (declared in init)
 			if (data.GameRunning)
 			{
 				if (data.OldData != null && data.NewData != null)
 				{
-					if (data.OldData.SpeedKmh < Settings.SpeedWarningLevel && data.OldData.SpeedKmh >= Settings.SpeedWarningLevel)
+                    that.x[i] = float.Parse(pluginManager.GetPropertyValue(xprop).ToString());
+                    that.y[i++] = float.Parse(pluginManager.GetPropertyValue(yprop).ToString());
+					i %= that.y.Length;
+                    that.variables = "Grip.FrontLeft vs ProxyS.FrontLeft";
+                    if (data.OldData.SpeedKmh < Settings.SpeedWarningLevel && data.OldData.SpeedKmh >= Settings.SpeedWarningLevel)
 					{
 						// Trigger an event
 						this.TriggerEvent("SpeedWarning");
@@ -68,9 +78,10 @@ namespace OxyPlotPlugin
 		/// </summary>
 		/// <param name="pluginManager"></param>
 		/// <returns></returns>
+		private Control that;
 		public System.Windows.Controls.Control GetWPFSettingsControl(PluginManager pluginManager)
 		{
-			return new Control(this);
+			return that = new Control(this);
 		}
 
 		/// <summary>
