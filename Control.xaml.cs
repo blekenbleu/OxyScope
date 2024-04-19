@@ -20,9 +20,9 @@ namespace OxyPlotPlugin
 		{
 			InitializeComponent();
 			Random rnd=new Random();
-			x = new double[200];
-			y = new double[200];
-			for (int i = 0; i < 100;)
+			x = new double[180];
+			y = new double[180];
+			for (int i = 0; i < 180;)
 			{
 				y[i] = 100 * rnd.NextDouble();
 				x[i] = ++i;
