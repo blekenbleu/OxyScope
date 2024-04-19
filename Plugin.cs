@@ -4,6 +4,7 @@ using SimHub.Plugins.DataPlugins.ShakeItV3;
 using System;
 using System.Windows.Media;
 using System.Xml;
+using static System.Net.WebRequestMethods;
 
 namespace OxyPlotPlugin
 {
@@ -52,12 +53,6 @@ namespace OxyPlotPlugin
                     that.x[i] = float.Parse(pluginManager.GetPropertyValue(xprop).ToString());
                     that.y[i++] = float.Parse(pluginManager.GetPropertyValue(yprop).ToString());
 					i %= that.y.Length;
-                    that.variables = "Grip.FrontLeft vs ProxyS.FrontLeft";
-                    if (data.OldData.SpeedKmh < Settings.SpeedWarningLevel && data.OldData.SpeedKmh >= Settings.SpeedWarningLevel)
-					{
-						// Trigger an event
-						this.TriggerEvent("SpeedWarning");
-					}
 				}
 			}
 		}
@@ -90,29 +85,16 @@ namespace OxyPlotPlugin
 		/// </summary>
 		/// <param name="pluginManager"></param>
 		public void Init(PluginManager pluginManager)
-		{
-			SimHub.Logging.Current.Info("Starting plugin");
+        {
+			SimHub.Logging.Current.Info("Starting " + LeftMenuTitle);
 
-			// Load settings
-			Settings = this.ReadCommonSettings<Settings>("GeneralSettings", () => new Settings());
-
-			// Declare a property available in the property list, this gets evaluated "on demand" (when shown or used in formulas)
-			this.AttachDelegate("CurrentDateTime", () => DateTime.Now);
-
-			// Declare an event
-			this.AddEvent("SpeedWarning");
+            // Load settings
+            Settings = this.ReadCommonSettings<Settings>("GeneralSettings", () => new Settings());
 
 			// Declare an action which can be called
-			this.AddAction("IncrementSpeedWarning",(a, b) =>
+			this.AddAction("ChangeProperties", (a, b) =>
 			{
-				Settings.SpeedWarningLevel++;
-				SimHub.Logging.Current.Info("Speed warning changed");
-			});
-
-			// Declare an action which can be called
-			this.AddAction("DecrementSpeedWarning", (a, b) =>
-			{
-				Settings.SpeedWarningLevel--;
+                that.variables = "Grip.FrontLeft vs ProxyS.FrontLeft";
 			});
 		}
 	}
