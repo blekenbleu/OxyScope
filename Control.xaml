@@ -7,18 +7,21 @@
 			 mc:Ignorable="d"
 			 xmlns:oxy="http://oxyplot.org/wpf"
 			 Height="600" Width="800">
-	<ScrollViewer>
-		<Grid>
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition />
-				<ColumnDefinition Width="0*" />
-			</Grid.ColumnDefinitions>
-			<StackPanel>
-                <Button Name="scatterSeries" Content="Refresh" Width="100" Height="22" Margin="30,2" Click="ScatterSeries_Click" Visibility="{Binding Path=OxyButVis}"/>
-			</StackPanel>
-			<GroupBox Name="plotBox" Header="OxyPlot" Margin="10,30" Grid.Row="1">
-				<oxy:PlotView Name="plot"/>
-			</GroupBox>
-		</Grid>
-	</ScrollViewer>
+    <ScrollViewer>
+        <Grid>
+            <Canvas VerticalAlignment="Top">
+                <Slider Maximum="99" TickPlacement="BottomRight" TickFrequency="20" IsSnapToTickEnabled="True" Width="300" Height="22" Margin="0,2"
+                        Name="SL"/>
+                <TextBox TextWrapping="Wrap" Text="Low 01" Width="35" Margin="302,2" Height="42" Name="TBL"/>
+                <Button x:Name="scatterSeries" Content="Refresh" Width="60" Height="22" Margin="360,2" Click="ScatterSeries_Click" Visibility="{Binding OxyButVis}"
+                        Background="Red" />
+                <Slider  Maximum="99" TickPlacement="BottomRight" TickFrequency="20" IsSnapToTickEnabled="True" Width="300" Height="22" Margin="450,2"
+                         Value="00" Name="SR"/>
+                <TextBox TextWrapping="Wrap" Text="Min 99" Width="35" Margin="752,2" Height="42" Name="TBR"/>
+            </Canvas>
+            <GroupBox Name="plotBox" Header="OxyPlot" Margin="0,40,0,0">
+                <oxy:PlotView Name="plot"/>
+            </GroupBox>
+        </Grid>
+    </ScrollViewer>
 </UserControl>
