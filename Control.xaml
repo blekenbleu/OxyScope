@@ -14,7 +14,7 @@
 				<ColumnDefinition Width="0*" />
 			</Grid.ColumnDefinitions>
 			<StackPanel>
-				<Button Name="scatterSeries" Content="Refresh" Width="100" Height="22" Margin="30,2" Click="ScatterSeries_Click"/>
+                <Button Name="scatterSeries" Content="Refresh" Width="100" Height="22" Margin="30,2" Click="ScatterSeries_Click" Visibility="{Binding Path=OxyButVis}"/>
 			</StackPanel>
 			<GroupBox Name="plotBox" Header="OxyPlot" Margin="10,30" Grid.Row="1">
 				<oxy:PlotView Name="plot"/>

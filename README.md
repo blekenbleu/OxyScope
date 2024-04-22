@@ -30,22 +30,24 @@
 	![](Doc/pasted.png)  
 - break out scatterplot method from keypress event
 - update plot data from Plugin.cs  
-	![](Doc/proto.png)
-### To Do
-#### refresh plot without `new`
-	[`PlotModel.InvalidatePlot(true)`](https://oxyplot.readthedocs.io/en/master/common-tasks/refresh-plot.html);&nbsp;
-	[example](https://github.com/oxyplot/oxyplot/blob/develop/Source/Examples/WPF/WpfExamples/Examples/RealtimeDemo/MainViewModel.cs#L91C18-L91C49)
-	- [C#Corner live demo](https://www.c-sharpcorner.com/article/live-chart-streamed-data-update-using-oxyplot/),
-	[performance discussion](https://github.com/oxyplot/oxyplot/issues/1801),
-	[RealTimeDemo](https://github.com/oxyplot/oxyplot/tree/develop/Source/Examples/WPF/WpfExamples/Examples/RealtimeDemo),  
-	[PerformanceTest](https://github.com/alxkalinin/oxyplot/tree/develop/Source/Examples/PerformanceTest) example using `RenderingExtensions.DrawReducedLine` method,  
-	[RenderingExtensions.DrawReducedLine](https://svitla.com/blog/wpf-application-with-real-time-data-in-oxyplot-charts) tutorial discussion
-- ping pong buffers for capturing high dynamic range sample sets
-- interactively capture names and validate values of selected properties
-- update plotted property value array at run time
+	![](Doc/proto.png)  
+- ping pong buffers for capturing high dynamic range sample sets  
+- "autoexposure" `Refresh` button visible only for interesting value captures
 
+### To Do  
+- refresh plot without new objects  
+	- [PlotModel.InvalidatePlot(new)](https://oxyplot.readthedocs.io/en/master/common-tasks/refresh-plot.html)
+ 	[example](https://github.com/oxyplot/oxyplot/blob/develop/Source/Examples/WPF/WpfExamples/Examples/RealtimeDemo/MainViewModel.cs#L91C18-L91C49)  
+	- [C#Corner live demo](https://www.c-sharpcorner.com/article/live-chart-streamed-data-update-using-oxyplot/)  
+	- [performance discussion](https://github.com/oxyplot/oxyplot/issues/1801)  
+	- [RealTimeDemo](https://github.com/oxyplot/oxyplot/tree/develop/Source/Examples/WPF/WpfExamples/Examples/RealtimeDemo)    
+	- [PerformanceTest](https://github.com/alxkalinin/oxyplot/tree/develop/Source/Examples/PerformanceTest) example using RenderingExtensions.DrawReducedLine method    
+	- [RenderingExtensions.DrawReducedLine](https://svitla.com/blog/wpf-application-with-real-time-data-in-oxyplot-charts) tutorial discussion    
+- interactively capture names and validate values of selected properties  
+- min/max range sliders
 
-<details><summary>click for Properties folder differences</summary>
+### Property folder changes from default WPF project for SimHub plugins
+<details><summary>click for differences</summary>
 <ul>
 <li>delete <code>Settings.Designer.cs<code> and <code>Settings.settings</code>
 <li>copy <code>DesignTimeResources.xaml</code>
