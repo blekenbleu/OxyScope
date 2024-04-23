@@ -13,11 +13,10 @@ namespace OxyPlotPlugin
 	public class ViewModel : INotifyPropertyChanged
 	{
 		public event PropertyChangedEventHandler PropertyChanged;
-	    public void OnPropertyChanged(PropertyChangedEventArgs myevent) => PropertyChanged?.Invoke(this, myevent);
+		public void OnPropertyChanged(PropertyChangedEventArgs myevent) => PropertyChanged?.Invoke(this, myevent);
 
 		readonly PropertyChangedEventArgs BVevent = new PropertyChangedEventArgs(nameof(OxyButVis));
 		readonly PropertyChangedEventArgs XYevent = new PropertyChangedEventArgs(nameof(XYprop));
-		readonly PropertyChangedEventArgs YXevent = new PropertyChangedEventArgs(nameof(YXclick));
 		readonly PropertyChangedEventArgs Yevent = new PropertyChangedEventArgs(nameof(Yprop));
 		readonly PropertyChangedEventArgs Xevent = new PropertyChangedEventArgs(nameof(Xprop));
 
@@ -34,57 +33,44 @@ namespace OxyPlotPlugin
 			} 
 		}
 
-		private string _xyclick;
-		public string YXclick
-		{	get => _xyclick;
-			set
-            {
-                if (_xyclick != value)
-                {
-                    _xyclick = value;
-                    PropertyChanged?.Invoke(this, YXevent);
-                }
-            }
-        }
-
 		private string _xprop;
 		public string Xprop
 		{	get => _xprop;
 			set
-            {
-                if (_xprop != value)
-                {
-                    _xprop = value;
-                    PropertyChanged?.Invoke(this, Xevent);
-                }
-            }
-        }
+			{
+				if (_xprop != value)
+				{
+					_xprop = value;
+					PropertyChanged?.Invoke(this, Xevent);
+				}
+			}
+		}
 
 		private string _yprop;
 		public string Yprop
 		{	get => _yprop;
 			set
-            {
-                if (_yprop != value)
-                {
-                    _yprop = value;
-                    PropertyChanged?.Invoke(this, Yevent);
-                }
-            }
-        }
+			{
+				if (_yprop != value)
+				{
+					_yprop = value;
+					PropertyChanged?.Invoke(this, Yevent);
+				}
+			}
+		}
 
 		private string _xyprop;
 		public string XYprop
 		{	get => _xyprop;
 			set
-            {
-                if (_xyprop != value)
-                {
-                    _xyprop = value;
-                    PropertyChanged?.Invoke(this, XYevent);
-                }
-            }
-        }
+			{
+				if (_xyprop != value)
+				{
+					_xyprop = value;
+					PropertyChanged?.Invoke(this, XYevent);
+				}
+			}
+		}
 	}	// class ViewModel
 
 	/// <summary>
@@ -93,17 +79,14 @@ namespace OxyPlotPlugin
 	public partial class Control : UserControl
 	{
 		public Plugin Plugin { get; }
-
-		public ViewModel PluginViewModel;
-
+		public ViewModel Model;
 		public int lowval, minval;
 		public Control()
 		{
-			PluginViewModel = new ViewModel();
-			PluginViewModel.OxyButVis = Visibility.Hidden;
-            PluginViewModel.XYprop = "All plots must include Low > values > Min";
-			PluginViewModel.YXclick = "";
-			DataContext = PluginViewModel;
+			Model = new ViewModel();
+			Model.OxyButVis = Visibility.Hidden;
+			Model.XYprop = "All plots must include Low > values > Min";
+			DataContext = Model;
 			InitializeComponent();
 			Random rnd=new Random();
 			lowval = 1; minval = 40;	// minimum plotable interval range 
@@ -119,7 +102,8 @@ namespace OxyPlotPlugin
 				y[0][i] = ymax * rnd.NextDouble();
 				x[0][i] = ++i;
 			}
-			ScatterPlot(0, "launch a game or Replay to enable Y vs X property plots", "X", "Y");
+			ScatterPlot(0, "launch a game or Replay to enable Y vs X property plots",
+						Xprop.Text, Yprop.Text);	// Plugin not yet set
 		}
 
 		public Control(Plugin plugin) : this()
@@ -127,22 +111,17 @@ namespace OxyPlotPlugin
 			this.Plugin = plugin;
 		}
 
-		private void VS_Click(object sender, RoutedEventArgs e)
+		private void ScatterSeries_Click(object sender, RoutedEventArgs e)
 		{
 			Plugin.yprop = Yprop.Text;
 			Plugin.xprop = Xprop.Text;
-		}
-
-		private void ScatterSeries_Click(object sender, RoutedEventArgs e)
-		{
+			Plugin.running = true;		// prevent Plugin overwriting slider prompt until first click
 			ymax = 1 + Plugin.ymax[Plugin.which];
-			ScatterPlot(Plugin.which, Plugin.gname + " " + Plugin.cname, Plugin.xprop, Plugin.yprop);
+			ScatterPlot(Plugin.which, Plugin.gname + " " + Plugin.cname + "@" + Plugin.tname, Plugin.xprop, Plugin.yprop);
 			// force which refill
 			Plugin.ymax[Plugin.which] = Plugin.xmax[Plugin.which] = Plugin.ymin[Plugin.which] = Plugin.xmin[Plugin.which];
-			PluginViewModel.OxyButVis = Visibility.Hidden;
-			PluginViewModel.YXclick = "vs";
-            vs.Visibility = Visibility.Visible;
-        }
+			Model.OxyButVis = Visibility.Hidden;
+		}
 
 		public double[][] x;
 		public double[][] y;
@@ -150,7 +129,7 @@ namespace OxyPlotPlugin
 		public string variables;
 		private PlotModel model;
 
-        public void ScatterPlot(int which, string title, string xlabel, string ylabel)
+		public void ScatterPlot(int which, string title, string xlabel, string ylabel)
 		{
 			model = new PlotModel { Title = title };
 			model.Axes.Add(new LinearAxis
