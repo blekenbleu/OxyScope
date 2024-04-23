@@ -2,20 +2,20 @@
 using SimHub.Plugins;
 using SimHub.Plugins.DataPlugins.ShakeItV3;
 using System;
+using System.Windows.Forms;
 using System.Windows.Media;
 using System.Xml;
 using static System.Net.WebRequestMethods;
 
 namespace OxyPlotPlugin
 {
-	[PluginDescription("An XY OxyPlot of 2 SimHub properties")]
+	[PluginDescription("XY OxyPlot of paired SimHub properties")]
 	[PluginAuthor("blekenbleu")]
-	[PluginName("OxyPlot plugin")]
+	[PluginName("OxyPlot XY plugin")]
 	public class Plugin : IPlugin, IDataPlugin, IWPFSettingsV2
 	{
 		public Settings Settings;
 		public bool running = false;
-		internal string gname = "", cname="", tname="";
 
 		/// <summary>
 		/// Instance of the current plugin manager
@@ -30,7 +30,7 @@ namespace OxyPlotPlugin
 		/// <summary>
 		/// Gets a short plugin title to show in left menu. Return null if you want to use the title as defined in PluginName attribute.
 		/// </summary>
-		public string LeftMenuTitle => "OxyPlot plugin";
+		public string LeftMenuTitle => "OxyPlot XY plugin";
 
 		/// <summary>
 		/// Called one time per game data update, contains all normalized game data,
@@ -153,10 +153,10 @@ namespace OxyPlotPlugin
 			// Declare an action which can be called
 			this.AddAction("ChangeProperties", (a, b) =>
 			{
-				View.variables = "Grip.FrontLeft vs ProxyS.FrontLeft";
-				gname = pluginManager.GetPropertyValue("DataCorePlugin.CurrentGame")?.ToString();
-				cname = pluginManager.GetPropertyValue("CarID")?.ToString();
-				tname = pluginManager.GetPropertyValue("DataCorePlugin.GameData.TrackId")?.ToString();
+                View.Model.Title =
+					pluginManager.GetPropertyValue("DataCorePlugin.CurrentGame")?.ToString()
+					+ ":  " + pluginManager.GetPropertyValue("CarID")?.ToString()
+					+ "@" + pluginManager.GetPropertyValue("DataCorePlugin.GameData.TrackId")?.ToString();
 			});
 		}
 	}

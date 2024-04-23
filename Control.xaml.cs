@@ -14,6 +14,7 @@ namespace OxyPlotPlugin
 	{
 		public event PropertyChangedEventHandler PropertyChanged;
 		public void OnPropertyChanged(PropertyChangedEventArgs myevent) => PropertyChanged?.Invoke(this, myevent);
+		public string Title { get; set; }
 
 		readonly PropertyChangedEventArgs BVevent = new PropertyChangedEventArgs(nameof(OxyButVis));
 		readonly PropertyChangedEventArgs XYevent = new PropertyChangedEventArgs(nameof(XYprop));
@@ -80,24 +81,28 @@ namespace OxyPlotPlugin
 	{
 		public Plugin Plugin { get; }
 		public ViewModel Model;
-		public int lowval, minval;
+		public int lowval, minval;	// plot control lime sliders
+		public double[][] x;		// plot samples
+		public double[][] y;
+		private double ymax;		// somewhat arbitrary Y axis limit
+
 		public Control()
 		{
 			Model = new ViewModel();
 			Model.OxyButVis = Visibility.Hidden;
-			Model.XYprop = "All plots must include Low > values > Min";
+			Model.XYprop = "Plots require some values:  Low > values > Min";
 			DataContext = Model;
 			InitializeComponent();
-			Random rnd=new Random();
-			lowval = 1; minval = 40;	// minimum plotable interval range 
+			lowval = 50; minval = 10;	// default minimum plotable interval range 
+			ymax = 15;
 			x = new double[2][];
 			y = new double[2][];
-			ymax = 15;
 			x[0] = new double[180];
 			x[1] = new double[x[0].Length];
 			y[0] = new double[x[0].Length];
 			y[1] = new double[x[0].Length];
-			for (int i = 0; i < x[0].Length;)
+			Random rnd=new Random();
+			for (int i = 0; i < x[0].Length;)	// something to fill the plot
 			{
 				y[0][i] = ymax * rnd.NextDouble();
 				x[0][i] = ++i;
@@ -107,7 +112,8 @@ namespace OxyPlotPlugin
 		public Control(Plugin plugin) : this()
 		{
 			this.Plugin = plugin;
-			ScatterPlot(0, "launch a game or Replay to enable Y vs X property plots");
+			Model.Title = "launch a game or Replay to enable Y vs X property plots";
+			ScatterPlot(0);
 		}
 
 		private void ScatterSeries_Click(object sender, RoutedEventArgs e)
@@ -116,21 +122,16 @@ namespace OxyPlotPlugin
 			Plugin.xprop = Xprop.Text;
 			Plugin.running = true;		// prevent Plugin overwriting slider prompt until first click
 			ymax = 1 + Plugin.ymax[Plugin.which];
-			ScatterPlot(Plugin.which, Plugin.gname + " " + Plugin.cname + "@" + Plugin.tname);
+			ScatterPlot(Plugin.which);
 			// force which refill
 			Plugin.ymax[Plugin.which] = Plugin.xmax[Plugin.which] = Plugin.ymin[Plugin.which] = Plugin.xmin[Plugin.which];
 			Model.OxyButVis = Visibility.Hidden;
 		}
 
-		public double[][] x;
-		public double[][] y;
-		private double ymax;
-		public string variables;
-		private PlotModel model;
-
-		public void ScatterPlot(int which, string title)
+		public void ScatterPlot(int which)
 		{
-			model = new PlotModel { Title = title };
+			PlotModel model = new PlotModel { Title = Model.Title };
+
 			model.Axes.Add(new LinearAxis
 			{
 				Position = AxisPosition.Left,
@@ -150,7 +151,6 @@ namespace OxyPlotPlugin
 			model.LegendPosition = LegendPosition.TopRight;
 			model.LegendFontSize = 12;
 			model.LegendBorder = OxyColors.Black;
-
 			model.LegendBorderThickness = 1;
 			plot.Model = model;
 		}

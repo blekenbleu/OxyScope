@@ -19,32 +19,25 @@
 	Control.xaml (2x), Control.xaml.cs, Plugin.cs, Settings.cs
 - in Plugin.cs, changed:  
 ```
-    [PluginDescription("An XY OxyPlot of 2 SimHub properties")]
+    [PluginDescription("XY OxyPlot of paired SimHub properties")]
     [PluginAuthor("blekenbleu")]
-    [PluginName("OxyPlot plugin")]
+    [PluginName("OxyPlot XY plugin")]
 	...
 	...
-	public string LeftMenuTitle => "OxyPlot plugin";
+	public string LeftMenuTitle => "OxyPlot XY plugin";
 ```
-- added OxyPlot stuff for scatter plot
+- added OxyPlot stuff for scatter plot  
 	![](Doc/pasted.png)  
 - break out scatterplot method from keypress event
 - update plot data from Plugin.cs  
 	![](Doc/proto.png)  
 - ping pong buffers for capturing high dynamic range sample sets  
-- "autoexposure" `Refresh` button visible only for interesting value captures
+- min/max X sample range sliders
+- "autoexposure" `Refresh` button visible only for value captures based on sliders
 - capture property names and validate values of selected properties  
-- min/max range sliders
 
-### To Do  
-- refresh plot without new objects  
-	- [PlotModel.InvalidatePlot(new)](https://oxyplot.readthedocs.io/en/master/common-tasks/refresh-plot.html)
- 	[example](https://github.com/oxyplot/oxyplot/blob/develop/Source/Examples/WPF/WpfExamples/Examples/RealtimeDemo/MainViewModel.cs#L91C18-L91C49)  
-	- [C#Corner live demo](https://www.c-sharpcorner.com/article/live-chart-streamed-data-update-using-oxyplot/)  
-	- [performance discussion](https://github.com/oxyplot/oxyplot/issues/1801)  
-	- [RealTimeDemo](https://github.com/oxyplot/oxyplot/tree/develop/Source/Examples/WPF/WpfExamples/Examples/RealtimeDemo)    
-	- [PerformanceTest](https://github.com/alxkalinin/oxyplot/tree/develop/Source/Examples/PerformanceTest) example using RenderingExtensions.DrawReducedLine method    
-	- [RenderingExtensions.DrawReducedLine](https://svitla.com/blog/wpf-application-with-real-time-data-in-oxyplot-charts) tutorial discussion    
+### Many plot properties can change for any plot
+- `new ScatterSeries` each time...
 
 ### Property folder changes from default WPF project for SimHub plugins
 <details><summary>click for differences</summary>
