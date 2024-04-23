@@ -2,11 +2,10 @@
 using OxyPlot.Axes;
 using OxyPlot.Series;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace OxyPlotPlugin
 {
@@ -17,6 +16,11 @@ namespace OxyPlotPlugin
 	    public void OnPropertyChanged(PropertyChangedEventArgs myevent) => PropertyChanged?.Invoke(this, myevent);
 
 		readonly PropertyChangedEventArgs BVevent = new PropertyChangedEventArgs(nameof(OxyButVis));
+		readonly PropertyChangedEventArgs XYevent = new PropertyChangedEventArgs(nameof(XYprop));
+		readonly PropertyChangedEventArgs YXevent = new PropertyChangedEventArgs(nameof(YXclick));
+		readonly PropertyChangedEventArgs Yevent = new PropertyChangedEventArgs(nameof(Yprop));
+		readonly PropertyChangedEventArgs Xevent = new PropertyChangedEventArgs(nameof(Xprop));
+
 		private Visibility _unseen;
 		public Visibility OxyButVis
 		{ 	get => _unseen;
@@ -29,6 +33,58 @@ namespace OxyPlotPlugin
 				}
 			} 
 		}
+
+		private string _xyclick;
+		public string YXclick
+		{	get => _xyclick;
+			set
+            {
+                if (_xyclick != value)
+                {
+                    _xyclick = value;
+                    PropertyChanged?.Invoke(this, YXevent);
+                }
+            }
+        }
+
+		private string _xprop;
+		public string Xprop
+		{	get => _xprop;
+			set
+            {
+                if (_xprop != value)
+                {
+                    _xprop = value;
+                    PropertyChanged?.Invoke(this, Xevent);
+                }
+            }
+        }
+
+		private string _yprop;
+		public string Yprop
+		{	get => _yprop;
+			set
+            {
+                if (_yprop != value)
+                {
+                    _yprop = value;
+                    PropertyChanged?.Invoke(this, Yevent);
+                }
+            }
+        }
+
+		private string _xyprop;
+		public string XYprop
+		{	get => _xyprop;
+			set
+            {
+                if (_xyprop != value)
+                {
+                    _xyprop = value;
+                    PropertyChanged?.Invoke(this, XYevent);
+                }
+            }
+        }
 	}	// class ViewModel
 
 	/// <summary>
@@ -40,13 +96,17 @@ namespace OxyPlotPlugin
 
 		public ViewModel PluginViewModel;
 
+		public int lowval, minval;
 		public Control()
 		{
 			PluginViewModel = new ViewModel();
 			PluginViewModel.OxyButVis = Visibility.Hidden;
+            PluginViewModel.XYprop = "All plots must include Low > values > Min";
+			PluginViewModel.YXclick = "";
 			DataContext = PluginViewModel;
 			InitializeComponent();
 			Random rnd=new Random();
+			lowval = 1; minval = 40;	// minimum plotable interval range 
 			x = new double[2][];
 			y = new double[2][];
 			ymax = 15;
@@ -59,7 +119,7 @@ namespace OxyPlotPlugin
 				y[0][i] = ymax * rnd.NextDouble();
 				x[0][i] = ++i;
 			}
-			ScatterPlot(0);
+			ScatterPlot(0, "launch a game or Replay to enable Y vs X property plots", "X", "Y");
 		}
 
 		public Control(Plugin plugin) : this()
@@ -67,35 +127,43 @@ namespace OxyPlotPlugin
 			this.Plugin = plugin;
 		}
 
+		private void VS_Click(object sender, RoutedEventArgs e)
+		{
+			Plugin.yprop = Yprop.Text;
+			Plugin.xprop = Xprop.Text;
+		}
+
 		private void ScatterSeries_Click(object sender, RoutedEventArgs e)
 		{
 			ymax = 1 + Plugin.ymax[Plugin.which];
-			ScatterPlot(Plugin.which);
+			ScatterPlot(Plugin.which, Plugin.gname + " " + Plugin.cname, Plugin.xprop, Plugin.yprop);
 			// force which refill
 			Plugin.ymax[Plugin.which] = Plugin.xmax[Plugin.which] = Plugin.ymin[Plugin.which] = Plugin.xmin[Plugin.which];
 			PluginViewModel.OxyButVis = Visibility.Hidden;
-		}
+			PluginViewModel.YXclick = "vs";
+            vs.Visibility = Visibility.Visible;
+        }
 
 		public double[][] x;
 		public double[][] y;
 		private double ymax;
-		public string variables = "OxyPlot - Scatter Series";
+		public string variables;
 		private PlotModel model;
 
-        public void ScatterPlot(int which)
+        public void ScatterPlot(int which, string title, string xlabel, string ylabel)
 		{
-			model = new PlotModel { Title = variables };
+			model = new PlotModel { Title = title };
 			model.Axes.Add(new LinearAxis
 			{
 				Position = AxisPosition.Left,
-				Title = "Grip",
+				Title = ylabel,
 				Minimum = 0,
 				Maximum = ymax
 			});
 			model.Axes.Add(new LinearAxis
 			{
 				Position = AxisPosition.Bottom,
-				Title = "Slip",
+				Title = xlabel,
 				Minimum = 0,
 				Maximum = 100
 			});
@@ -117,6 +185,17 @@ namespace OxyPlotPlugin
 			scatterSeries.MarkerFill = color;
 			model.Series.Add(scatterSeries);
 			return model;
+		}
+
+		// handle slider changes
+		private void SLslider_DragCompleted(object sender, MouseButtonEventArgs e)
+		{
+			TBL.Text = "Low " + (lowval = (int)((Slider)sender).Value);
+		}
+
+		private void SRslider_DragCompleted(object sender, MouseButtonEventArgs e)
+		{
+			TBR.Text = "Min " + (minval = (int)((Slider)sender).Value);
 		}
 	}	// class
 }

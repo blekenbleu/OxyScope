@@ -33,6 +33,8 @@
 	![](Doc/proto.png)  
 - ping pong buffers for capturing high dynamic range sample sets  
 - "autoexposure" `Refresh` button visible only for interesting value captures
+- capture property names and validate values of selected properties  
+- min/max range sliders
 
 ### To Do  
 - refresh plot without new objects  
@@ -43,8 +45,6 @@
 	- [RealTimeDemo](https://github.com/oxyplot/oxyplot/tree/develop/Source/Examples/WPF/WpfExamples/Examples/RealtimeDemo)    
 	- [PerformanceTest](https://github.com/alxkalinin/oxyplot/tree/develop/Source/Examples/PerformanceTest) example using RenderingExtensions.DrawReducedLine method    
 	- [RenderingExtensions.DrawReducedLine](https://svitla.com/blog/wpf-application-with-real-time-data-in-oxyplot-charts) tutorial discussion    
-- interactively capture names and validate values of selected properties  
-- min/max range sliders
 
 ### Property folder changes from default WPF project for SimHub plugins
 <details><summary>click for differences</summary>

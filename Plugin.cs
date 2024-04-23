@@ -14,6 +14,7 @@ namespace OxyPlotPlugin
 	public class Plugin : IPlugin, IDataPlugin, IWPFSettingsV2
 	{
 		public Settings Settings;
+		internal string gname = "", cname="";
 
 		/// <summary>
 		/// Instance of the current plugin manager
@@ -42,8 +43,8 @@ namespace OxyPlotPlugin
 		private int i, work;
 		public int which;	// which x and y array for OxyPlot to use
 		public double[] xmin, xmax, ymin, ymax;
-        private string xprop = "ShakeITBSV3Plugin.Export.ProxyS.FrontLeft";
-        private string yprop = "ShakeITBSV3Plugin.Export.Grip.FrontLeft";
+        public string xprop = "ShakeITBSV3Plugin.Export.ProxyS.FrontLeft";
+        public string yprop = "ShakeITBSV3Plugin.Export.Grip.FrontLeft";
 
         public void DataUpdate(PluginManager pluginManager, ref GameData data)
 		{
@@ -52,8 +53,26 @@ namespace OxyPlotPlugin
 			{
 				if (data.OldData != null && data.NewData != null)
 				{
-                    that.x[work][i] = float.Parse(pluginManager.GetPropertyValue(xprop).ToString());
-                    that.y[work][i] = float.Parse(pluginManager.GetPropertyValue(yprop).ToString());
+					float xf = 0, yf = 0;
+					bool fail = false;
+					var xp = pluginManager.GetPropertyValue(xprop);
+					if (null == xp || !float.TryParse(xp.ToString(), out xf))
+					{
+						that.PluginViewModel.XYprop = "invalid X property:  " + xprop;
+						fail = true;
+                    }
+					var yp = pluginManager.GetPropertyValue(yprop);
+					if (null == yp || !float.TryParse(yp.ToString(), out yf))
+                    {
+						that.PluginViewModel.XYprop = "invalid Y property:  " + yprop;
+						fail = true;
+                    }
+					if (fail)
+						return;
+
+					that.PluginViewModel.XYprop = "working...";
+                    that.x[work][i] = xf;
+                    that.y[work][i] = yf;
 					if (0 == i)
 					{
 						xmin[work] = xmax[work] = that.x[work][i];
@@ -75,13 +94,14 @@ namespace OxyPlotPlugin
 						i = 0;
 						int n = 1 - work;
 
-						if (1 > xmin[work] && 40 < xmax[work]
+						if (that.lowval > xmin[work] && that.minval < xmax[work]
 							&& (xmax[work] - xmin[work]) > (xmax[n] - xmin[n]))
 //						if ((ymax[work] - ymin[work]) * (xmax[work] - xmin[work]) >
 //							(ymax[n] - ymin[n]) * (xmax[n] - xmin[n]))
 						{	// larger sample volume than in [1 - work]
 							which = work;		// plot this buffer
 							that.PluginViewModel.OxyButVis = System.Windows.Visibility.Visible;
+							that.PluginViewModel.YXclick = "click";
 							work = n;	// refill buffer with smaller range
 						}
 					}
@@ -130,6 +150,8 @@ namespace OxyPlotPlugin
 			this.AddAction("ChangeProperties", (a, b) =>
 			{
                 that.variables = "Grip.FrontLeft vs ProxyS.FrontLeft";
+				gname = pluginManager.GetPropertyValue("DataCorePlugin.CurrentGame")?.ToString();
+				cname = pluginManager.GetPropertyValue("CarID")?.ToString();
 			});
 		}
 	}
