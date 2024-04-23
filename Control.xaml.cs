@@ -102,13 +102,12 @@ namespace OxyPlotPlugin
 				y[0][i] = ymax * rnd.NextDouble();
 				x[0][i] = ++i;
 			}
-			ScatterPlot(0, "launch a game or Replay to enable Y vs X property plots",
-						Xprop.Text, Yprop.Text);	// Plugin not yet set
 		}
 
 		public Control(Plugin plugin) : this()
 		{
 			this.Plugin = plugin;
+			ScatterPlot(0, "launch a game or Replay to enable Y vs X property plots");
 		}
 
 		private void ScatterSeries_Click(object sender, RoutedEventArgs e)
@@ -117,7 +116,7 @@ namespace OxyPlotPlugin
 			Plugin.xprop = Xprop.Text;
 			Plugin.running = true;		// prevent Plugin overwriting slider prompt until first click
 			ymax = 1 + Plugin.ymax[Plugin.which];
-			ScatterPlot(Plugin.which, Plugin.gname + " " + Plugin.cname + "@" + Plugin.tname, Plugin.xprop, Plugin.yprop);
+			ScatterPlot(Plugin.which, Plugin.gname + " " + Plugin.cname + "@" + Plugin.tname);
 			// force which refill
 			Plugin.ymax[Plugin.which] = Plugin.xmax[Plugin.which] = Plugin.ymin[Plugin.which] = Plugin.xmin[Plugin.which];
 			Model.OxyButVis = Visibility.Hidden;
@@ -129,20 +128,20 @@ namespace OxyPlotPlugin
 		public string variables;
 		private PlotModel model;
 
-		public void ScatterPlot(int which, string title, string xlabel, string ylabel)
+		public void ScatterPlot(int which, string title)
 		{
 			model = new PlotModel { Title = title };
 			model.Axes.Add(new LinearAxis
 			{
 				Position = AxisPosition.Left,
-				Title = ylabel,
+				Title = Plugin.yprop,
 				Minimum = 0,
 				Maximum = ymax
 			});
 			model.Axes.Add(new LinearAxis
 			{
 				Position = AxisPosition.Bottom,
-				Title = xlabel,
+				Title = Plugin.xprop,
 				Minimum = 0,
 				Maximum = 100
 			});
