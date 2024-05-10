@@ -14,12 +14,24 @@ namespace OxyPlotPlugin
 	{
 		public event PropertyChangedEventHandler PropertyChanged;
 		public void OnPropertyChanged(PropertyChangedEventArgs myevent) => PropertyChanged?.Invoke(this, myevent);
-		public string Title { get; set; }
 
 		readonly PropertyChangedEventArgs BVevent = new PropertyChangedEventArgs(nameof(OxyButVis));
 		readonly PropertyChangedEventArgs XYevent = new PropertyChangedEventArgs(nameof(XYprop));
 		readonly PropertyChangedEventArgs Yevent = new PropertyChangedEventArgs(nameof(Yprop));
 		readonly PropertyChangedEventArgs Xevent = new PropertyChangedEventArgs(nameof(Xprop));
+		readonly PropertyChangedEventArgs Tevent = new PropertyChangedEventArgs(nameof(Title));
+
+		private string _title;
+		public string Title { get => _title;
+			set
+			{
+				if (_title != value)
+				{
+					_title = value;
+					PropertyChanged?.Invoke(this, Tevent);
+				}
+			}
+		}
 
 		private Visibility _unseen;
 		public Visibility OxyButVis
