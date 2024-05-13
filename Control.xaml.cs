@@ -125,6 +125,8 @@ namespace OxyPlotPlugin
 		{
 			this.Plugin = plugin;
 			Model.Title = "launch a game or Replay to enable Y vs X property plots";
+			TBL.Text = "Low " + (SL.Value = lowval = plugin.Settings.Low);
+			TBR.Text = "Min " + (SR.Value = minval = plugin.Settings.Min);
 			ScatterPlot(0);
 		}
 

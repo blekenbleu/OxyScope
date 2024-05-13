@@ -120,6 +120,8 @@ namespace OxyPlotPlugin
 		/// <param name="pluginManager"></param>
 		public void End(PluginManager pluginManager)
 		{
+			Settings.Min = View.minval;
+			Settings.Low = View.lowval;
 			// Save settings
 			this.SaveCommonSettings("GeneralSettings", Settings);
 		}
@@ -149,6 +151,8 @@ namespace OxyPlotPlugin
 
 			// Load settings
 			Settings = this.ReadCommonSettings<Settings>("GeneralSettings", () => new Settings());
+			if (null == Settings)
+				Settings = new Settings() { Low = 3, Min = 30 };
 
 			// Declare an action which can be called
 			this.AddAction("ChangeProperties", (a, b) =>
