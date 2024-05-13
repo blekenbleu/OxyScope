@@ -132,8 +132,12 @@ namespace OxyPlotPlugin
 
 		private void ScatterSeries_Click(object sender, RoutedEventArgs e)
 		{
-			Plugin.yprop = Yprop.Text;
-			Plugin.xprop = Xprop.Text;
+			if (0 < Yprop.Text.Length)
+				Plugin.Settings.Y = Yprop.Text;
+			else Yprop.Text = Plugin.Settings.Y;
+			if (0 < Xprop.Text.Length)
+				Plugin.Settings.X = Xprop.Text;
+			else Xprop.Text = Plugin.Settings.X;
 			Plugin.running = true;		// prevent Plugin overwriting slider prompt until first click
 			ymax = 1 + Plugin.ymax[Plugin.which];
 			ScatterPlot(Plugin.which);
@@ -149,14 +153,14 @@ namespace OxyPlotPlugin
 			model.Axes.Add(new LinearAxis
 			{
 				Position = AxisPosition.Left,
-				Title = Plugin.yprop,
+				Title = Yprop.Text,
 				Minimum = 0,
 				Maximum = ymax
 			});
 			model.Axes.Add(new LinearAxis
 			{
 				Position = AxisPosition.Bottom,
-				Title = Plugin.xprop,
+				Title = Xprop.Text,
 				Minimum = 0,
 				Maximum = 100
 			});

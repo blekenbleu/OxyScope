@@ -26,9 +26,9 @@
 			<Canvas>
 				<TextBox Canvas.Left="0" TextWrapping="Wrap" Text="{Binding XYprop}" Height="25" Canvas.Top="590" Width="800" Name="XYprop"/>
 				<TextBox Canvas.Left="0" TextWrapping="Wrap" Height="25" Canvas.Top="615" Width="390"
-				 Name="Yprop" Text="ShakeITBSV3Plugin.Export.Grip.FrontLeft"/>
+				 Name="Yprop" Text=""/>
 				<TextBox Canvas.Left="410" TextWrapping="Wrap" Height="25" Canvas.Top="615" Width="390"
-				 Name="Xprop" Text="ShakeITBSV3Plugin.Export.ProxyS.FrontLeft"/>
+				 Name="Xprop" Text=""/>
 				<TextBox Canvas.Left="390" Text="vs" Width="20" Height="22" Canvas.Top="615"/>
 			</Canvas>
 

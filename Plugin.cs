@@ -44,8 +44,6 @@ namespace OxyPlotPlugin
 		private int i, work;
 		public int which;	// which x and y array for OxyPlot to use
 		public double[] xmin, xmax, ymin, ymax;
-		public string xprop = "ShakeITBSV3Plugin.Export.ProxyS.FrontLeft";
-		public string yprop = "ShakeITBSV3Plugin.Export.Grip.FrontLeft";
 
 		public void DataUpdate(PluginManager pluginManager, ref GameData data)
 		{
@@ -56,16 +54,16 @@ namespace OxyPlotPlugin
 				{
 					float xf = 0, yf = 0;
 					bool fail = false;
-					var xp = pluginManager.GetPropertyValue(xprop);
+					var xp = pluginManager.GetPropertyValue(Settings.X);
 					if (null == xp || !float.TryParse(xp.ToString(), out xf))
 					{
-						View.Model.XYprop = "invalid X property:  " + xprop;
+						View.Model.XYprop = "invalid X property:  " + Settings.X;
 						fail = true;
 					}
-					var yp = pluginManager.GetPropertyValue(yprop);
+					var yp = pluginManager.GetPropertyValue(Settings.Y);
 					if (null == yp || !float.TryParse(yp.ToString(), out yf))
 					{
-						View.Model.XYprop = "invalid Y property:  " + yprop;
+						View.Model.XYprop = "invalid Y property:  " + Settings.Y;
 						fail = true;
 					}
 					if (fail)
@@ -122,6 +120,8 @@ namespace OxyPlotPlugin
 		{
 			Settings.Min = View.minval;
 			Settings.Low = View.lowval;
+			Settings.X = View.Xprop.Text;
+			Settings.Y = View.Yprop.Text;
 			// Save settings
 			this.SaveCommonSettings("GeneralSettings", Settings);
 		}
@@ -152,7 +152,11 @@ namespace OxyPlotPlugin
 			// Load settings
 			Settings = this.ReadCommonSettings<Settings>("GeneralSettings", () => new Settings());
 			if (null == Settings)
-				Settings = new Settings() { Low = 3, Min = 30 };
+				Settings = new Settings() {
+					Low = 3, Min = 30,
+					X = "ShakeITBSV3Plugin.Export.ProxyS.FrontLeft",
+					Y = "ShakeITBSV3Plugin.Export.Grip.FrontLeft"
+				};
 
 			// Declare an action which can be called
 			this.AddAction("ChangeProperties", (a, b) =>
