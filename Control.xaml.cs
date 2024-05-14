@@ -94,8 +94,10 @@ namespace OxyPlotPlugin
 		public Plugin Plugin { get; }
 		public ViewModel Model;
 		public int lowval, minval;	// plot control lime sliders
-		public double[][] x;		// plot samples
-		public double[][] y;
+		public double[] x;			// plot samples
+		public double[] y;
+		public int length;
+		public int[] start;			// circular buffer  
 		private double ymax;		// somewhat arbitrary Y axis limit
 
 		public Control()
@@ -107,17 +109,16 @@ namespace OxyPlotPlugin
 			InitializeComponent();
 			lowval = 50; minval = 10;	// default minimum plotable interval range 
 			ymax = 15;
-			x = new double[2][];
-			y = new double[2][];
-			x[0] = new double[180];
-			x[1] = new double[x[0].Length];
-			y[0] = new double[x[0].Length];
-			y[1] = new double[x[0].Length];
+			length = 360;
+			start = new int[2]; start[0] = 0; start[1] =  length >> 1;
+			x = new double[length];
+			y = new double[length];
+			int l = length >> 1;
 			Random rnd=new Random();
-			for (int i = 0; i < x[0].Length;)	// something to fill the plot
+			for (int i = 0; i < l ;)	// something to fill the plot
 			{
-				y[0][i] = ymax * rnd.NextDouble();
-				x[0][i] = ++i;
+				y[i] = ymax * rnd.NextDouble();
+				x[i] = ++i;
 			}
 		}
 
@@ -142,7 +143,7 @@ namespace OxyPlotPlugin
 			ymax = 1 + Plugin.ymax[Plugin.which];
 			ScatterPlot(Plugin.which);
 			// force which refill
-			Plugin.ymax[Plugin.which] = Plugin.xmax[Plugin.which] = Plugin.ymin[Plugin.which] = Plugin.xmin[Plugin.which];
+			Plugin.ymax[Plugin.which] = Plugin.xmax[Plugin.which] = Plugin.ymin[Plugin.which] = 1 + Plugin.xmin[Plugin.which];
 			Model.OxyButVis = Visibility.Hidden;
 		}
 
@@ -157,6 +158,7 @@ namespace OxyPlotPlugin
 				Minimum = 0,
 				Maximum = ymax
 			});
+
 			model.Axes.Add(new LinearAxis
 			{
 				Position = AxisPosition.Bottom,
@@ -164,7 +166,8 @@ namespace OxyPlotPlugin
 				Minimum = 0,
 				Maximum = 100
 			});
-			model = AddScatter(model, x[which], y[which], 3, OxyColors.Red);
+
+			model = AddScatter(model, which);
 			model.Series[model.Series.Count - 1].Title = "60Hz sample";
 			model.LegendPosition = LegendPosition.TopRight;
 			model.LegendFontSize = 12;
@@ -173,12 +176,21 @@ namespace OxyPlotPlugin
 			plot.Model = model;
 		}
 
-		private PlotModel AddScatter(PlotModel model, double[] x, double[] y, int size, OxyColor color)
+		private PlotModel AddScatter(PlotModel model, int which)
 		{
+			int size = 3;	// plot dot size
+			int end = (start[which] <= length >> 1) ? start[which] + length >> 1 : length;
+
 			var scatterSeries = new ScatterSeries { MarkerType = MarkerType.Circle };
-			for (int i = 0; i < x.Length; i++)
+			for (int i = start[which]; i < end; i++)
 				scatterSeries.Points.Add(new ScatterPoint(x[i], y[i], size));
-			scatterSeries.MarkerFill = color;
+			if (start[which] > length >> 1)
+			{
+				end = start[which] - length >> 1;	// wrap "circular" buffer
+				for (int i = 0; i < end; i++)
+					scatterSeries.Points.Add(new ScatterPoint(x[i], y[i], size));
+			}
+			scatterSeries.MarkerFill = OxyColors.Red;
 			model.Series.Add(scatterSeries);
 			return model;
 		}
