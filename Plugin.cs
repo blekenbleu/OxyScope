@@ -41,13 +41,13 @@ namespace OxyPlotPlugin
 		/// </summary>
 		/// <param name="pluginManager"></param>
 		/// <param name="data">Current game data, including current and previous data frame.</param>
-		private int i, j, work;
+		private int i, work;
 		public int which;	// which x and y array for OxyPlot to use
-		public double[] xmin, xmax, ymin, ymax;
+		public double[] xmin, xmax, ymax;	// View uses ymax for Y axis scaling
 
 		public void DataUpdate(PluginManager pluginManager, ref GameData data)
 		{
-			// Define the value of our property (declared in init)
+			// Search for X-axis sample batches satisfying < View.lowval && > View.minval
 			if (data.GameRunning && data.OldData != null && data.NewData != null)
 			{
 				float xf = 0, yf = 0;
@@ -70,41 +70,39 @@ namespace OxyPlotPlugin
 					return;
 				}
 
-				if (running)
-					View.Model.XYprop = "working...";
-				View.x[j + i] = xf;
-				View.y[j + i] = yf;
-				if (0 == i)
+				View.x[i] = xf;
+				View.y[i] = yf;
+				if (View.start[work] == i)
 				{
-					xmin[work] = xmax[work] = View.x[j];
-					ymin[work] = ymax[work] = View.y[j];
+					xmin[work] = xmax[work] = View.x[i];
 				}
 				else	// volume of sample values
 				{
-					if (xmin[work] > View.x[j + i])
-						xmin[work] = View.x[j + i];
-					else if (xmax[work] < View.x[j + i])
-						xmax[work] = View.x[j + i];
-					if (ymin[work] > View.y[j + i])
-						ymin[work] = View.y[j + i];
-					else if (ymax[work] < View.y[j + i])
-						ymax[work] = View.y[j + i];
+					if (xmin[work] > View.x[i])
+						xmin[work] = View.x[i];
+					else if (xmax[work] < View.x[i])
+						xmax[work] = View.x[i];
+					if (ymax[work] < View.y[i])
+						ymax[work] = View.y[i];
 				}
-				if (++i >= View.length >> 1)	// filled?
+				if ((++i - View.start[work]) >= View.length >> 1)	// filled?
 				{
-					i = 0;
 					int n = 1 - work;
 
-					if (View.lowval > xmin[work] && View.minval < xmax[work]
+					// Coordination:  View should disable running while loading Plot
+					if (running)
+					{
+						View.Model.XYprop = "working... current high = " + xmax[work] + ", low = " + xmin[work];
+						if (View.lowval > xmin[work] && View.minval < xmax[work]
 						&& (xmax[work] - xmin[work]) > (xmax[n] - xmin[n]))
-//					if ((ymax[work] - ymin[work]) * (xmax[work] - xmin[work]) >
-//						(ymax[n] - ymin[n]) * (xmax[n] - xmin[n]))
-					{	// larger sample volume than in [1 - work]
-						which = work;		// plot this buffer
-						View.Model.OxyButVis = System.Windows.Visibility.Visible;
-						work = n;			// refill buffer with smaller range
-						j = View.start[work];
+						{	// larger sample volume than in [1 - work]
+							which = work;		// plot this buffer
+							View.Model.OxyButVis = System.Windows.Visibility.Visible;
+							work = n;			// refill buffer with smaller range
+						}
 					}
+					i = View.start[work];
+					ymax[work] = 0;
 				}
 			}
 		}
@@ -142,9 +140,8 @@ namespace OxyPlotPlugin
 		/// <param name="pluginManager"></param>
 		public void Init(PluginManager pluginManager)
 		{
-			i = j = which = work = 0;
+			i = which = work = 0;	ymax = new double[] {0, 0};
 			xmin = new double[] {0, 0}; xmax = new double[] {0, 0};
-			ymin = new double[] {0, 0}; ymax = new double[] {0, 0};
 			SimHub.Logging.Current.Info("Starting " + LeftMenuTitle);
 
 			// Load settings
@@ -155,10 +152,17 @@ namespace OxyPlotPlugin
 					X = "ShakeITBSV3Plugin.Export.ProxyS.FrontLeft",
 					Y = "ShakeITBSV3Plugin.Export.Grip.FrontLeft"
 				};
+			else {
+				if (0 == Settings.X.Length)
+						Settings.X = "ShakeITBSV3Plugin.Export.ProxyS.FrontLeft";
+				if (0 == Settings.Y.Length)
+						Settings.Y = "ShakeITBSV3Plugin.Export.Grip.FrontLeft";
+			}
 
 			// Declare an action which can be called
 			this.AddAction("ChangeProperties", (a, b) =>
 			{
+				running = true;
                 View.Model.Title =
 					pluginManager.GetPropertyValue("DataCorePlugin.CurrentGame")?.ToString()
 					+ ":  " + pluginManager.GetPropertyValue("CarID")?.ToString()

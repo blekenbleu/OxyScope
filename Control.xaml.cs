@@ -128,7 +128,13 @@ namespace OxyPlotPlugin
 			Model.Title = "launch a game or Replay to enable Y vs X property plots";
 			TBL.Text = "Low " + (SL.Value = lowval = plugin.Settings.Low);
 			TBR.Text = "Min " + (SR.Value = minval = plugin.Settings.Min);
+			Xprop.Text = Yprop.Text = "random";
 			ScatterPlot(0);
+			if (null != plugin.Settings)
+			{
+				Xprop.Text = plugin.Settings.X;
+				Yprop.Text = plugin.Settings.Y;
+			}
 		}
 
 		private void ScatterSeries_Click(object sender, RoutedEventArgs e)
@@ -139,11 +145,15 @@ namespace OxyPlotPlugin
 			if (0 < Xprop.Text.Length)
 				Plugin.Settings.X = Xprop.Text;
 			else Xprop.Text = Plugin.Settings.X;
-			Plugin.running = true;		// prevent Plugin overwriting slider prompt until first click
+
+			Plugin.running = false;		// disable Plugin updates
+			Model.XYprop = "property updates paused...";
 			ymax = 1 + Plugin.ymax[Plugin.which];
 			ScatterPlot(Plugin.which);
-			// force which refill
-			Plugin.ymax[Plugin.which] = Plugin.xmax[Plugin.which] = Plugin.ymin[Plugin.which] = 1 + Plugin.xmin[Plugin.which];
+			// enable which refill
+			Plugin.ymax[Plugin.which] = Plugin.xmax[Plugin.which] = 1 + lowval;
+			Plugin.ymax[Plugin.which] = 0;
+			Plugin.running = true;		// enable Plugin updates
 			Model.OxyButVis = Visibility.Hidden;
 		}
 
