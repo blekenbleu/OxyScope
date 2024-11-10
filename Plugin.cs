@@ -55,26 +55,29 @@ namespace OxyPlotPlugin
 				var xp = pluginManager.GetPropertyValue(Settings.X);
 				if (null == xp || !float.TryParse(xp.ToString(), out xf))
 				{
-					View.Model.XYprop = "invalid X property:  " + Settings.X;
+					View.VMod.XYprop = "invalid X property:  " + Settings.X;
 					fail = true;
 				}
 				var yp = pluginManager.GetPropertyValue(Settings.Y);
 				if (null == yp || !float.TryParse(yp.ToString(), out yf))
 				{
-					View.Model.XYprop = "invalid Y property:  " + Settings.Y;
+					View.VMod.XYprop = "invalid Y property:  " + Settings.Y;
 					fail = true;
 				}
 				if (fail)
 				{
-					View.Model.OxyButVis = System.Windows.Visibility.Visible;
+					View.VMod.Vis = System.Windows.Visibility.Visible;
 					return;
 				}
+
+				if (1 > xf)
+					return;
 
 				View.x[i] = xf;
 				View.y[i] = yf;
 				if (View.start[work] == i)
 				{
-					xmin[work] = xmax[work] = View.x[i];
+					xmin[work] = xmax[work] = 0.5 * (View.lowval + View.minval); // View.x[i];
 				}
 				else	// volume of sample values
 				{
@@ -92,13 +95,20 @@ namespace OxyPlotPlugin
 					// Coordination:  View should disable running while loading Plot
 					if (running)
 					{
-						View.Model.XYprop = "working... current high = " + xmax[work] + ", low = " + xmin[work];
-						if (View.lowval > xmin[work] && View.minval < xmax[work]
-						&& (xmax[work] - xmin[work]) > (xmax[n] - xmin[n]))
-						{	// larger sample volume than in [1 - work]
-							which = work;		// plot this buffer
-							View.Model.OxyButVis = System.Windows.Visibility.Visible;
-							work = n;			// refill buffer with smaller range
+						View.VMod.XYprop = "working..." + " current high = " + xmax[work] + ", low = " + xmin[work];
+						if (View.minval < xmax[work])
+						{
+//							View.VMod.XYprop += " current high = " + xmax[work];
+							if (View.lowval > xmin[work])
+							{
+//								View.VMod.XYprop += ", low = " + xmin[work];
+								if ((xmax[work] - xmin[work]) > (xmax[n] - xmin[n]))
+								{	// larger sample volume than in [1 - work]
+									which = work;		// plot this buffer
+									View.VMod.Vis = System.Windows.Visibility.Visible;
+									work = n;			// refill buffer with smaller range
+								}
+							}
 						}
 					}
 					i = View.start[work];
@@ -141,7 +151,7 @@ namespace OxyPlotPlugin
 		public void Init(PluginManager pluginManager)
 		{
 			i = which = work = 0;	ymax = new double[] {0, 0};
-			xmin = new double[] {0, 0}; xmax = new double[] {0, 0};
+			xmin = new double[] {90, 90}; xmax = new double[] {0, 0};
 			SimHub.Logging.Current.Info("Starting " + LeftMenuTitle);
 
 			// Load settings
@@ -163,10 +173,12 @@ namespace OxyPlotPlugin
 			this.AddAction("ChangeProperties", (a, b) =>
 			{
 				running = true;
-                View.Model.Title =
+                View.VMod.Title =
 					pluginManager.GetPropertyValue("DataCorePlugin.CurrentGame")?.ToString()
 					+ ":  " + pluginManager.GetPropertyValue("CarID")?.ToString()
 					+ "@" + pluginManager.GetPropertyValue("DataCorePlugin.GameData.TrackId")?.ToString();
+				View.Dispatcher.Invoke(() => View.ScatterPlot(which));	// invoke from another thread
+				View.VMod.XYprop = "property updates waiting...";
 			});
 		}
 	}

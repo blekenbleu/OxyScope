@@ -15,7 +15,7 @@ namespace OxyPlotPlugin
 		public event PropertyChangedEventHandler PropertyChanged;
 		public void OnPropertyChanged(PropertyChangedEventArgs myevent) => PropertyChanged?.Invoke(this, myevent);
 
-		readonly PropertyChangedEventArgs BVevent = new PropertyChangedEventArgs(nameof(OxyButVis));
+		readonly PropertyChangedEventArgs BVevent = new PropertyChangedEventArgs(nameof(Vis));
 		readonly PropertyChangedEventArgs XYevent = new PropertyChangedEventArgs(nameof(XYprop));
 		readonly PropertyChangedEventArgs Yevent = new PropertyChangedEventArgs(nameof(Yprop));
 		readonly PropertyChangedEventArgs Xevent = new PropertyChangedEventArgs(nameof(Xprop));
@@ -34,7 +34,7 @@ namespace OxyPlotPlugin
 		}
 
 		private Visibility _unseen;
-		public Visibility OxyButVis
+		public Visibility Vis
 		{ 	get => _unseen;
 			set
 			{
@@ -92,7 +92,7 @@ namespace OxyPlotPlugin
 	public partial class Control : UserControl
 	{
 		public Plugin Plugin { get; }
-		public ViewModel Model;
+		public ViewModel VMod;
 		public int lowval, minval;	// plot control lime sliders
 		public double[] x;			// plot samples
 		public double[] y;
@@ -102,10 +102,10 @@ namespace OxyPlotPlugin
 
 		public Control()
 		{
-			Model = new ViewModel();
-			Model.OxyButVis = Visibility.Hidden;
-			Model.XYprop = "Plots require some values:  Low > values > Min";
-			DataContext = Model;
+			VMod = new ViewModel();
+			VMod.Vis = Visibility.Hidden;
+			VMod.XYprop = "Plots require some values:  Below > values and other values:  Above < values";
+			DataContext = VMod;
 			InitializeComponent();
 			lowval = 50; minval = 10;	// default minimum plotable interval range 
 			ymax = 15;
@@ -125,9 +125,9 @@ namespace OxyPlotPlugin
 		public Control(Plugin plugin) : this()
 		{
 			this.Plugin = plugin;
-			Model.Title = "launch a game or Replay to enable Y vs X property plots";
-			TBL.Text = "Low " + (SL.Value = lowval = plugin.Settings.Low);
-			TBR.Text = "Min " + (SR.Value = minval = plugin.Settings.Min);
+			VMod.Title = "launch a game or Replay to enable Y vs X property plots";
+			TBL.Text = "Below " + (SL.Value = lowval = plugin.Settings.Low);
+			TBR.Text = "Above " + (SR.Value = minval = plugin.Settings.Min);
 			Xprop.Text = Yprop.Text = "random";
 			ScatterPlot(0);
 			if (null != plugin.Settings)
@@ -137,7 +137,7 @@ namespace OxyPlotPlugin
 			}
 		}
 
-		private void ScatterSeries_Click(object sender, RoutedEventArgs e)
+		private void SSclick(object sender, RoutedEventArgs e)	// Refresh button
 		{
 			if (0 < Yprop.Text.Length)
 				Plugin.Settings.Y = Yprop.Text;
@@ -147,19 +147,20 @@ namespace OxyPlotPlugin
 			else Xprop.Text = Plugin.Settings.X;
 
 			Plugin.running = false;		// disable Plugin updates
-			Model.XYprop = "property updates paused...";
+			VMod.XYprop = "property updates paused...";
 			ymax = 1 + Plugin.ymax[Plugin.which];
 			ScatterPlot(Plugin.which);
 			// enable which refill
 			Plugin.ymax[Plugin.which] = Plugin.xmax[Plugin.which] = 1 + lowval;
 			Plugin.ymax[Plugin.which] = 0;
 			Plugin.running = true;		// enable Plugin updates
-			Model.OxyButVis = Visibility.Hidden;
+			VMod.XYprop = "property updates waiting...";
+			VMod.Vis = Visibility.Hidden;
 		}
 
 		public void ScatterPlot(int which)
 		{
-			PlotModel model = new PlotModel { Title = Model.Title };
+			PlotModel model = new PlotModel { Title = VMod.Title };
 
 			model.Axes.Add(new LinearAxis
 			{
@@ -206,14 +207,14 @@ namespace OxyPlotPlugin
 		}
 
 		// handle slider changes
-		private void SLslider_DragCompleted(object sender, MouseButtonEventArgs e)
+		private void SLdone(object sender, MouseButtonEventArgs e)
 		{
-			TBL.Text = "Low " + (lowval = (int)((Slider)sender).Value);
+			TBL.Text = "Below " + (lowval = (int)((Slider)sender).Value);
 		}
 
-		private void SRslider_DragCompleted(object sender, MouseButtonEventArgs e)
+		private void SRdone(object sender, MouseButtonEventArgs e)
 		{
-			TBR.Text = "Min " + (minval = (int)((Slider)sender).Value);
+			TBR.Text = "Above " + (minval = (int)((Slider)sender).Value);
 		}
 	}	// class
 }
