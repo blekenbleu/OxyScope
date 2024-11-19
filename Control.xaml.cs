@@ -17,21 +17,19 @@ namespace OxyPlotPlugin
 	{
 		public Plugin Plugin { get; }
 		public Model Model;
-		public int lowval, minval;	// plot control lime sliders
-		public double[] x;			// plot samples
-		public double[] y;
+		public int lowX, lowY;				// plot control lime sliders
+		public double[] x, y;				// plot samples
 		public int length;
-		public int[] start;			// circular buffer  
-		private double ymax;		// somewhat arbitrary Y axis limit
+		public int[] start;					// circular buffer  
+		private double xmax = 100, ymax;	// somewhat arbitrary axis limits
 
 		public Control()
 		{
-			Model = new Model();
+			DataContext = Model = new Model();
 			Model.Vis = Visibility.Hidden;
-			Model.XYprop = "Plots require some values:  Below > values and other values:  Above < values";
-			DataContext = Model;
+			Model.XYprop = "Property plots require some X and Y values 'X Below' and 'Y Below'";
 			InitializeComponent();
-			lowval = 50; minval = 10;	// default minimum plotable interval range 
+			lowX = 50; lowY = 10;	// default minimum plotable interval range 
 			ymax = 15;
 			length = 360;
 			start = new int[2]; start[0] = 0; start[1] =  length >> 1;
@@ -49,9 +47,9 @@ namespace OxyPlotPlugin
 		public Control(Plugin plugin) : this()
 		{
 			this.Plugin = plugin;
-			Model.Title = "launch a game or Replay to enable Y vs X property plots";
-			TBL.Text = "Below " + (SL.Value = lowval = plugin.Settings.Low);
-			TBR.Text = "Above " + (SR.Value = minval = plugin.Settings.Min);
+			Model.Title = "launch a game or Replay to start property XY plots";
+			TBL.Text = "X Below " + (SL.Value = lowX = plugin.Settings.Low) + "%";
+			TBR.Text = "Y Below " + (SR.Value = lowY = plugin.Settings.Min) + "%";
 			Xprop.Text = Yprop.Text = "random";
 			ScatterPlot(0);
 			if (null != plugin.Settings)
@@ -72,14 +70,14 @@ namespace OxyPlotPlugin
 
 			Plugin.running = false;		// disable Plugin updates
 			Model.XYprop = "property updates paused...";
-			ymax = 1 + Plugin.ymax[Plugin.which];
+			ymax = 1.1 *  Plugin.ymax[Plugin.which];
+			xmax = 1.1 *  Plugin.xmax[Plugin.which];
 			ScatterPlot(Plugin.which);
 			// enable which refill
-			Plugin.ymax[Plugin.which] = Plugin.xmax[Plugin.which] = 1 + lowval;
-			Plugin.ymax[Plugin.which] = 0;
+			Plugin.ymax[Plugin.which] = Plugin.xmax[Plugin.which] = 0;
 			Plugin.running = true;		// enable Plugin updates
 			Model.XYprop = "property updates waiting...";
-			Model.Vis = Visibility.Hidden;
+			Model.Vis = Visibility.Hidden;		// Refresh button
 		}
 
 		public void ScatterPlot(int which)
@@ -99,7 +97,7 @@ namespace OxyPlotPlugin
 				Position = AxisPosition.Bottom,
 				Title = Xprop.Text,
 				Minimum = 0,
-				Maximum = 100
+				Maximum = xmax
 			});
 
 			model = AddScatter(model, which);
@@ -133,12 +131,12 @@ namespace OxyPlotPlugin
 		// handle slider changes
 		private void SLdone(object sender, MouseButtonEventArgs e)
 		{
-			TBL.Text = "Below " + (lowval = (int)((Slider)sender).Value);
+			TBL.Text = "X Below " + (lowX = (int)((Slider)sender).Value) + "%";
 		}
 
 		private void SRdone(object sender, MouseButtonEventArgs e)
 		{
-			TBR.Text = "Above " + (minval = (int)((Slider)sender).Value);
+			TBR.Text = "Y Below " + (lowY = (int)((Slider)sender).Value) + "%";
 		}
 	}	// class
 }

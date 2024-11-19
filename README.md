@@ -1,4 +1,5 @@
 # OxyPlotPlugin from SimHubPluginSdk
+XY plot of *positive* property values
 - Create a new WPF project named `OxyPlotPlugin` in Visual Studio, then quit.  
 - delete (or move away) all but `OxyPlotPlugin.sln` and `OxyPlotPlugin.csproj`  
 - copy all but .sln and .csproj from SimHubPluginSdk
@@ -39,7 +40,13 @@
 ### Many plot properties can change for any plot
 - `new ScatterSeries` each time...
 
-### Property folder changes from default WPF project for SimHub plugins
+#### 10 Nov:&nbsp; better prompts and feedback
+- better icon, simpler xaml, version number
+- both X and Y autorange based on max property sample values
+- **Replot** when min sample values < `X Below`, `Y Below` % of corresponding max values
+- should add a third slider for minimum useful X values.
+
+#### Property folder changes from default WPF project for SimHub plugins
 <details><summary>click for differences</summary>
 <ul>
 <li>delete <code>Settings.Designer.cs<code> and <code>Settings.settings</code>
@@ -49,4 +56,3 @@
 <li>in Resources.resx, add 4 lines for sdkmenuicon; force othe lines to match
 </ul>
 </details>
-

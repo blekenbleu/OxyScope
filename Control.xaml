@@ -7,25 +7,26 @@
 			 mc:Ignorable="d"
 			 xmlns:oxy="http://oxyplot.org/wpf"
 			 Height="650" Width="800">
-        <Grid>
-            <Canvas VerticalAlignment="Top">
-                <Slider Maximum="99" TickPlacement="BottomRight" TickFrequency="3" IsSnapToTickEnabled="True" Width="300" Height="22"
-						Name="SL" Margin="0,2" Minimum="1" PreviewMouseUp="SLdone"/>
-                <TextBox Name="TBL" Margin="302,2" TextWrapping="Wrap" Text="Below 01" Width="45" Height="42"/>
-                <Button Content="Refresh" Width="60" Height="22" Margin="360,2" Click="SSclick" Visibility="{Binding Vis}" Background="Red" />
-                <Slider Maximum="99" TickPlacement="BottomRight" TickFrequency="3" IsSnapToTickEnabled="True" Width="300" Height="22"
+		<Grid>
+			<Canvas VerticalAlignment="Top">
+				<Slider Maximum="99" TickPlacement="BottomRight" TickFrequency="3" IsSnapToTickEnabled="True" Width="300" Height="22"
+						Name="SL" Margin="0,2" Minimum="1" Value="10" PreviewMouseUp="SLdone"/>
+				<TextBox Name="TBL" Margin="302,2" TextWrapping="Wrap" Text="X Below 10%" Width="55" Height="42"/>
+				<Button Content="Refresh" Width="60" Height="22" Margin="360,2" Click="SSclick" Visibility="{Binding Vis}" Background="Red" />
+				<Slider Maximum="99" TickPlacement="BottomRight" TickFrequency="3" IsSnapToTickEnabled="True" Width="300" Height="22"
 						Name="SR" Margin="430,2" Value="40" PreviewMouseUp="SRdone"/>
-                <TextBox Name="TBR" Margin="732,2" TextWrapping="Wrap" Text="Above 99" Width="48" Height="42"/>
-            </Canvas>
-            <GroupBox Name="plotBox" Header="OxyPlot" Height="550">
-                <oxy:PlotView Name="plot"/>
-            </GroupBox>
-            <Canvas>
-                <TextBox Canvas.Left="0" TextWrapping="Wrap" Text="{Binding XYprop}" Height="25" Canvas.Top="590" Width="800" Name="XYprop"/>
-                <TextBox Canvas.Left="0" TextWrapping="Wrap" Height="25" Canvas.Top="615" Width="390" Name="Yprop" Text=""/>
-                <TextBox Canvas.Left="410" TextWrapping="Wrap" Height="25" Canvas.Top="615" Width="390" Name="Xprop" Text=""/>
-                <TextBox Canvas.Left="390" Text="vs" Width="20" Height="22" Canvas.Top="615"/>
-            </Canvas>
+				<TextBox Name="TBR" Margin="732,2" TextWrapping="Wrap" Text="Y Below 40%" Width="54" Height="42"/>
+			</Canvas>
+			<GroupBox Height="550">
+				<GroupBox.Header> <TextBlock FontWeight="Bold"> Properties XY plot</TextBlock> </GroupBox.Header>
+				<oxy:PlotView Name="plot"/>
+			</GroupBox>
+			<Canvas>
+				<TextBox Canvas.Left="0" TextWrapping="Wrap" Text="{Binding XYprop}" Height="25" Canvas.Top="590" Width="800" Name="XYprop"/>
+				<TextBox Canvas.Left="0" TextWrapping="Wrap" Height="25" Canvas.Top="615" Width="390" Name="Yprop" Text=""/>
+				<TextBox Canvas.Left="410" TextWrapping="Wrap" Height="25" Canvas.Top="615" Width="390" Name="Xprop" Text=""/>
+				<TextBox Canvas.Left="390" Text="vs" Width="20" Height="22" Canvas.Top="615"/>
+			</Canvas>
 
-        </Grid>
+		</Grid>
 </UserControl>

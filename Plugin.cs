@@ -27,31 +27,32 @@ namespace OxyPlotPlugin
 		public PluginManager PluginManager { get; set; }
 
 		/// <summary>
-		/// Gets the left menu icon. Icon must be 24x24 and compatible with black and white display.
+		/// Gets the left menu icon. Icon must be 24x24 black and white.
 		/// </summary>
 		public ImageSource PictureIcon => this.ToIcon(Properties.Resources.sdkmenuicon);
 
 		/// <summary>
-		/// Gets a short plugin title to show in left menu. Return null if you want to use the title as defined in PluginName attribute.
+		/// Gets a short plugin title to show in left menu.
+		/// Return null if you want to use the title as defined in PluginName attribute.
 		/// </summary>
 		public string LeftMenuTitle => "OxyPlot XY " + PluginVersion;
 
 		/// <summary>
 		/// Called one time per game data update, contains all normalized game data,
-		/// raw data are intentionnally "hidden" under a generic object type (A plugin SHOULD NOT USE IT)
+		/// raw data are intentionally "hidden" under a generic object type (A plugin SHOULD NOT USE IT)
 		///
-		/// This method is on the critical path, it must execute as fast as possible and avoid throwing any error
+		/// This method is on the critical path; execute as fast as possible, avoid throwing any error
 		///
 		/// </summary>
 		/// <param name="pluginManager"></param>
 		/// <param name="data">Current game data, including current and previous data frame.</param>
 		private int i, work;
-		public int which;	// which x and y array for OxyPlot to use
-		public double[] xmin, xmax, ymax;	// View uses ymax for Y axis scaling
+		public int which;					// which x and y array to plot
+		public double[] xmin, ymin, xmax, ymax;	// View uses, xmax, ymax for axes scaling
 
 		public void DataUpdate(PluginManager pluginManager, ref GameData data)
 		{
-			// Search for X-axis sample batches satisfying < View.lowval && > View.minval
+			// Search for X-axis sample batches satisfying < View.lowX && > View.lowY
 			if (data.GameRunning && data.OldData != null && data.NewData != null)
 			{
 				float xf = 0, yf = 0;
@@ -74,14 +75,15 @@ namespace OxyPlotPlugin
 					return;
 				}
 
-				if (1 > xf)
+				if (0 > xf || 0 > yf)
 					return;
 
 				View.x[i] = xf;
 				View.y[i] = yf;
 				if (View.start[work] == i)
 				{
-					xmin[work] = xmax[work] = 0.5 * (View.lowval + View.minval); // View.x[i];
+					xmin[work] = xmax[work] = View.x[i];
+					ymin[work] = ymax[work] = View.y[i];
 				}
 				else	// volume of sample values
 				{
@@ -91,6 +93,8 @@ namespace OxyPlotPlugin
 						xmax[work] = View.x[i];
 					if (ymax[work] < View.y[i])
 						ymax[work] = View.y[i];
+					else if (ymin[work] > View.y[i])
+						ymin[work] = View.y[i];
 				}
 				if ((++i - View.start[work]) >= View.length >> 1)	// filled?
 				{
@@ -99,24 +103,20 @@ namespace OxyPlotPlugin
 					// Coordination:  View should disable running while loading Plot
 					if (running)
 					{
-						View.Model.XYprop = "working..." + " current high = " + xmax[work] + ", low = " + xmin[work];
-						if (View.minval < xmax[work])
-						{
-//							View.Model.XYprop += " current high = " + xmax[work];
-							if (View.lowval > xmin[work])
-							{
-//								View.Model.XYprop += ", low = " + xmin[work];
-								if ((xmax[work] - xmin[work]) > (xmax[n] - xmin[n]))
-								{	// larger sample volume than in [1 - work]
-									which = work;		// plot this buffer
-									View.Model.Vis = System.Windows.Visibility.Visible;
-									work = n;			// refill buffer with smaller range
-								}
-							}
-						}
+						View.Model.XYprop = "working..." + " current X high = "
+										  + xmax[work] + ", low = " + xmin[work];
+						View.Model.XYprop += ";  current Y high = " + ymax[work]
+										  + ", low = " + ymin[work];
 					}
+						if ((xmax[work] - xmin[work]) > (xmax[n] - xmin[n])
+						 && xmin[work] <= xmax[work] * 0.01 * Settings.Low
+						 && ymin[work] <= ymax[work] * 0.01 * Settings.Min)
+						{	// larger sample volume than in [1 - work]
+							which = work;		// plot this buffer
+							View.Model.Vis = System.Windows.Visibility.Visible;
+							work = n;			// refill buffer with smaller range
+						}
 					i = View.start[work];
-					ymax[work] = 0;
 				}
 			}
 		}
@@ -128,8 +128,8 @@ namespace OxyPlotPlugin
 		/// <param name="pluginManager"></param>
 		public void End(PluginManager pluginManager)
 		{
-			Settings.Min = View.minval;
-			Settings.Low = View.lowval;
+			Settings.Min = View.lowY;
+			Settings.Low = View.lowX;
 			Settings.X = View.Xprop.Text;
 			Settings.Y = View.Yprop.Text;
 			// Save settings
@@ -154,7 +154,8 @@ namespace OxyPlotPlugin
 		/// <param name="pluginManager"></param>
 		public void Init(PluginManager pluginManager)
 		{
-			i = which = work = 0;	ymax = new double[] {0, 0};
+			i = which = work = 0;
+			ymin = new double[] {90, 90}; ymax = new double[] {0, 0};
 			xmin = new double[] {90, 90}; xmax = new double[] {0, 0};
 			SimHub.Logging.Current.Info("Starting " + LeftMenuTitle);
 
