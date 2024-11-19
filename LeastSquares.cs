@@ -5,50 +5,50 @@ using System.Linq;
 
 namespace OxyPlotPlugin
 {
-	public class XYPoint
+	public class XYvalue
 	{
 		public double X;
 		public double Y;
 	}
 
-	class LeastSquares
-	{
-		public static List<XYPoint> GenerateLinearBestFit(List<XYPoint> points, out double a, out double b)
+    public partial class Plugin
+    {
+		public static List<XYvalue> LinearBestFit(float[] x, float[] y,
+												  out double m, out double b)
 		{
-			int numPoints = points.Count;
-			double meanX = points.Average(point => point.X);
-			double meanY = points.Average(point => point.Y);
+            List<XYvalue> samples = Enumerable.Range(0, x.Length).Select
+							(i => new XYvalue { Y = y[i], X = x[i] }).ToList();
+			int n = samples.Count;
+			double meanX = samples.Average(point => point.X);
+			double meanY = samples.Average(point => point.Y);
+			double sumXX = samples.Sum(point => point.X * point.X);
+			double sumXY = samples.Sum(point => point.X * point.Y);
 
-			double sumXSquared = points.Sum(point => point.X * point.X);
-			double sumXY = points.Sum(point => point.X * point.Y);
+			m = (sumXY / n - meanX * meanY) / (sumXX / n - meanX * meanX);
+			b = (meanY - m * meanX);
 
-			a = (sumXY / numPoints - meanX * meanY) / (sumXSquared / numPoints - meanX * meanX);
-			b = (a * meanX - meanY);
-
-			double a1 = a;
+			double a1 = m;
 			double b1 = b;
 
-			return points.Select(point => new XYPoint() { X = point.X, Y = a1 * point.X - b1 }).ToList();
+			return samples.Select(point => new XYvalue()
+			{ X = point.X, Y = a1 * point.X + b1 }).ToList();
 		}
 
-		public static void Show()
+/*      float[] x = new float[] { 1, 2, 3, 4, 5 },
+			    y = new float[] { 12, 16, 34, 45, 47 };
+        public static void Show(float[] x, float[] y)
 		{
-			List<XYPoint> points = new List<XYPoint>()
-		   	{
-			   	new XYPoint() {X = 1, Y = 12},
-			   	new XYPoint() {X = 2, Y = 16},
-			   	new XYPoint() {X = 3, Y = 34},
-			   	new XYPoint() {X = 4, Y = 45},
-			   	new XYPoint() {X = 5, Y = 47}
-		   	};
-			double a, b;
+            List<XYvalue> samples = Enumerable.Range(0, x.Length).Select
+							(i => new XYvalue { Y = y[i], X = x[i] }).ToList();
+            double m, b;
 
-			List<XYPoint> bestFit = GenerateLinearBestFit(points, out a, out b);
+			List<XYvalue> Fit = LinearBestFit(samples, out m, out b);
 
-			Console.WriteLine("y = {0:#.####}x {1:+#.####;-#.####}", a, -b);
+			Console.WriteLine($"y = {m:#0.####}x {b:+#0.####;-#0.####}");
 
-			for(int index = 0; index < points.Count; index++)
-				Console.WriteLine("X = {0}, Y = {1}, Fit = {2:#.###}", points[index].X, points[index].Y, bestFit[index].Y);
-		}
+			for(int i = 0; i < samples.Count; i++)
+				Console.WriteLine("X = {0}, Y = {1}, Fit = {2:#.###}",
+								  samples[i].X, samples[i].Y, Fit[i].Y);
+		}	*/
 	}
 }

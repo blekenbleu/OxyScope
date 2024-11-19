@@ -14,7 +14,7 @@ namespace OxyPlotPlugin
 	[PluginDescription("XY OxyPlot of paired SimHub properties")]
 	[PluginAuthor("blekenbleu")]
 	[PluginName("OxyPlot XY")]
-	public class Plugin : IPlugin, IDataPlugin, IWPFSettingsV2
+	public partial class Plugin : IPlugin, IDataPlugin, IWPFSettingsV2
 	{
 		public Settings Settings;
 		public bool running = false;
