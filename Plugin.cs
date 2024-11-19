@@ -2,6 +2,8 @@
 using SimHub.Plugins;
 using SimHub.Plugins.DataPlugins.ShakeItV3;
 using System;
+using System.Diagnostics;
+using System.Reflection;
 using System.Windows.Forms;
 using System.Windows.Media;
 using System.Xml;
@@ -11,11 +13,13 @@ namespace OxyPlotPlugin
 {
 	[PluginDescription("XY OxyPlot of paired SimHub properties")]
 	[PluginAuthor("blekenbleu")]
-	[PluginName("OxyPlot XY plugin")]
+	[PluginName("OxyPlot XY")]
 	public class Plugin : IPlugin, IDataPlugin, IWPFSettingsV2
 	{
 		public Settings Settings;
 		public bool running = false;
+		public static string PluginVersion = FileVersionInfo.GetVersionInfo(
+            Assembly.GetExecutingAssembly().Location).FileVersion.ToString();
 
 		/// <summary>
 		/// Instance of the current plugin manager
@@ -30,7 +34,7 @@ namespace OxyPlotPlugin
 		/// <summary>
 		/// Gets a short plugin title to show in left menu. Return null if you want to use the title as defined in PluginName attribute.
 		/// </summary>
-		public string LeftMenuTitle => "OxyPlot XY plugin";
+		public string LeftMenuTitle => "OxyPlot XY " + PluginVersion;
 
 		/// <summary>
 		/// Called one time per game data update, contains all normalized game data,
@@ -55,18 +59,18 @@ namespace OxyPlotPlugin
 				var xp = pluginManager.GetPropertyValue(Settings.X);
 				if (null == xp || !float.TryParse(xp.ToString(), out xf))
 				{
-					View.VMod.XYprop = "invalid X property:  " + Settings.X;
+					View.Model.XYprop = "invalid X property:  " + Settings.X;
 					fail = true;
 				}
 				var yp = pluginManager.GetPropertyValue(Settings.Y);
 				if (null == yp || !float.TryParse(yp.ToString(), out yf))
 				{
-					View.VMod.XYprop = "invalid Y property:  " + Settings.Y;
+					View.Model.XYprop = "invalid Y property:  " + Settings.Y;
 					fail = true;
 				}
 				if (fail)
 				{
-					View.VMod.Vis = System.Windows.Visibility.Visible;
+					View.Model.Vis = System.Windows.Visibility.Visible;
 					return;
 				}
 
@@ -95,17 +99,17 @@ namespace OxyPlotPlugin
 					// Coordination:  View should disable running while loading Plot
 					if (running)
 					{
-						View.VMod.XYprop = "working..." + " current high = " + xmax[work] + ", low = " + xmin[work];
+						View.Model.XYprop = "working..." + " current high = " + xmax[work] + ", low = " + xmin[work];
 						if (View.minval < xmax[work])
 						{
-//							View.VMod.XYprop += " current high = " + xmax[work];
+//							View.Model.XYprop += " current high = " + xmax[work];
 							if (View.lowval > xmin[work])
 							{
-//								View.VMod.XYprop += ", low = " + xmin[work];
+//								View.Model.XYprop += ", low = " + xmin[work];
 								if ((xmax[work] - xmin[work]) > (xmax[n] - xmin[n]))
 								{	// larger sample volume than in [1 - work]
 									which = work;		// plot this buffer
-									View.VMod.Vis = System.Windows.Visibility.Visible;
+									View.Model.Vis = System.Windows.Visibility.Visible;
 									work = n;			// refill buffer with smaller range
 								}
 							}
@@ -173,12 +177,12 @@ namespace OxyPlotPlugin
 			this.AddAction("ChangeProperties", (a, b) =>
 			{
 				running = true;
-                View.VMod.Title =
+                View.Model.Title =
 					pluginManager.GetPropertyValue("DataCorePlugin.CurrentGame")?.ToString()
 					+ ":  " + pluginManager.GetPropertyValue("CarID")?.ToString()
 					+ "@" + pluginManager.GetPropertyValue("DataCorePlugin.GameData.TrackId")?.ToString();
 				View.Dispatcher.Invoke(() => View.ScatterPlot(which));	// invoke from another thread
-				View.VMod.XYprop = "property updates waiting...";
+				View.Model.XYprop = "property updates waiting...";
 			});
 		}
 	}
