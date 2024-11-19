@@ -6,7 +6,7 @@
 			 xmlns:local="clr-namespace:OxyPlotPlugin"
 			 mc:Ignorable="d"
 			 xmlns:oxy="http://oxyplot.org/wpf"
-			 d:DataContext="{d:DesignInstance Type=local:VMod}"
+			 d:DataContext="{d:DesignInstance Type=local:Plugin}"
 			 Height="650" Width="800">
 	<ScrollViewer>
 		<Grid>

@@ -118,7 +118,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="sdkmenuicon.png" />
+    <Content Include="Properties/oxyplot.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
