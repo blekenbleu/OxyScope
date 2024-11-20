@@ -15,7 +15,7 @@
         			<RowDefinition Height="55"/>
 				</Grid.RowDefinitions>
 			<Canvas Grid.Row="0" Grid.Column="0" VerticalAlignment="Top">
-				<Slider Maximum="199" TickPlacement="BottomRight" TickFrequency="3" IsSnapToTickEnabled="True" Width="550" Height="22"
+				<Slider Maximum="199" TickPlacement="BottomRight" TickFrequency="2" IsSnapToTickEnabled="True" Width="550" Height="22"
 						Name="ST" Margin="0,2" Minimum="1" Value="99" PreviewMouseUp="STdone" Visibility="{Binding THvis}"/>
 				<TextBox Name="TBT" TextWrapping="Wrap" Height="42" Margin="552,2" Text="X Threshold" Width="80" Visibility="{Binding THvis}"/>
 				<Button Width="70" Height="42" Margin="640,2" Click="THclick">
