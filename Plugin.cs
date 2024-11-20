@@ -130,6 +130,10 @@ namespace OxyPlotPlugin
 		{
 			Settings.Min = View.lowY;
 			Settings.Low = View.lowX;
+			Settings.Threshold = View.Model.Threshold;
+			Settings.LinFit = View.Model.LinFit;
+			View.Model.Threshold = true;
+			Settings.ThresVal = View.Model.ThresVal;
 			Settings.X = View.Xprop.Text;
 			Settings.Y = View.Yprop.Text;
 			// Save settings
@@ -163,7 +167,7 @@ namespace OxyPlotPlugin
 			Settings = this.ReadCommonSettings<Settings>("GeneralSettings", () => new Settings());
 			if (null == Settings)
 				Settings = new Settings() {
-					Low = 3, Min = 30,
+					Low = 3, Min = 30, ThresVal = 99,
 					X = "ShakeITBSV3Plugin.Export.ProxyS.FrontLeft",
 					Y = "ShakeITBSV3Plugin.Export.Grip.FrontLeft"
 				};

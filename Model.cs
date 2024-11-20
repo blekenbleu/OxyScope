@@ -11,7 +11,11 @@ namespace OxyPlotPlugin
 		public void OnPropertyChanged(PropertyChangedEventArgs myevent) => PropertyChanged?.Invoke(this, myevent);
 
 		readonly PropertyChangedEventArgs BVevent = new PropertyChangedEventArgs(nameof(Vis));
+		readonly PropertyChangedEventArgs TVevent = new PropertyChangedEventArgs(nameof(THvis));
 		readonly PropertyChangedEventArgs XYevent = new PropertyChangedEventArgs(nameof(XYprop));
+		readonly PropertyChangedEventArgs THevent = new PropertyChangedEventArgs(nameof(Threshold));
+		readonly PropertyChangedEventArgs LFevent = new PropertyChangedEventArgs(nameof(LinFit));
+		readonly PropertyChangedEventArgs THVevent = new PropertyChangedEventArgs(nameof(ThresVal));
 		readonly PropertyChangedEventArgs Yevent = new PropertyChangedEventArgs(nameof(Yprop));
 		readonly PropertyChangedEventArgs Xevent = new PropertyChangedEventArgs(nameof(Xprop));
 		readonly PropertyChangedEventArgs Tevent = new PropertyChangedEventArgs(nameof(Title));
@@ -26,6 +30,19 @@ namespace OxyPlotPlugin
 					PropertyChanged?.Invoke(this, Tevent);
 				}
 			}
+		}
+
+		private Visibility _thvis;
+		public Visibility THvis
+		{ 	get => _thvis;
+			set
+			{
+				if (_thvis != value)
+				{
+					_thvis = value;
+					PropertyChanged?.Invoke(this, TVevent);
+				}
+			} 
 		}
 
 		private Visibility _unseen;
@@ -76,6 +93,49 @@ namespace OxyPlotPlugin
 				{
 					_xyprop = value;
 					PropertyChanged?.Invoke(this, XYevent);
+				}
+			}
+		}
+
+		private bool _thresh = true;
+		public bool Threshold
+		{	get => _thresh;
+			set
+			{
+				if (_thresh != value)
+				{
+					_thresh = value;
+					PropertyChanged?.Invoke(this, THevent);
+					if (_thresh)
+						_thval = _thsave;	// restore saved ThresVal
+				}
+			}
+		}
+
+		private double _thval, _thsave;
+		public double ThresVal
+		{	get => _thval;
+			set
+			{
+				if (_thval != value)
+				{
+					_thval = value;
+					PropertyChanged?.Invoke(this, THVevent);
+					if (_thresh)
+						_thsave = _thval;
+				}
+			}
+		}
+
+		private bool _linfit = true;
+		public bool LinFit
+		{	get => _linfit;
+			set
+			{
+				if (_linfit != value)
+				{
+					_linfit = value;
+					PropertyChanged?.Invoke(this, LFevent);
 				}
 			}
 		}

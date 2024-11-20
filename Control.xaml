@@ -16,12 +16,14 @@
 				</Grid.RowDefinitions>
 			<Canvas Grid.Row="0" Grid.Column="0" VerticalAlignment="Top">
 				<Slider Maximum="199" TickPlacement="BottomRight" TickFrequency="3" IsSnapToTickEnabled="True" Width="550" Height="22"
-						Name="ST" Margin="0,2" Minimum="1" Value="99" PreviewMouseUp="SLdone"/>
-				<TextBox Name="TBT" TextWrapping="Wrap" Height="42" Margin="552,2" Text="X Threshold" Width="80"/>
-				<Button Width="70" Height="42" Margin="640,2" Click="SSclick">
-					<TextBlock Text="Disable Threshold" TextWrapping="Wrap" TextAlignment="Center"/>
+						Name="ST" Margin="0,2" Minimum="1" Value="99" PreviewMouseUp="STdone" Visibility="{Binding THvis}"/>
+				<TextBox Name="TBT" TextWrapping="Wrap" Height="42" Margin="552,2" Text="X Threshold" Width="80" Visibility="{Binding THvis}"/>
+				<Button Width="70" Height="42" Margin="640,2" Click="THclick">
+					<TextBlock Text="Disable Threshold" TextWrapping="Wrap" TextAlignment="Center" Name="TH"/>
 				</Button>
-				<Button Content="Linear Fit" Width="70" Height="42" Margin="720,2" Click="SSclick" />
+				<Button Width="70" Height="42" Margin="720,2" Click="LFclick">
+					<TextBlock Text="Linear Fit disable" TextWrapping="Wrap" TextAlignment="Center" Name="LF"/>
+				</Button>
             </Canvas>
             <Canvas Grid.Row="1" Grid.Column="0">
 				<Slider Maximum="99" TickPlacement="BottomRight" TickFrequency="3" IsSnapToTickEnabled="True" Width="300" Height="22"

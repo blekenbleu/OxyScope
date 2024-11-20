@@ -27,7 +27,7 @@ namespace OxyPlotPlugin
 		{
 			DataContext = Model = new Model();
 			Model.Vis = Visibility.Hidden;
-			Model.XYprop = "Property plots require some X and Y values 'X Below' and 'Y Below'";
+			Model.XYprop = "Property plots require some X and Y values < 'X Below' and 'Y Below'";
 			InitializeComponent();
 			lowX = 50; lowY = 10;	// default minimum plotable interval range 
 			ymax = 15;
@@ -50,7 +50,16 @@ namespace OxyPlotPlugin
 			Model.Title = "launch a game or Replay to start property XY plots";
 			TBL.Text = "X Below " + (SL.Value = lowX = plugin.Settings.Low) + "%";
 			TBR.Text = "Y Below " + (SR.Value = lowY = plugin.Settings.Min) + "%";
+
+			Model.Threshold = true;		// to restore Model.ThresVal
+			TBT.Text = "X Threshold " + (Model.ThresVal = Plugin.Settings.ThresVal);
+			Model.Threshold = Plugin.Settings.Threshold;
+			Model.THvis = Model.Threshold ? Visibility.Visible : Visibility.Hidden;
+			TH.Text = Model.Threshold ? "Disable Threshold" : "Enable Threshold";
+			Model.LinFit = Plugin.Settings.LinFit;
+			LF.Text = "Linear Fit " + (Model.LinFit ? "disable" : "enable");
 			Xprop.Text = Yprop.Text = "random";
+			
 			ScatterPlot(0);
 			if (null != plugin.Settings)
 			{
@@ -78,6 +87,27 @@ namespace OxyPlotPlugin
 			Plugin.running = true;		// enable Plugin updates
 			Model.XYprop = "property updates waiting...";
 			Model.Vis = Visibility.Hidden;		// Refresh button
+		}
+
+		private void THclick(object sender, RoutedEventArgs e)	// Threshold button
+		{
+			Model.Threshold = !Model.Threshold;
+			if (Model.Threshold)
+			{
+				Model.THvis = Visibility.Visible;
+				TH.Text = "Disable Threshold";
+				TBT.Text = "X Threshold " + Model.ThresVal;
+			}
+			else {
+				Model.THvis = Visibility.Hidden;
+				TH.Text = "Enable Threshold";
+			}
+		}
+
+		private void LFclick(object sender, RoutedEventArgs e)	// Linear Fit button
+		{
+			Model.LinFit = !Model.LinFit;
+			LF.Text = "Linear Fit " + (Model.LinFit ? "disable" : "enable");
 		}
 
 		public void ScatterPlot(int which)
@@ -137,6 +167,11 @@ namespace OxyPlotPlugin
 		private void SRdone(object sender, MouseButtonEventArgs e)
 		{
 			TBR.Text = "Y Below " + (lowY = (int)((Slider)sender).Value) + "%";
+		}
+
+		private void STdone(object sender, MouseButtonEventArgs e)
+		{
+			TBT.Text = "X Threshold " + (Model.ThresVal = (int)((Slider)sender).Value);
 		}
 	}	// class
 }
