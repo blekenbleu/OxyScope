@@ -11,9 +11,9 @@ namespace OxyPlotPlugin
 		public double Y;
 	}
 
-    public partial class Plugin
+    public partial class Control
     {
-		public static List<XYvalue> LinearBestFit(float[] x, float[] y,
+		public List<XYvalue> LinearBestFit(double[] x, double[] y,
 												  out double m, out double b)
 		{
             List<XYvalue> samples = Enumerable.Range(0, x.Length).Select
@@ -26,12 +26,21 @@ namespace OxyPlotPlugin
 
 			m = (sumXY / n - meanX * meanY) / (sumXX / n - meanX * meanX);
 			b = (meanY - m * meanX);
-
+/*
 			double a1 = m;
 			double b1 = b;
 
 			return samples.Select(point => new XYvalue()
 			{ X = point.X, Y = a1 * point.X + b1 }).ToList();
+ */
+			return samples;
+		}
+
+		double[] SubArray(double[] din, int offset, int length)
+		{
+			double[] result = new double[length];
+			Array.Copy(din, offset, result, 0, length);
+			return result;
 		}
 
 /*      float[] x = new float[] { 1, 2, 3, 4, 5 },

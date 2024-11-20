@@ -1,13 +1,8 @@
 ﻿using GameReaderCommon;
 using SimHub.Plugins;
-using SimHub.Plugins.DataPlugins.ShakeItV3;
-using System;
 using System.Diagnostics;
 using System.Reflection;
-using System.Windows.Forms;
 using System.Windows.Media;
-using System.Xml;
-using static System.Net.WebRequestMethods;
 
 namespace OxyPlotPlugin
 {
@@ -55,27 +50,25 @@ namespace OxyPlotPlugin
 			// Search for X-axis sample batches satisfying < View.lowX && > View.lowY
 			if (data.GameRunning && data.OldData != null && data.NewData != null)
 			{
-				float xf = 0, yf = 0;
-				bool fail = false;
+				float xf, yf;
 				var xp = pluginManager.GetPropertyValue(Settings.X);
+
 				if (null == xp || !float.TryParse(xp.ToString(), out xf))
 				{
 					View.Model.XYprop = "invalid X property:  " + Settings.X;
-					fail = true;
-				}
-				var yp = pluginManager.GetPropertyValue(Settings.Y);
-				if (null == yp || !float.TryParse(yp.ToString(), out yf))
-				{
-					View.Model.XYprop = "invalid Y property:  " + Settings.Y;
-					fail = true;
-				}
-				if (fail)
-				{
 					View.Model.Vis = System.Windows.Visibility.Visible;
 					return;
 				}
 
-				if (0 > xf || 0 > yf)
+				var yp = pluginManager.GetPropertyValue(Settings.Y);
+				if (null == yp || !float.TryParse(yp.ToString(), out yf))
+				{
+					View.Model.XYprop = "invalid Y property:  " + Settings.Y;
+					View.Model.Vis = System.Windows.Visibility.Visible;
+					return;
+				}
+
+				if (View.Model.ThresVal > xf || 0 > yf)
 					return;
 
 				View.x[i] = xf;
@@ -103,19 +96,19 @@ namespace OxyPlotPlugin
 					// Coordination:  View should disable running while loading Plot
 					if (running)
 					{
-						View.Model.XYprop = "working..." + " current X high = "
-										  + xmax[work] + ", low = " + xmin[work];
-						View.Model.XYprop += ";  current Y high = " + ymax[work]
-										  + ", low = " + ymin[work];
+						View.Model.XYprop = $"current X high = {xmax[work]:#0.000}"
+										  + $", low = {xmin[work]:#0.000}"
+										  + $";  current Y high = {ymax[work]:#0.000}"
+										  + $", low = {ymin[work]:#0.000}";
 					}
-						if ((xmax[work] - xmin[work]) > (xmax[n] - xmin[n])
-						 && xmin[work] <= xmax[work] * 0.01 * Settings.Low
-						 && ymin[work] <= ymax[work] * 0.01 * Settings.Min)
-						{	// larger sample volume than in [1 - work]
-							which = work;		// plot this buffer
-							View.Model.Vis = System.Windows.Visibility.Visible;
-							work = n;			// refill buffer with smaller range
-						}
+					if ((xmax[work] - xmin[work]) > (xmax[n] - xmin[n])
+					  && xmin[work] <= xmax[work] * 0.01 * Settings.Low
+					  && ymin[work] <= ymax[work] * 0.01 * Settings.Min)
+					{	// larger sample volume than in [1 - work]
+						which = work;		// plot this buffer
+						View.Model.Vis = System.Windows.Visibility.Visible;
+						work = n;			// refill buffer with smaller range
+					}
 					i = View.start[work];
 				}
 			}
@@ -132,7 +125,7 @@ namespace OxyPlotPlugin
 			Settings.Low = View.lowX;
 			Settings.Threshold = View.Model.Threshold;
 			Settings.LinFit = View.Model.LinFit;
-			View.Model.Threshold = true;
+			View.Model.Threshold = true;				// set true to get ThresVal
 			Settings.ThresVal = View.Model.ThresVal;
 			Settings.X = View.Xprop.Text;
 			Settings.Y = View.Yprop.Text;
