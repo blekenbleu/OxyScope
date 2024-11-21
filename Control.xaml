@@ -46,8 +46,10 @@
 			</GroupBox>
 			<Canvas Grid.Row="3" Grid.Column="0" VerticalAlignment="Top">
 				<TextBox Canvas.Left="0" TextWrapping="Wrap" Text="{Binding XYprop}" Height="25" Width="800" Name="XYprop"/>
-				<TextBox Margin="0,28"   TextWrapping="Wrap" Height="25" Width="390" Name="Yprop" Text=""/>
-				<TextBox Margin="410,28" TextWrapping="Wrap" Height="25" Width="390" Name="Xprop" Text=""/>
+				<TextBox Margin="0,28"   TextWrapping="Wrap" Height="25" Width="390"
+						 Name="Yprop" Text="{Binding Yprop, Mode=TwoWay}"/>
+				<TextBox Margin="410,28" TextWrapping="Wrap" Height="25" Width="390"
+						 Name="Xprop" Text="{Binding Xprop, Mode=TwoWay}"/>
 				<TextBox Margin="390,28" Text="vs" Width="20" Height="25"/>
 			</Canvas>
 			<Canvas Grid.Row="4" Grid.Column="0" VerticalAlignment="Top">

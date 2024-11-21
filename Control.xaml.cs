@@ -16,7 +16,7 @@ namespace OxyPlotPlugin
 	/// </summary>
 	public partial class Control : UserControl
 	{
-		public Plugin Plugin { get; }
+		public OxyScope Plugin { get; }
 		public Model Model;
 		public int lowX, lowY;			// plot control lime sliders
 		public double[] x, y;			// plot samples
@@ -46,7 +46,7 @@ namespace OxyPlotPlugin
 			}
 		}
 
-		public Control(Plugin plugin) : this()
+		public Control(OxyScope plugin) : this()
 		{
 			Plugin = plugin;
 			Model.Title = "launch a game or Replay to start property XY plots";
@@ -60,26 +60,21 @@ namespace OxyPlotPlugin
 			TH.Text = Model.ThresBool ? "Disable Threshold" : "Enable Threshold";
 			Model.LinFit = Plugin.Settings.LinFit;
 			LF.Text = "Linear Fit " + (Model.LinFit ? "disable" : "enable");
-			Xprop.Text = Yprop.Text = "random";
-			
+			Model.Xprop = Model.Yprop = "random";
+			Model.FilterX = Plugin.Settings.FilterX;
+			Model.FilterY = Plugin.Settings.FilterY;
+
 			plot.Model = ScatterPlot(0, null);
 			if (null != plugin.Settings)
 			{
-				Xprop.Text = plugin.Settings.X;
-				Yprop.Text = plugin.Settings.Y;
+				Model.Xprop = plugin.Settings.X;
+				Model.Yprop = plugin.Settings.Y;
 			}
 		}
 
 		internal void Replot()
 		{
-			if (0 < Yprop.Text.Length)
-				Plugin.Settings.Y = Yprop.Text;
-			else Yprop.Text = Plugin.Settings.Y;
-			if (0 < Xprop.Text.Length)
-				Plugin.Settings.X = Xprop.Text;
-			else Xprop.Text = Plugin.Settings.X;
-
-			Plugin.running = false;		// disable Plugin updates
+			Plugin.running = false;		// disable OxyScope updates
 			ymax = 1.2 * Plugin.ymax[Plugin.which];	// legend space
 			xmax = 1.1 * Plugin.xmax[Plugin.which];
 
@@ -105,7 +100,7 @@ namespace OxyPlotPlugin
 			}
 			plot.Model = model;					// OxyPlot
 			Plugin.ymax[Plugin.which] = Plugin.xmax[Plugin.which] = 0;
-			Plugin.running = true;				// enable Plugin updates
+			Plugin.running = true;				// enable OxyScope updates
 			Model.RVis = Visibility.Hidden;		// Replot button
 		}
 
@@ -148,7 +143,7 @@ namespace OxyPlotPlugin
 			model.Axes.Add(new LinearAxis
 			{
 				Position = AxisPosition.Left,
-				Title = Yprop.Text,
+				Title = Model.Yprop,
 				Minimum = 0,
 				Maximum = ymax
 			});
@@ -156,7 +151,7 @@ namespace OxyPlotPlugin
 			model.Axes.Add(new LinearAxis
 			{
 				Position = AxisPosition.Bottom,
-				Title = Xprop.Text,
+				Title = Model.Xprop,
 				Minimum = 0,
 				Maximum = xmax
 			});
