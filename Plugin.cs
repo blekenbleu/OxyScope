@@ -56,7 +56,6 @@ namespace OxyPlotPlugin
 				if (null == xp || !float.TryParse(xp.ToString(), out xf))
 				{
 					View.Model.XYprop = "invalid X property:  " + Settings.X;
-					View.Model.Vis = System.Windows.Visibility.Visible;
 					return;
 				}
 
@@ -64,7 +63,6 @@ namespace OxyPlotPlugin
 				if (null == yp || !float.TryParse(yp.ToString(), out yf))
 				{
 					View.Model.XYprop = "invalid Y property:  " + Settings.Y;
-					View.Model.Vis = System.Windows.Visibility.Visible;
 					return;
 				}
 
@@ -106,7 +104,9 @@ namespace OxyPlotPlugin
 					  && ymin[work] <= ymax[work] * 0.01 * Settings.Min)
 					{	// larger sample volume than in [1 - work]
 						which = work;		// plot this buffer
-						View.Model.Vis = System.Windows.Visibility.Visible;
+						if (View.Model.Replot)
+							View.Dispatcher.Invoke(() => View.Replot());
+						else View.Model.RVis = System.Windows.Visibility.Visible;
 						work = n;			// refill buffer with smaller range
 					}
 					i = View.start[work];
@@ -123,9 +123,9 @@ namespace OxyPlotPlugin
 		{
 			Settings.Min = View.lowY;
 			Settings.Low = View.lowX;
-			Settings.Threshold = View.Model.Threshold;
+			Settings.ThresBool = View.Model.ThresBool;
 			Settings.LinFit = View.Model.LinFit;
-			View.Model.Threshold = true;				// set true to get ThresVal
+			View.Model.ThresBool = true;				// set true to get ThresVal
 			Settings.ThresVal = View.Model.ThresVal;
 			Settings.X = View.Xprop.Text;
 			Settings.Y = View.Yprop.Text;
@@ -179,7 +179,7 @@ namespace OxyPlotPlugin
 					pluginManager.GetPropertyValue("DataCorePlugin.CurrentGame")?.ToString()
 					+ ":  " + pluginManager.GetPropertyValue("CarID")?.ToString()
 					+ "@" + pluginManager.GetPropertyValue("DataCorePlugin.GameData.TrackId")?.ToString();
-				View.Dispatcher.Invoke(() => View.ScatterPlot(which));	// invoke from another thread
+				View.Dispatcher.Invoke(() => View.ScatterPlot(which, "60 Hz samples"));	// invoke from another thread
 				View.Model.XYprop = "property updates waiting...";
 			});
 		}

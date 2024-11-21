@@ -15,13 +15,16 @@
         			<RowDefinition Height="55"/>
 				</Grid.RowDefinitions>
 			<Canvas Grid.Row="0" Grid.Column="0" VerticalAlignment="Top">
-				<Slider Maximum="199" TickPlacement="BottomRight" TickFrequency="2" IsSnapToTickEnabled="True" Width="550" Height="22"
-						Name="ST" Margin="0,2" Minimum="1" Value="99" PreviewMouseUp="STdone" Visibility="{Binding THvis}"/>
-				<TextBox Name="TBT" TextWrapping="Wrap" Height="42" Margin="552,2" Text="X Threshold" Width="80" Visibility="{Binding THvis}"/>
+				<Slider Maximum="199" TickPlacement="BottomRight" TickFrequency="2" IsSnapToTickEnabled="True" Width="475" Height="22"
+						Name="ST" Margin="0,2" Minimum="1" Value="99" PreviewMouseUp="STdone" Visibility="{Binding TVis}"/>
+				<Button Width="65" Height="42" Margin="480,2" Click="ARclick">
+					<TextBlock Text="Auto Replot" TextWrapping="Wrap" TextAlignment="Center" Name="TR"/>
+				</Button>
+				<TextBox Name="TBT" TextWrapping="Wrap" Height="42" Margin="552,2" Text="X Threshold" Width="80" Visibility="{Binding TVis}"/>
 				<Button Width="70" Height="42" Margin="640,2" Click="THclick">
 					<TextBlock Text="Disable Threshold" TextWrapping="Wrap" TextAlignment="Center" Name="TH"/>
 				</Button>
-				<Button Width="70" Height="42" Margin="720,2" Click="LFclick">
+				<Button Width="70" Height="42" Margin="715,2" Click="LFclick">
 					<TextBlock Text="Linear Fit disable" TextWrapping="Wrap" TextAlignment="Center" Name="LF"/>
 				</Button>
             </Canvas>
@@ -29,7 +32,7 @@
 				<Slider Maximum="99" TickPlacement="BottomRight" TickFrequency="3" IsSnapToTickEnabled="True" Width="300" Height="22"
 						Name="SL" Margin="0,2" Minimum="1" Value="10" PreviewMouseUp="SLdone"/>
 				<TextBox Name="TBL" Margin="302,2" TextWrapping="Wrap" Text="X Below 10%" Width="55" Height="42"/>
-				<Button Content="Refresh" Width="60" Height="22" Margin="360,2" Click="SSclick" Visibility="{Binding Vis}" Background="Red" />
+				<Button Content="Replot" Width="60" Height="22" Margin="360,2" Click="SSclick" Visibility="{Binding RVis}" Background="Red" />
 				<Slider Maximum="99" TickPlacement="BottomRight" TickFrequency="3" IsSnapToTickEnabled="True" Width="300" Height="22"
 						Name="SR" Margin="430,2" Value="40" PreviewMouseUp="SRdone"/>
 				<TextBox Name="TBR" Margin="732,2" TextWrapping="Wrap" Text="Y Below 40%" Width="54" Height="42"/>

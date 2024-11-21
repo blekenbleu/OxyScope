@@ -10,16 +10,18 @@ namespace OxyPlotPlugin
 		public event PropertyChangedEventHandler PropertyChanged;
 		public void OnPropertyChanged(PropertyChangedEventArgs myevent) => PropertyChanged?.Invoke(this, myevent);
 
-		readonly PropertyChangedEventArgs BVevent = new PropertyChangedEventArgs(nameof(Vis));
-		readonly PropertyChangedEventArgs TVevent = new PropertyChangedEventArgs(nameof(THvis));
-		readonly PropertyChangedEventArgs XYevent = new PropertyChangedEventArgs(nameof(XYprop));
-		readonly PropertyChangedEventArgs THevent = new PropertyChangedEventArgs(nameof(Threshold));
-		readonly PropertyChangedEventArgs LFevent = new PropertyChangedEventArgs(nameof(LinFit));
-		readonly PropertyChangedEventArgs THVevent = new PropertyChangedEventArgs(nameof(ThresVal));
-		readonly PropertyChangedEventArgs Yevent = new PropertyChangedEventArgs(nameof(Yprop));
+		readonly PropertyChangedEventArgs Levent = new PropertyChangedEventArgs(nameof(LinFit));
+		readonly PropertyChangedEventArgs Revent = new PropertyChangedEventArgs(nameof(Replot));
+		readonly PropertyChangedEventArgs RVevent = new PropertyChangedEventArgs(nameof(RVis));
+		readonly PropertyChangedEventArgs TBevent = new PropertyChangedEventArgs(nameof(ThresBool));
+		readonly PropertyChangedEventArgs THevent = new PropertyChangedEventArgs(nameof(ThresVal));
+		readonly PropertyChangedEventArgs TIevent = new PropertyChangedEventArgs(nameof(Title));
+		readonly PropertyChangedEventArgs TVevent = new PropertyChangedEventArgs(nameof(TVis));
 		readonly PropertyChangedEventArgs Xevent = new PropertyChangedEventArgs(nameof(Xprop));
-		readonly PropertyChangedEventArgs Tevent = new PropertyChangedEventArgs(nameof(Title));
+		readonly PropertyChangedEventArgs XYevent = new PropertyChangedEventArgs(nameof(XYprop));
+		readonly PropertyChangedEventArgs Yevent = new PropertyChangedEventArgs(nameof(Yprop));
 
+		public double m, B;		// for linear least-squares fit
 		private string _title;
 		public string Title { get => _title;
 			set
@@ -27,33 +29,33 @@ namespace OxyPlotPlugin
 				if (_title != value)
 				{
 					_title = value;
-					PropertyChanged?.Invoke(this, Tevent);
+					PropertyChanged?.Invoke(this, TIevent);
 				}
 			}
 		}
 
-		private Visibility _thvis;
-		public Visibility THvis
-		{ 	get => _thvis;
+		private Visibility _tvis;
+		public Visibility TVis
+		{ 	get => _tvis;
 			set
 			{
-				if (_thvis != value)
+				if (_tvis != value)
 				{
-					_thvis = value;
+					_tvis = value;
 					PropertyChanged?.Invoke(this, TVevent);
 				}
 			} 
 		}
 
 		private Visibility _unseen;
-		public Visibility Vis
+		public Visibility RVis
 		{ 	get => _unseen;
 			set
 			{
 				if (_unseen != value)
 				{
 					_unseen = value;
-					PropertyChanged?.Invoke(this, BVevent);
+					PropertyChanged?.Invoke(this, RVevent);
 				}
 			} 
 		}
@@ -97,32 +99,28 @@ namespace OxyPlotPlugin
 			}
 		}
 
-		private bool _thresh = true;
-		public bool Threshold
-		{	get => _thresh;
+		private bool _tbool = true;
+		public bool ThresBool
+		{	get => _tbool;
 			set
 			{
-				if (_thresh != value)
+				if (_tbool != value)
 				{
-					_thresh = value;
-					PropertyChanged?.Invoke(this, THevent);
-					if (_thresh)
-						_thval = _thsave;	// restore saved ThresVal
+					_tbool = value;
+					PropertyChanged?.Invoke(this, TBevent);
 				}
 			}
 		}
 
-		private double _thval, _thsave;
+		private double _thval;
 		public double ThresVal
-		{	get => _thval;
+		{	get => _tbool ? _thval : 0;
 			set
 			{
 				if (_thval != value)
 				{
 					_thval = value;
-					PropertyChanged?.Invoke(this, THVevent);
-					if (_thresh)
-						_thsave = _thval;
+					PropertyChanged?.Invoke(this, THevent);
 				}
 			}
 		}
@@ -135,7 +133,20 @@ namespace OxyPlotPlugin
 				if (_linfit != value)
 				{
 					_linfit = value;
-					PropertyChanged?.Invoke(this, LFevent);
+					PropertyChanged?.Invoke(this, Levent);
+				}
+			}
+		}
+
+		private bool _replot = true;
+		public bool Replot
+		{	get => _replot;
+			set
+			{
+				if (_replot != value)
+				{
+					_replot = value;
+					PropertyChanged?.Invoke(this, Revent);
 				}
 			}
 		}

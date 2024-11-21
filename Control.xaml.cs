@@ -1,9 +1,8 @@
 ﻿using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
-using SimHub.Plugins;
 using System;
-using System.ComponentModel;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -27,7 +26,7 @@ namespace OxyPlotPlugin
 		public Control()
 		{
 			DataContext = Model = new Model();
-			Model.Vis = Visibility.Hidden;
+			Model.RVis = Visibility.Hidden;
 			Model.XYprop = "Property plots require some X and Y values < 'X Below' and 'Y Below'";
 			InitializeComponent();
 			lowX = 50; lowY = 10;		// default minimum plotable interval range 
@@ -52,16 +51,16 @@ namespace OxyPlotPlugin
 			TBL.Text = "X Below " + (SL.Value = lowX = plugin.Settings.Low) + "%";
 			TBR.Text = "Y Below " + (SR.Value = lowY = plugin.Settings.Min) + "%";
 
-			Model.Threshold = true;		// to restore Model.ThresVal
+			Model.ThresBool = true;		// to restore Model.ThresVal
 			TBT.Text = "X Threshold " + (ST.Value = Model.ThresVal = Plugin.Settings.ThresVal);
-			Model.Threshold = Plugin.Settings.Threshold;
-			Model.THvis = Model.Threshold ? Visibility.Visible : Visibility.Hidden;
-			TH.Text = Model.Threshold ? "Disable Threshold" : "Enable Threshold";
+			Model.ThresBool = Plugin.Settings.ThresBool;
+			Model.TVis = Model.ThresBool ? Visibility.Visible : Visibility.Hidden;
+			TH.Text = Model.ThresBool ? "Disable Threshold" : "Enable Threshold";
 			Model.LinFit = Plugin.Settings.LinFit;
 			LF.Text = "Linear Fit " + (Model.LinFit ? "disable" : "enable");
 			Xprop.Text = Yprop.Text = "random";
 			
-			plot.Model = ScatterPlot(0);
+			plot.Model = ScatterPlot(0, null);
 			if (null != plugin.Settings)
 			{
 				Xprop.Text = plugin.Settings.X;
@@ -69,7 +68,7 @@ namespace OxyPlotPlugin
 			}
 		}
 
-		private void SSclick(object sender, RoutedEventArgs e)	// Refresh button
+		internal void Replot()
 		{
 			if (0 < Yprop.Text.Length)
 				Plugin.Settings.Y = Yprop.Text;
@@ -81,34 +80,44 @@ namespace OxyPlotPlugin
 			Plugin.running = false;		// disable Plugin updates
 			ymax = 1.15 * Plugin.ymax[Plugin.which];	// legend space
 			xmax = 1.1 * Plugin.xmax[Plugin.which];
-			PlotModel model = ScatterPlot(Plugin.which);
+			PlotModel model = ScatterPlot(Plugin.which, "60 Hz samples");
 			if (Model.LinFit)
 			{
-				double m, B;
-				LinearBestFit(SubArray(x, start[Plugin.which], length >> 1),
-							  SubArray(y, start[Plugin.which], length >> 1), out m, out B);
-				model.Series.Add(BestFit(m, B));
+				LinearBestFit(out Model.m, out Model.B);
+				model.Series.Add(BestFit(Model.m, Model.B));
+				Model.XYprop += $";  intercept = {Model.B:#0.0000}, slope = {Model.m:#0.0000}"; 
 			}
 			plot.Model = model;
 			// enable which refill
 			Plugin.ymax[Plugin.which] = Plugin.xmax[Plugin.which] = 0;
 			Plugin.running = true;		// enable Plugin updates
-			Model.Vis = Visibility.Hidden;		// Refresh button
+			Model.RVis = Visibility.Hidden;		// Refresh button
+		}
+
+		private void SSclick(object sender, RoutedEventArgs e)	// Replot button
+		{
+			Replot();
 		}
 
 		private void THclick(object sender, RoutedEventArgs e)	// Threshold button
 		{
-			Model.Threshold = !Model.Threshold;
-			if (Model.Threshold)
+			Model.ThresBool = !Model.ThresBool;
+			if (Model.ThresBool)
 			{
-				Model.THvis = Visibility.Visible;
+				Model.TVis = Visibility.Visible;
 				TH.Text = "Disable Threshold";
 				TBT.Text = "X Threshold " + Model.ThresVal;
 			}
 			else {
-				Model.THvis = Visibility.Hidden;
+				Model.TVis = Visibility.Hidden;
 				TH.Text = "Enable Threshold";
 			}
+		}
+
+		private void ARclick(object sender, RoutedEventArgs e)	// Linear Fit button
+		{
+			Model.Replot = !Model.Replot;
+			TR.Text = (Model.Replot ? "Auto" : "Manual") + " Replot";
 		}
 
 		private void LFclick(object sender, RoutedEventArgs e)	// Linear Fit button
@@ -117,7 +126,7 @@ namespace OxyPlotPlugin
 			LF.Text = "Linear Fit " + (Model.LinFit ? "disable" : "enable");
 		}
 
-		public PlotModel ScatterPlot(int which)
+		public PlotModel ScatterPlot(int which, string title)
 		{
 			PlotModel model = new PlotModel { Title = Model.Title };
 
@@ -137,8 +146,7 @@ namespace OxyPlotPlugin
 				Maximum = xmax
 			});
 
-			model.Series.Add(Scatter(which));
-			model.Series[model.Series.Count - 1].Title = "60Hz sample";
+			model.Series.Add(Scatter(which, title));
 			model.LegendPosition = LegendPosition.TopRight;
 			model.LegendFontSize = 12;
 			model.LegendBorder = OxyColors.Black;
@@ -146,21 +154,21 @@ namespace OxyPlotPlugin
 			return model;
 		}
 
-		private ScatterSeries Scatter(int which)
+		private ScatterSeries Scatter(int which, string title)
 		{
 			int size = 3;	// plot dot size
 			int end = (start[which] <= length >> 1) ? start[which] + length >> 1 : length;
 
+			samples = new List<XYvalue> ();
 			var scatterSeries = new ScatterSeries { MarkerType = MarkerType.Circle };
 			for (int i = start[which]; i < end; i++)
-				scatterSeries.Points.Add(new ScatterPoint(x[i], y[i], size));
-			if (start[which] > length >> 1)
 			{
-				end = start[which] - length >> 1;	// wrap "circular" buffer
-				for (int i = 0; i < end; i++)
-					scatterSeries.Points.Add(new ScatterPoint(x[i], y[i], size));
+				scatterSeries.Points.Add(new ScatterPoint(x[i], y[i], size));
+				samples.Add(new XYvalue { X = x[i], Y = y[i] });
 			}
 			scatterSeries.MarkerFill = OxyColors.Red;
+			if (null != title)
+				scatterSeries.Title = title;
 			return scatterSeries;
 		}
 
@@ -170,6 +178,7 @@ namespace OxyPlotPlugin
 			line.Points.Add(new DataPoint(0, B));
 			line.Points.Add(new DataPoint(Plugin.xmax[Plugin.which],
 							 m * Plugin.xmax[Plugin.which]));
+			line.Title = "least squares fit";
 			return line;
 		}
 
