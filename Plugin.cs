@@ -179,7 +179,7 @@ namespace OxyPlotPlugin
 					pluginManager.GetPropertyValue("DataCorePlugin.CurrentGame")?.ToString()
 					+ ":  " + pluginManager.GetPropertyValue("CarID")?.ToString()
 					+ "@" + pluginManager.GetPropertyValue("DataCorePlugin.GameData.TrackId")?.ToString();
-				View.Dispatcher.Invoke(() => View.Replot());	// invoke from another thread
+//				View.Dispatcher.Invoke(() => View.Replot());	// invoke from another thread
 				View.Model.XYprop = "property updates waiting...";
 			});
 		}
