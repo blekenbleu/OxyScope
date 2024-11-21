@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using MathNet.Numerics;
 
 namespace OxyPlotPlugin
 {
@@ -19,9 +20,10 @@ namespace OxyPlotPlugin
 		public Model Model;
 		public int lowX, lowY;			// plot control lime sliders
 		public double[] x, y;			// plot samples
-		public int length;
+		public int length, ln2;
 		public int[] start;				// circular buffer
 		private double xmax, ymax;		// somewhat arbitrary axis limits
+		double[] c;
 
 		public Control()
 		{
@@ -32,12 +34,12 @@ namespace OxyPlotPlugin
 			lowX = 50; lowY = 10;		// default minimum plotable interval range 
 			ymax = 15;
 			length = 360;
-			start = new int[2]; start[0] = 0; start[1] = length >> 1;
+			ln2 = length >> 1; 
+			start = new int[] { 0, ln2 };
 			x = new double[length];
 			y = new double[length];
-			int l = length >> 1;
-			Random rnd=new Random();
-			for (int i = 0; i < l ;)	// something to fill the plot
+			Random rnd = new Random();
+			for (int i = 0; i < ln2 ;)	// fill the plot
 			{
 				y[i] = ymax * rnd.NextDouble();
 				x[i] = ++i;
@@ -46,7 +48,7 @@ namespace OxyPlotPlugin
 
 		public Control(Plugin plugin) : this()
 		{
-			this.Plugin = plugin;
+			Plugin = plugin;
 			Model.Title = "launch a game or Replay to start property XY plots";
 			TBL.Text = "X Below " + (SL.Value = lowX = plugin.Settings.Low) + "%";
 			TBR.Text = "Y Below " + (SR.Value = lowY = plugin.Settings.Min) + "%";
@@ -78,20 +80,33 @@ namespace OxyPlotPlugin
 			else Xprop.Text = Plugin.Settings.X;
 
 			Plugin.running = false;		// disable Plugin updates
-			ymax = 1.15 * Plugin.ymax[Plugin.which];	// legend space
+			ymax = 1.2 * Plugin.ymax[Plugin.which];	// legend space
 			xmax = 1.1 * Plugin.xmax[Plugin.which];
+
+			// ScatterPlot() also collects samples for LinearBestFit()
 			PlotModel model = ScatterPlot(Plugin.which, "60 Hz samples");
 			if (Model.LinFit)
 			{
-				LinearBestFit(out Model.m, out Model.B);
-				model.Series.Add(BestFit(Model.m, Model.B));
-				Model.XYprop += $";  intercept = {Model.B:#0.0000}, slope = {Model.m:#0.0000}"; 
+				// https://numerics.mathdotnet.com/Regression
+				double[] xs = SubArray(x, start[Plugin.which], ln2),
+						 ys = SubArray(y, start[Plugin.which], ln2);
+				(double, double)p = Fit.Line(xs, ys);
+				Model.B = p.Item1;
+				Model.m = p.Item2;
+				model.Series.Add(BestFit(Model.m, Model.B, "Fit.Line"));
+
+				c = Fit.LinearCombination(xs, ys, x => x);
+				model.Series.Add(BestFit(c[0], 0, "Fit thru origin"));
+
+			// 	LinearBestFit(out Model.m, out Model.B);
+			//	model.Series.Add(BestFit(Model.m, Model.B, "LinearBestFit"));
+				Model.XYprop += $";  intercept = {Model.B:#0.0000}, "
+					+ $"slope = {Model.m:#0.0000}, origin slope = {c[0]:#0.0000}"; 
 			}
-			plot.Model = model;
-			// enable which refill
+			plot.Model = model;					// OxyPlot
 			Plugin.ymax[Plugin.which] = Plugin.xmax[Plugin.which] = 0;
-			Plugin.running = true;		// enable Plugin updates
-			Model.RVis = Visibility.Hidden;		// Refresh button
+			Plugin.running = true;				// enable Plugin updates
+			Model.RVis = Visibility.Hidden;		// Replot button
 		}
 
 		private void SSclick(object sender, RoutedEventArgs e)	// Replot button
@@ -126,7 +141,7 @@ namespace OxyPlotPlugin
 			LF.Text = "Linear Fit " + (Model.LinFit ? "disable" : "enable");
 		}
 
-		public PlotModel ScatterPlot(int which, string title)
+		PlotModel ScatterPlot(int which, string title)
 		{
 			PlotModel model = new PlotModel { Title = Model.Title };
 
@@ -147,7 +162,7 @@ namespace OxyPlotPlugin
 			});
 
 			model.Series.Add(Scatter(which, title));
-			model.LegendPosition = LegendPosition.TopRight;
+			model.LegendPosition = LegendPosition.TopLeft;
 			model.LegendFontSize = 12;
 			model.LegendBorder = OxyColors.Black;
 			model.LegendBorderThickness = 1;
@@ -157,14 +172,14 @@ namespace OxyPlotPlugin
 		private ScatterSeries Scatter(int which, string title)
 		{
 			int size = 3;	// plot dot size
-			int end = (start[which] <= length >> 1) ? start[which] + length >> 1 : length;
+			int end = (start[which] <= ln2) ? start[which] + ln2 : length;
 
-			samples = new List<XYvalue> ();
+//			samples = new List<XYvalue> ();
 			var scatterSeries = new ScatterSeries { MarkerType = MarkerType.Circle };
 			for (int i = start[which]; i < end; i++)
 			{
+//				samples.Add(new XYvalue { X = x[i], Y = y[i] });
 				scatterSeries.Points.Add(new ScatterPoint(x[i], y[i], size));
-				samples.Add(new XYvalue { X = x[i], Y = y[i] });
 			}
 			scatterSeries.MarkerFill = OxyColors.Red;
 			if (null != title)
@@ -172,13 +187,13 @@ namespace OxyPlotPlugin
 			return scatterSeries;
 		}
 
-		LineSeries BestFit(double m, double B)
+		LineSeries BestFit(double m, double B, string title)
 		{
 			LineSeries line = new LineSeries();
 			line.Points.Add(new DataPoint(0, B));
 			line.Points.Add(new DataPoint(Plugin.xmax[Plugin.which],
 							 m * Plugin.xmax[Plugin.which]));
-			line.Title = "least squares fit";
+			line.Title = title;
 			return line;
 		}
 
