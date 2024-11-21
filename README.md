@@ -44,7 +44,9 @@ XY plot of *positive* property values
 - better icon, simpler xaml, version number
 - both X and Y autorange based on max property sample values
 - **Replot** when min sample values < `X Below`, `Y Below` % of corresponding max values
-- should add a third slider for minimum useful X values.
+#### 21 Nov:
+- added a threshold slider for minimum useful X values.
+- `View.Dispatcher.Invoke()` to auto `View.Replot()` *from* `DataUpdate()` *thread*
 
 #### Property folder changes from default WPF project for SimHub plugins
 <details><summary>click for differences</summary>
