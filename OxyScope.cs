@@ -12,6 +12,7 @@ namespace OxyPlotPlugin
 	public partial class OxyScope : IPlugin, IDataPlugin, IWPFSettingsV2
 	{
 		public Settings Settings;
+		string CarId = "";
 		public bool running = false;
 		public static string PluginVersion = FileVersionInfo.GetVersionInfo(
             Assembly.GetExecutingAssembly().Location).FileVersion.ToString();
@@ -74,6 +75,16 @@ namespace OxyPlotPlugin
 					oops = false;
 					View.Model.XYprop = "continuing...";
                 }
+
+				if (CarId != data.NewData.CarId)
+				{
+					CarId = data.NewData.CarId;
+					running = true;
+               		View.Model.Title =
+                    	pluginManager.GetPropertyValue("DataCorePlugin.CurrentGame")?.ToString()
+                	    + ":  " + pluginManager.GetPropertyValue("CarID")?.ToString()
+                    	+ "@" + pluginManager.GetPropertyValue("DataCorePlugin.GameData.TrackId")?.ToString();  
+				}
 
 				if (View.Model.ThresVal > xf || 0 > yf)
 					return;

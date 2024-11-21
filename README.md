@@ -1,4 +1,4 @@
-# OxyPlotPlugin from SimHubPluginSdk
+# OxyScope from SimHubPluginSdk
 XY plot of *positive* property values
 - Create a new WPF project named `OxyPlotPlugin` in Visual Studio, then quit.  
 - delete (or move away) all but `OxyPlotPlugin.sln` and `OxyPlotPlugin.csproj`  
@@ -11,9 +11,9 @@ XY plot of *positive* property values
 	- delete `PlatformTarget`s; change OutputPath to $(SIMHUB_INSTALL_PATH)
 	- insert unique SimHubPluginSdk PropertyGroups for Release and Debug
 	- insert unique SimHubPluginSdk References
-	- delete unique OxyPlotPlugin References
+	- delete unique OxyScope References
 	- insert unique SimHubPluginSdk Compile ItemGroups
-	- delete unique OxyPlotPlugin lines  
+	- delete unique OxyScope lines  
 
 ### Done
 - convert content from SimHubPluginSdk namespace `Sdk.Plugin` to `OxyPlotPlugin`
@@ -22,10 +22,10 @@ XY plot of *positive* property values
 ```
     [PluginDescription("XY OxyPlot of paired SimHub properties")]
     [PluginAuthor("blekenbleu")]
-    [PluginName("OxyPlot XY plugin")]
+    [PluginName("OxyScope")]
 	...
 	...
-	public string LeftMenuTitle => "OxyPlot XY plugin";
+	public string LeftMenuTitle => "OxyScope " + PluginVersion;
 ```
 - added OxyPlot stuff for scatter plot  
 	![](Doc/pasted.png)  
@@ -47,6 +47,8 @@ XY plot of *positive* property values
 #### 21 Nov:
 - added a threshold slider for minimum useful X values.
 - `View.Dispatcher.Invoke()` to auto `View.Replot()` *from* `DataUpdate()` *thread*
+- least squares linear estimators
+- added X, Y property IIR filter sliders
 
 #### Property folder changes from default WPF project for SimHub plugins
 <details><summary>click for differences</summary>
