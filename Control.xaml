@@ -3,16 +3,19 @@
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:ui="clr-namespace:SimHub.Plugins.UI;assembly=SimHub.Plugins"
 			 xmlns:local="clr-namespace:OxyPlotPlugin"
 			 mc:Ignorable="d"
 			 xmlns:oxy="http://oxyplot.org/wpf"
-			 Height="720" Width="800">
+             d:DataContext="{d:DesignInstance Type=local:Model}"
+             Height="770" Width="800">
 			<Grid>
-			    <Grid.RowDefinitions>
-        			<RowDefinition Height="50"/>
-        			<RowDefinition Height="50"/>
-        			<RowDefinition Height="560"/>
-        			<RowDefinition Height="55"/>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="50"/>
+					<RowDefinition Height="50"/>
+					<RowDefinition Height="560"/>
+					<RowDefinition Height="55"/>
+					<RowDefinition Height="50"/>
 				</Grid.RowDefinitions>
 			<Canvas Grid.Row="0" Grid.Column="0" VerticalAlignment="Top">
 				<Slider Maximum="199" TickPlacement="BottomRight" TickFrequency="2" IsSnapToTickEnabled="True" Width="475" Height="22"
@@ -27,8 +30,8 @@
 				<Button Width="70" Height="42" Margin="715,2" Click="LFclick">
 					<TextBlock Text="Linear Fit disable" TextWrapping="Wrap" TextAlignment="Center" Name="LF"/>
 				</Button>
-            </Canvas>
-            <Canvas Grid.Row="1" Grid.Column="0">
+			</Canvas>
+			<Canvas Grid.Row="1" Grid.Column="0">
 				<Slider Maximum="99" TickPlacement="BottomRight" TickFrequency="3" IsSnapToTickEnabled="True" Width="300" Height="22"
 						Name="SL" Margin="0,2" Minimum="1" Value="10" PreviewMouseUp="SLdone"/>
 				<TextBox Name="TBL" Margin="302,2" TextWrapping="Wrap" Text="X Below 10%" Width="55" Height="42"/>
@@ -46,6 +49,16 @@
 				<TextBox Margin="0,28"   TextWrapping="Wrap" Height="25" Width="390" Name="Yprop" Text=""/>
 				<TextBox Margin="410,28" TextWrapping="Wrap" Height="25" Width="390" Name="Xprop" Text=""/>
 				<TextBox Margin="390,28" Text="vs" Width="20" Height="25"/>
+			</Canvas>
+			<Canvas Grid.Row="4" Grid.Column="0" VerticalAlignment="Top">
+				<ui:TitledSlider Title="	 Y-axis filter" Width="400"
+					 Value="{Binding FilterY, Mode=TwoWay}" Margin="0,5"
+					 TickFrequency = "1" IsSnapToTickEnabled = "True"
+					 Maximum="10" Minimum="1" x:Name="sv"/>
+				<ui:TitledSlider Title="	 X-axis filter" Width="400"
+					 Value="{Binding FilterX, Mode=TwoWay}" Margin="400,5"
+					 TickFrequency = "1" IsSnapToTickEnabled = "True"
+					 Maximum="10" Minimum="1" x:Name="ss"/> 
 			</Canvas>
 
 		</Grid>

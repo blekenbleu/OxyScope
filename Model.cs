@@ -10,6 +10,8 @@ namespace OxyPlotPlugin
 		public event PropertyChangedEventHandler PropertyChanged;
 		public void OnPropertyChanged(PropertyChangedEventArgs myevent) => PropertyChanged?.Invoke(this, myevent);
 
+		readonly PropertyChangedEventArgs FXevent = new PropertyChangedEventArgs(nameof(FilterX));
+		readonly PropertyChangedEventArgs FYevent = new PropertyChangedEventArgs(nameof(FilterY));
 		readonly PropertyChangedEventArgs Levent = new PropertyChangedEventArgs(nameof(LinFit));
 		readonly PropertyChangedEventArgs Revent = new PropertyChangedEventArgs(nameof(Replot));
 		readonly PropertyChangedEventArgs RVevent = new PropertyChangedEventArgs(nameof(RVis));
@@ -108,6 +110,32 @@ namespace OxyPlotPlugin
 				{
 					_tbool = value;
 					PropertyChanged?.Invoke(this, TBevent);
+				}
+			}
+		}
+
+		private double _filtx;
+		public double FilterX
+		{	get => _filtx;
+			set
+			{
+				if (_filtx != value)
+				{
+					_filtx = value;
+					PropertyChanged?.Invoke(this, FXevent);
+				}
+			}
+		}
+
+		private double _filty;
+		public double FilterY
+		{	get => _filty;
+			set
+			{
+				if (_filty != value)
+				{
+					_filty = value;
+					PropertyChanged?.Invoke(this, FYevent);
 				}
 			}
 		}
