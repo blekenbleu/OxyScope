@@ -18,7 +18,7 @@
 					<RowDefinition Height="50"/>
 				</Grid.RowDefinitions>
 			<Canvas Grid.Row="0" Grid.Column="0" VerticalAlignment="Top">
-            <TextBlock Width="45" Height="22">
+            <TextBlock Width="45" Height="30" Margin="4,8" FontSize="18" Background="White" TextAlignment="Center">
                 <Hyperlink RequestNavigate="Hyperlink_RequestNavigate"
                     NavigateUri="https://blekenbleu.github.io/SimHub/oxyhelp.htm">Help</Hyperlink>
             </TextBlock>
