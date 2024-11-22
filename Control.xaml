@@ -18,8 +18,12 @@
 					<RowDefinition Height="50"/>
 				</Grid.RowDefinitions>
 			<Canvas Grid.Row="0" Grid.Column="0" VerticalAlignment="Top">
-				<Slider Maximum="199" TickPlacement="BottomRight" TickFrequency="2" IsSnapToTickEnabled="True" Width="475" Height="22"
-						Name="ST" Margin="0,2" Minimum="1" Value="99" PreviewMouseUp="STdone" Visibility="{Binding TVis}"/>
+            <TextBlock Width="45" Height="22">
+                <Hyperlink RequestNavigate="Hyperlink_RequestNavigate"
+                    NavigateUri="https://blekenbleu.github.io/SimHub/oxyhelp.htm">Help</Hyperlink>
+            </TextBlock>
+            <Slider Maximum="199" TickPlacement="BottomRight" TickFrequency="2" IsSnapToTickEnabled="True" Width="425" Height="22"
+						Name="ST" Margin="50,2" Minimum="1" Value="99" PreviewMouseUp="STdone" Visibility="{Binding TVis}"/>
 				<Button Width="65" Height="42" Margin="480,2" Click="ARclick">
 					<TextBlock Text="Auto Replot" TextWrapping="Wrap" TextAlignment="Center" Name="TR"/>
 				</Button>

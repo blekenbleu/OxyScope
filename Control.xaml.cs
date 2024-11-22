@@ -72,7 +72,13 @@ namespace blekenbleu.OxyScope
 			}
 		}
 
-		internal void Replot()
+        private void Hyperlink_RequestNavigate(object sender,
+                                       System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            System.Diagnostics.Process.Start(e.Uri.AbsoluteUri);
+        }
+
+        internal void Replot()
 		{
 			Plugin.running = false;		// disable OxyScope updates
 			ymax = 1.2 * Plugin.ymax[Plugin.which];	// legend space
