@@ -8,7 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using MathNet.Numerics;
 
-namespace OxyPlotPlugin
+namespace blekenbleu.OxyScope
 {
 
 	/// <summary>

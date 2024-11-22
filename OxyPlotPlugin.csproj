@@ -7,7 +7,7 @@
     <ProjectGuid>{76F196C5-3F7F-45C1-A89D-636D079B13B9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OxyPlotPlugin</RootNamespace>
+    <RootNamespace>blekenbleu.OxyScope</RootNamespace>
     <AssemblyName>OxyPlotPlugin</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

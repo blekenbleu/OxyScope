@@ -16,7 +16,7 @@ XY plot of *positive* property values
 	- delete unique OxyScope lines  
 
 ### Done
-- convert content from SimHubPluginSdk namespace `Sdk.Plugin` to `OxyPlotPlugin`
+- convert content from SimHubPluginSdk namespace `Sdk.Plugin` to `blekenbleu.OxyScope`
 	Control.xaml (2x), Control.xaml.cs, Plugin.cs, Settings.cs
 - in Plugin.cs, changed:  
 ```

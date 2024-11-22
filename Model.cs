@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.Windows;
 
-namespace OxyPlotPlugin
+namespace blekenbleu.OxyScope
 {
 	
 	// https://intellitect.com/blog/getting-started-model-view-viewmodel-mvvm-pattern-using-windows-presentation-framework-wpf/

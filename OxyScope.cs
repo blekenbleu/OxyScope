@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Media;
 
-namespace OxyPlotPlugin
+namespace blekenbleu.OxyScope
 {
 	[PluginDescription("XY OxyPlot of paired SimHub properties")]
 	[PluginAuthor("blekenbleu")]

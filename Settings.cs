@@ -1,4 +1,4 @@
-﻿namespace OxyPlotPlugin
+﻿namespace blekenbleu.OxyScope
 {
 	/// <summary>
 	/// Settings class, make sure it can be correctly serialized using JSON.net
