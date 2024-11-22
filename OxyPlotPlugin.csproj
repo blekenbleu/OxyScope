@@ -32,6 +32,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DebugType>pdbonly</DebugType>
     <OutputPath>bin\$(Configuration)\</OutputPath>
+	<StartAction>Program</StartAction>
+    <StartProgram>..\..\SimHubWPF.exe</StartProgram>
     <OutDir>..\..\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
@@ -133,4 +135,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>cd "$(SIMHUB_INSTALL_PATH)"
+if $(ConfigurationName) == Release (7z u R:\TEMP\OxyScope.zip OxyPlotPlugin.dll)</PostBuildEvent>
+  </PropertyGroup>
 </Project>
