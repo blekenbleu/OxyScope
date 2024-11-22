@@ -28,7 +28,7 @@
 					<TextBlock Text="Disable Threshold" TextWrapping="Wrap" TextAlignment="Center" Name="TH"/>
 				</Button>
 				<Button Width="70" Height="42" Margin="715,2" Click="LFclick">
-					<TextBlock Text="Linear Fit disable" TextWrapping="Wrap" TextAlignment="Center" Name="LF"/>
+					<TextBlock Text="Linear Fit enabled" TextWrapping="Wrap" TextAlignment="Center" Name="LF"/>
 				</Button>
 			</Canvas>
 			<Canvas Grid.Row="1" Grid.Column="0">

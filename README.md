@@ -1,5 +1,6 @@
 # OxyScope from SimHubPluginSdk
-XY plot of *positive* property values
+XY plot of *positive* property values  
+[UI control explanations](Doc/help.htm)  
 - Create a new WPF project named `OxyPlotPlugin` in Visual Studio, then quit.  
 - delete (or move away) all but `OxyPlotPlugin.sln` and `OxyPlotPlugin.csproj`  
 - copy all but .sln and .csproj from SimHubPluginSdk

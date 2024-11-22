@@ -59,7 +59,7 @@ namespace blekenbleu.OxyScope
 			Model.TVis = Model.ThresBool ? Visibility.Visible : Visibility.Hidden;
 			TH.Text = Model.ThresBool ? "Disable Threshold" : "Enable Threshold";
 			Model.LinFit = Plugin.Settings.LinFit;
-			LF.Text = "Linear Fit " + (Model.LinFit ? "disable" : "enable");
+			LF.Text = "Linear Fit " + (Model.LinFit ? "enabled" : "disabled");
 			Model.Xprop = Model.Yprop = "random";
 			Model.FilterX = Plugin.Settings.FilterX;
 			Model.FilterY = Plugin.Settings.FilterY;
@@ -133,7 +133,7 @@ namespace blekenbleu.OxyScope
 		private void LFclick(object sender, RoutedEventArgs e)	// Linear Fit button
 		{
 			Model.LinFit = !Model.LinFit;
-			LF.Text = "Linear Fit " + (Model.LinFit ? "disable" : "enable");
+			LF.Text = "Linear Fit " + (Model.LinFit ? "enabled" : "disabled");
 		}
 
 		PlotModel ScatterPlot(int which, string title)
