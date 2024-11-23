@@ -35,104 +35,103 @@ namespace blekenbleu.OxyScope
 
 		/// <summary>
 		/// Called one time per game data update, contains all normalized game data,
-		/// raw data are intentionally "hidden" under a generic object type (A plugin SHOULD NOT USE IT)
+		/// raw data are intentionally "hidden" under a generic object type
+		/// (A plugin SHOULD NOT USE IT)
 		///
-		/// This method is on the critical path; execute as fast as possible, avoid throwing any error
+		/// This method is on the critical path; execute as fast as possible,
+		/// avoid throwing any error
 		///
 		/// </summary>
 		/// <param name="pluginManager"></param>
 		/// <param name="data">Current game data, including current and previous data frame.</param>
 		double IIRX = 0, IIRY = 0;
-		private int i, work;
-		public int which;					// which x and y array to plot
-		public double[] xmin, ymin, xmax, ymax; // View uses, xmax, ymax for axes scaling
+		private int i;
+		internal int work;
+		public int which;						// which x and y array to plot
+		public double[] xmin, ymin, xmax, ymax; // View uses for axes scaling
 		bool oops = false;
 		public void DataUpdate(PluginManager pluginManager, ref GameData data)
 		{
-			// Search for X-axis sample batches satisfying < View.lowX && > View.lowY
-			if (data.GameRunning && data.OldData != null && data.NewData != null)
+			if (!data.GameRunning || null == data.OldData || null == data.NewData)
+				return;
+
+			float xf, yf;
+			var xp = pluginManager.GetPropertyValue(View.Model.Xprop);
+
+			if (null == xp || !float.TryParse(xp.ToString(), out xf))
 			{
-				float xf, yf;
-				var xp = pluginManager.GetPropertyValue(View.Model.Xprop);
+				View.Model.XYprop = "invalid X property:  " + View.Model.Xprop;
+				oops = true;
+				return;
+			}
 
-				if (null == xp || !float.TryParse(xp.ToString(), out xf))
-				{
-					View.Model.XYprop = "invalid X property:  " + View.Model.Xprop;
-					oops = true;
-					return;
-				}
+			var yp = pluginManager.GetPropertyValue(View.Model.Yprop);
+			if (null == yp || !float.TryParse(yp.ToString(), out yf))
+			{
+				View.Model.XYprop = "invalid Y property:  " + View.Model.Yprop;
+				oops = true;
+				return;
+			}
 
-				var yp = pluginManager.GetPropertyValue(View.Model.Yprop);
-				if (null == yp || !float.TryParse(yp.ToString(), out yf))
-				{
-					View.Model.XYprop = "invalid Y property:  " + View.Model.Yprop;
-					oops = true;
-					return;
-				}
+			if (oops)
+			{
+				oops = false;
+				View.Model.XYprop = "continuing...";
+            }
 
-				if (oops)
-				{
-					oops = false;
-					View.Model.XYprop = "continuing...";
-                }
+			if (0 == data.NewData.CarId.Length)
+				return;
 
-				if (CarId != data.NewData.CarId)
-				{
-					CarId = data.NewData.CarId;
-					running = true;
-               		View.Model.Title =
+			if (CarId != data.NewData.CarId)
+			{
+				CarId = data.NewData.CarId;
+				IIRX = IIRY = 0;
+				xmin[0] = xmin[1] = ymin[0] = ymin[1] = xmax[0] = ymax[0] = xmax[1] = ymax[1] = 0;
+           		View.Model.Title =
                     	pluginManager.GetPropertyValue("DataCorePlugin.CurrentGame")?.ToString()
-                	    + ":  " + pluginManager.GetPropertyValue("CarID")?.ToString()
-                    	+ "@" + pluginManager.GetPropertyValue("DataCorePlugin.GameData.TrackId")?.ToString();  
-				}
+                	    + ":  " + pluginManager.GetPropertyValue("CarName")?.ToString()
+                    	+ "@" + pluginManager.GetPropertyValue("DataCorePlugin.GameData.TrackName")?.ToString();  
+			}
 
-				if (View.Model.ThresVal > xf || 0 > yf)
-					return;
+			IIRX += (xf - IIRX) / View.Model.FilterX;
+			IIRY += (yf - IIRY) / View.Model.FilterY;
+			View.x[i] = IIRX;
+			View.y[i] = IIRY;
+			if (View.start[work] == i)
+			{
+				xmin[work] = xmax[work] = View.x[i];
+				ymin[work] = ymax[work] = View.y[i];
+			}
+			else	// volume of sample values
+			{
+				if (xmin[work] > View.x[i])
+					xmin[work] = View.x[i];
+				else if (xmax[work] < View.x[i])
+					xmax[work] = View.x[i];
 
-				IIRX += (xf - IIRX) / View.Model.FilterX;
-				IIRY += (yf - IIRY) / View.Model.FilterY;
-				View.x[i] = IIRX;
-				View.y[i] = IIRY;
-				if (View.start[work] == i)
-				{
-					xmin[work] = xmax[work] = View.x[i];
-					ymin[work] = ymax[work] = View.y[i];
-				}
-				else	// volume of sample values
-				{
-					if (xmin[work] > View.x[i])
-						xmin[work] = View.x[i];
-					else if (xmax[work] < View.x[i])
-						xmax[work] = View.x[i];
-					if (ymax[work] < View.y[i])
-						ymax[work] = View.y[i];
-					else if (ymin[work] > View.y[i])
-						ymin[work] = View.y[i];
-				}
-				if ((++i - View.start[work]) >= View.length >> 1)	// filled?
-				{
-					int n = 1 - work;
+				if (ymax[work] < View.y[i])
+					ymax[work] = View.y[i];
+				else if (ymin[work] > View.y[i])
+					ymin[work] = View.y[i];
+			}
+			if ((++i - View.start[work]) >= View.length >> 1)	// filled?
+			{
+				// Coordination:  View should disable running while loading Plot
+				View.Model.Current = $"{xmin[work]:#0.000} <= X <= "
+								   + $"{xmax[work]:#0.000};  "
+								   + $"{ymin[work]:#0.000} <= Y <= "
+								   + $"{ymax[work]:#0.000}";
 
-					// Coordination:  View should disable running while loading Plot
+				int n = 1 - work;
+
+				if (View.Model.Refresh || (xmax[work] - xmin[work]) > (xmax[n] - xmin[n]))
+				{
+					which = work;		// plot this buffer
 					if (running)
-					{
-						View.Model.XYprop = $"current X high = {xmax[work]:#0.000}"
-										  + $", low = {xmin[work]:#0.000}"
-										  + $";  current Y high = {ymax[work]:#0.000}"
-										  + $", low = {ymin[work]:#0.000}";
-					}
-					if ((xmax[work] - xmin[work]) > (xmax[n] - xmin[n])
-					  && xmin[work] <= xmax[work] * 0.01 * Settings.Low
-					  && ymin[work] <= ymax[work] * 0.01 * Settings.Min)
-					{	// larger sample volume than in [1 - work]
-						which = work;		// plot this buffer
-						if (View.Model.Replot)
-							View.Dispatcher.Invoke(() => View.Replot());
-						else View.Model.RVis = System.Windows.Visibility.Visible;
-						work = n;			// refill buffer with smaller range
-					}
-					i = View.start[work];
+						View.Dispatcher.Invoke(() => View.Replot());
+					work = n;			// refill buffer with larger range
 				}
+				i = View.start[work];
 			}
 		}
 
@@ -143,16 +142,13 @@ namespace blekenbleu.OxyScope
 		/// <param name="pluginManager"></param>
 		public void End(PluginManager pluginManager)
 		{
-			Settings.Min = View.lowY;
-			Settings.Low = View.lowX;
-			Settings.ThresBool = View.Model.ThresBool;
-			Settings.LinFit = View.Model.LinFit;
-			View.Model.ThresBool = true;				// set true to get ThresVal
-			Settings.ThresVal = View.Model.ThresVal;
 			Settings.FilterX = View.Model.FilterX;
 			Settings.FilterY = View.Model.FilterY;
-			Settings.X = View.Model.Xprop;
-			Settings.Y = View.Model.Yprop;
+			Settings.Xprop = View.Model.Xprop;
+			Settings.Yprop = View.Model.Yprop;
+			Settings.LinFit = View.Model.LinFit;
+			Settings.Refresh = View.Model.Refresh;
+			Settings.Replot = View.Model.Replot;
 			// Save settings
 			this.SaveCommonSettings("GeneralSettings", Settings);
 		}
@@ -169,31 +165,33 @@ namespace blekenbleu.OxyScope
 		}
 
 		/// <summary>
-		/// Called once after plugins startup
-		/// Plugins are rebuilt at game change
+		/// Called once after plugin instance
+		/// Plugins are reinstanced at game change
 		/// </summary>
 		/// <param name="pluginManager"></param>
 		public void Init(PluginManager pluginManager)
 		{
-			i = which = work = 0;
-			ymin = new double[] {90, 90}; ymax = new double[] {0, 0};
-			xmin = new double[] {90, 90}; xmax = new double[] {0, 0};
+			which = work = 0;
+			string where = "DataCorePlugin.GameData.",					// defaults
+				x = "AccelerationHeave", y = "GlobalAccelerationG";
+
+            ymin = new double[] {-90, -90}; ymax = new double[] {90, 90};
+			xmin = new double[] {-90, -90}; xmax = new double[] {90, 90};
 			SimHub.Logging.Current.Info("Starting " + LeftMenuTitle);
 
 			// Load settings
 			Settings = this.ReadCommonSettings<Settings>("GeneralSettings", () => new Settings());
 			if (null == Settings)
 				Settings = new Settings() {
-					Low = 3, Min = 30, ThresVal = 99,
-					X = "ShakeITBSV3Plugin.Export.ProxyS.FrontLeft",
-					Y = "ShakeITBSV3Plugin.Export.Grip.FrontLeft",
-					FilterX = 1, FilterY = 1
-				};
+					Xprop = where+x,
+                    Yprop = where+y,
+					FilterX = 1, FilterY = 1, Refresh = true, LinFit = true
+                };
 			else {
-				if (0 == Settings.X.Length)
-						Settings.X = "ShakeITBSV3Plugin.Export.ProxyS.FrontLeft";
-				if (0 == Settings.Y.Length)
-						Settings.Y = "ShakeITBSV3Plugin.Export.Grip.FrontLeft";
+				if (0 == Settings.Xprop.Length)
+						Settings.Xprop = where+x;
+				if (0 == Settings.Yprop.Length)
+						Settings.Yprop = where+y;
 				if (1 > Settings.FilterX)
 					Settings.FilterX = 1;
                 if (1 > Settings.FilterY)
@@ -204,18 +202,7 @@ namespace blekenbleu.OxyScope
 			this.AttachDelegate("Yprop", () => View.Model.Yprop);
 			this.AttachDelegate("IIRX", () => IIRX);
 			this.AttachDelegate("IIRY", () => IIRY);
-			this.AttachDelegate("current", () => i);
-			// Declare an action which can be called
-			this.AddAction("ChangeProperties", (a, b) =>
-			{
-				running = true;
-                View.Model.Title =
-					pluginManager.GetPropertyValue("DataCorePlugin.CurrentGame")?.ToString()
-					+ ":  " + pluginManager.GetPropertyValue("CarID")?.ToString()
-					+ "@" + pluginManager.GetPropertyValue("DataCorePlugin.GameData.TrackId")?.ToString();
-//				View.Dispatcher.Invoke(() => View.Replot());	// invoke from another thread
-				View.Model.XYprop = "property updates waiting...";
-			});
+			this.AttachDelegate("current", () => which);
 		}
 	}
 }

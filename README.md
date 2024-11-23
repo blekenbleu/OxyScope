@@ -50,6 +50,12 @@ XY plot of *positive* property values
 - `View.Dispatcher.Invoke()` to auto `View.Replot()` *from* `DataUpdate()` *thread*
 - least squares linear estimators
 - added X, Y property IIR filter sliders
+#### 23 Nov:&nbsp; revise UI options
+- separately report current *sample* X, Y min, max  
+- also always show current *plot* statistics
+- eliminate Threshold, Below sliders
+- Replot button: **Auto*8 vs **Manual**
+- update button: **3 second refresh** vs **Hold max X range**
 
 #### Property folder changes from default WPF project for SimHub plugins
 <details><summary>click for differences</summary>

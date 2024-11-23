@@ -5,10 +5,9 @@
 	/// </summary>
 	public class Settings
 	{
-		public int Low = 3, Min = 30;
-		public double ThresVal = 99, FilterX = 1, FilterY = 1;
-		public bool ThresBool = true, LinFit = true;
-		public string X = "ShakeITBSV3Plugin.Export.ProxyS.FrontLeft",
-					  Y = "ShakeITBSV3Plugin.Export.Grip.FrontLeft";
+		public double FilterX = 1, FilterY = 1;
+		public bool Refresh = true, LinFit = true, Replot = true;
+		public string Xprop = "DataCorePlugin.GameData.AccelerationHeave",
+					  Yprop = "DataCorePlugin.GameData.GlobalAccelerationG";
 	}
 }

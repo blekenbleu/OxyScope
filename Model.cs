@@ -10,46 +10,34 @@ namespace blekenbleu.OxyScope
 		public event PropertyChangedEventHandler PropertyChanged;
 		public void OnPropertyChanged(PropertyChangedEventArgs myevent) => PropertyChanged?.Invoke(this, myevent);
 
+		readonly PropertyChangedEventArgs Cevent = new PropertyChangedEventArgs(nameof(Current));
 		readonly PropertyChangedEventArgs FXevent = new PropertyChangedEventArgs(nameof(FilterX));
 		readonly PropertyChangedEventArgs FYevent = new PropertyChangedEventArgs(nameof(FilterY));
 		readonly PropertyChangedEventArgs Levent = new PropertyChangedEventArgs(nameof(LinFit));
 		readonly PropertyChangedEventArgs Revent = new PropertyChangedEventArgs(nameof(Replot));
 		readonly PropertyChangedEventArgs RVevent = new PropertyChangedEventArgs(nameof(RVis));
-		readonly PropertyChangedEventArgs TBevent = new PropertyChangedEventArgs(nameof(ThresBool));
-		readonly PropertyChangedEventArgs THevent = new PropertyChangedEventArgs(nameof(ThresVal));
+		readonly PropertyChangedEventArgs TBevent = new PropertyChangedEventArgs(nameof(Refresh));
 		readonly PropertyChangedEventArgs TIevent = new PropertyChangedEventArgs(nameof(Title));
-		readonly PropertyChangedEventArgs TVevent = new PropertyChangedEventArgs(nameof(TVis));
 		readonly PropertyChangedEventArgs Xevent = new PropertyChangedEventArgs(nameof(Xprop));
+		readonly PropertyChangedEventArgs XRevent = new PropertyChangedEventArgs(nameof(Xrange));
 		readonly PropertyChangedEventArgs XYevent = new PropertyChangedEventArgs(nameof(XYprop));
 		readonly PropertyChangedEventArgs Yevent = new PropertyChangedEventArgs(nameof(Yprop));
 
 		public double m, B;		// for linear least-squares fit
-		private string _title;
+		private string _title = "launch a game or Replay to collect XY property samples";
 		public string Title { get => _title;
 			set
 			{
 				if (_title != value)
 				{
 					_title = value;
+					Xrange = 0;
 					PropertyChanged?.Invoke(this, TIevent);
 				}
 			}
 		}
 
-		private Visibility _tvis;
-		public Visibility TVis
-		{ 	get => _tvis;
-			set
-			{
-				if (_tvis != value)
-				{
-					_tvis = value;
-					PropertyChanged?.Invoke(this, TVevent);
-				}
-			} 
-		}
-
-		private Visibility _unseen;
+		private Visibility _unseen = Visibility.Hidden;
 		public Visibility RVis
 		{ 	get => _unseen;
 			set
@@ -62,6 +50,20 @@ namespace blekenbleu.OxyScope
 			} 
 		}
 
+		private string _current = "waiting for property values...";
+		public string Current
+		{	get => _current;
+			set
+			{
+				if (_current != value)
+				{
+					_current = value;
+					PropertyChanged?.Invoke(this, Cevent);
+				}
+			}
+		}
+
+
 		private string _xprop;
 		public string Xprop
 		{	get => _xprop;
@@ -70,6 +72,7 @@ namespace blekenbleu.OxyScope
 				if (_xprop != value)
 				{
 					_xprop = value;
+					Xrange = 0;	
 					PropertyChanged?.Invoke(this, Xevent);
 				}
 			}
@@ -83,12 +86,13 @@ namespace blekenbleu.OxyScope
 				if (_yprop != value)
 				{
 					_yprop = value;
+					Xrange = 0;
 					PropertyChanged?.Invoke(this, Yevent);
 				}
 			}
 		}
 
-		private string _xyprop;
+		private string _xyprop = "Random data";
 		public string XYprop
 		{	get => _xyprop;
 			set
@@ -102,7 +106,7 @@ namespace blekenbleu.OxyScope
 		}
 
 		private bool _tbool = true;
-		public bool ThresBool
+		public bool Refresh
 		{	get => _tbool;
 			set
 			{
@@ -140,15 +144,15 @@ namespace blekenbleu.OxyScope
 			}
 		}
 
-		private double _thval;
-		public double ThresVal
-		{	get => _tbool ? _thval : 0;
+		private double _xrange = 0;
+		public double Xrange
+		{	get => _xrange;
 			set
 			{
-				if (_thval != value)
+				if (_xrange != value)
 				{
-					_thval = value;
-					PropertyChanged?.Invoke(this, THevent);
+					_xrange = value;
+					PropertyChanged?.Invoke(this, XRevent);
 				}
 			}
 		}

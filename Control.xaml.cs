@@ -1,11 +1,7 @@
 ﻿using OxyPlot;
-using OxyPlot.Axes;
-using OxyPlot.Series;
 using System;
-using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using MathNet.Numerics;
 
 namespace blekenbleu.OxyScope
@@ -18,7 +14,6 @@ namespace blekenbleu.OxyScope
 	{
 		public OxyScope Plugin { get; }
 		public Model Model;
-		public int lowX, lowY;			// plot control lime sliders
 		public double[] x, y;			// plot samples
 		public int length, ln2;
 		public int[] start;				// circular buffer
@@ -28,48 +23,49 @@ namespace blekenbleu.OxyScope
 		public Control()
 		{
 			DataContext = Model = new Model();
-			Model.RVis = Visibility.Hidden;
-			Model.XYprop = "Property plots require some X and Y values < 'X Below' and 'Y Below'";
 			InitializeComponent();
-			lowX = 50; lowY = 10;		// default minimum plotable interval range 
-			ymax = 15;
 			length = 360;
 			ln2 = length >> 1; 
 			start = new int[] { 0, ln2 };
 			x = new double[length];
 			y = new double[length];
-			Random rnd = new Random();
-			for (int i = 0; i < ln2 ;)	// fill the plot
-			{
-				y[i] = ymax * rnd.NextDouble();
-				x[i] = ++i;
-			}
 		}
 
 		public Control(OxyScope plugin) : this()
 		{
 			Plugin = plugin;
-			Model.Title = "launch a game or Replay to start property XY plots";
-			TBL.Text = "X Below " + (SL.Value = lowX = plugin.Settings.Low) + "%";
-			TBR.Text = "Y Below " + (SR.Value = lowY = plugin.Settings.Min) + "%";
+			if (null != Plugin.Settings)
+			{
+				Model.FilterX = Plugin.Settings.FilterX;
+				Model.FilterY = Plugin.Settings.FilterY;
+				Model.Refresh = !Plugin.Settings.Refresh;
+				Model.Replot = !Plugin.Settings.Replot;
+				Model.LinFit = !Plugin.Settings.LinFit;
+				Model.Refresh = Plugin.Settings.Refresh;
+				Model.Replot = Plugin.Settings.Replot;
+				Model.LinFit = Plugin.Settings.LinFit;
+				Model.Xprop = plugin.Settings.Xprop;
+				Model.Yprop = plugin.Settings.Yprop;
+			} else Model.Xprop = Model.Yprop = "random";
 
-			Model.ThresBool = true;		// to restore Model.ThresVal
-			TBT.Text = "X Threshold " + (ST.Value = Model.ThresVal = Plugin.Settings.ThresVal);
-			Model.ThresBool = Plugin.Settings.ThresBool;
-			Model.TVis = Model.ThresBool ? Visibility.Visible : Visibility.Hidden;
-			TH.Text = Model.ThresBool ? "Disable Threshold" : "Enable Threshold";
-			Model.LinFit = Plugin.Settings.LinFit;
 			LF.Text = "Linear Fit " + (Model.LinFit ? "enabled" : "disabled");
-			Model.Xprop = Model.Yprop = "random";
-			Model.FilterX = Plugin.Settings.FilterX;
-			Model.FilterY = Plugin.Settings.FilterY;
+			// fill the plot with random data
+			Random rnd = new Random();
+			double xp, xi, yp, ymin  = Plugin.ymin[Plugin.which];
+			ymax = Plugin.ymax[Plugin.which];
+			xmax = Plugin.xmax[Plugin.which];
+			yp = ymax - ymin;
+			xp = Plugin.xmin[Plugin.which];
+			xi = (xmax - xp) / ln2;
+			for (int i = 0; i < ln2; i++)	// fill the plot
+			{
+				y[i] = ymin + yp * rnd.NextDouble();
+				x[i] = xp;
+				xp += xi;
+			}
 
 			plot.Model = ScatterPlot(0, null);
-			if (null != plugin.Settings)
-			{
-				Model.Xprop = plugin.Settings.X;
-				Model.Yprop = plugin.Settings.Y;
-			}
+			Plugin.running = true;				// enable OxyScope updates
 		}
 
         private void Hyperlink_RequestNavigate(object sender,
@@ -80,12 +76,23 @@ namespace blekenbleu.OxyScope
 
         internal void Replot()
 		{
-			Plugin.running = false;		// disable OxyScope updates
-			ymax = 1.2 * Plugin.ymax[Plugin.which];	// legend space
-			xmax = 1.1 * Plugin.xmax[Plugin.which];
+			if (Model.Xrange > Plugin.xmax[Plugin.work] - Plugin.xmin[Plugin.work] && !Model.Refresh)
+				return;
 
-			// ScatterPlot() also collects samples for LinearBestFit()
+			if (!Model.Replot)
+			{
+				Model.RVis = Visibility.Visible;
+				return;
+			}
+
+			Plugin.running = false;		// disable OxyScope updates
+			ymax = 1.2 * (Plugin.ymax[Plugin.which] - Plugin.ymin[Plugin.which])
+				 + Plugin.ymin[Plugin.which];	// legend space
+			xmax = Plugin.xmax[Plugin.which];
+			Model.Xrange = Model.Refresh ? 0 : xmax - Plugin.xmin[Plugin.which];
+
 			PlotModel model = ScatterPlot(Plugin.which, "60 Hz samples");
+			Model.XYprop = Model.Current;
 			if (Model.LinFit)
 			{
 				// https://numerics.mathdotnet.com/Regression
@@ -94,124 +101,61 @@ namespace blekenbleu.OxyScope
 				(double, double)p = Fit.Line(xs, ys);
 				Model.B = p.Item1;
 				Model.m = p.Item2;
-				model.Series.Add(BestFit(Model.m, Model.B, "Fit.Line"));
+				model.Series.Add(BestFit(Plugin.xmin[Plugin.which], Model.m, Model.B, "Fit.Line"));
+				Model.XYprop += $";  intercept = {Model.B:#0.0000}, slope = {Model.m:#0.0000}";
 
-				c = Fit.LinearCombination(xs, ys, x => x);
-				model.Series.Add(BestFit(c[0], 0, "Fit thru origin"));
+				// 	LinearBestFit(out Model.m, out Model.B);
+				//	model.Series.Add(BestFit(Model.m, Model.B, "LinearBestFit"));
 
-			// 	LinearBestFit(out Model.m, out Model.B);
-			//	model.Series.Add(BestFit(Model.m, Model.B, "LinearBestFit"));
-				Model.XYprop += $";  intercept = {Model.B:#0.0000}, "
-					+ $"slope = {Model.m:#0.0000}, origin slope = {c[0]:#0.0000}"; 
+				if (0 >= Plugin.ymin[Plugin.which] && 0 <= Plugin.ymax[Plugin.which])
+				{
+					c = Fit.LinearCombination(xs, ys, x => x);
+					model.Series.Add(BestFit(0, c[0], 0, "Fit thru origin"));
+                    Model.XYprop += $", origin slope = {c[0]:#0.0000}"; 
+				}
+
 			}
 			plot.Model = model;					// OxyPlot
-			Plugin.ymax[Plugin.which] = Plugin.xmax[Plugin.which] = 0;
-			Plugin.running = true;				// enable OxyScope updates
-			Model.RVis = Visibility.Hidden;		// Replot button
+			Plugin.ymax[Plugin.which] = Plugin.xmax[Plugin.which]		// free this buffer for reuse
+									  = Plugin.xmin[Plugin.which] = 0;
+			Model.RVis = Visibility.Hidden;								// Replot button
+			Plugin.running = true;										// enable OxyScope updates
 		}
 
 		private void SSclick(object sender, RoutedEventArgs e)	// Replot button
 		{
+			Model.Replot = true;
 			Replot();
+			Model.Replot = false;
+			Model.RVis = Visibility.Hidden;
 		}
 
-		private void THclick(object sender, RoutedEventArgs e)	// Threshold button
+		private void THclick(object sender, RoutedEventArgs e)	// Refresh button
 		{
-			Model.ThresBool = !Model.ThresBool;
-			if (Model.ThresBool)
+			Model.Refresh = !Model.Refresh;
+			if (Model.Refresh)
 			{
-				Model.TVis = Visibility.Visible;
-				TH.Text = "Disable Threshold";
-				TBT.Text = "X Threshold " + Model.ThresVal;
-			}
-			else {
-				Model.TVis = Visibility.Hidden;
-				TH.Text = "Enable Threshold";
-			}
+				TH.Text = "3 second refresh";
+				Model.Xrange = 0;
+				Model.RVis = Visibility.Hidden;		// Replot button
+			} else TH.Text = "Hold max  X range";
 		}
 
-		private void ARclick(object sender, RoutedEventArgs e)	// Linear Fit button
+		private void ARclick(object sender, RoutedEventArgs e)	// Auto Replot
 		{
 			Model.Replot = !Model.Replot;
-			TR.Text = (Model.Replot ? "Auto" : "Manual") + " Replot";
+			if (Model.Replot)
+			{
+				TR.Text = "Auto";
+				Model.RVis = Visibility.Hidden;
+			} else TR.Text = "Manual";
+			TR.Text += " Replot";
 		}
 
 		private void LFclick(object sender, RoutedEventArgs e)	// Linear Fit button
 		{
 			Model.LinFit = !Model.LinFit;
 			LF.Text = "Linear Fit " + (Model.LinFit ? "enabled" : "disabled");
-		}
-
-		PlotModel ScatterPlot(int which, string title)
-		{
-			PlotModel model = new PlotModel { Title = Model.Title };
-
-			model.Axes.Add(new LinearAxis
-			{
-				Position = AxisPosition.Left,
-				Title = Model.Yprop,
-				Minimum = 0,
-				Maximum = ymax
-			});
-
-			model.Axes.Add(new LinearAxis
-			{
-				Position = AxisPosition.Bottom,
-				Title = Model.Xprop,
-				Minimum = 0,
-				Maximum = xmax
-			});
-
-			model.Series.Add(Scatter(which, title));
-			model.LegendPosition = LegendPosition.TopLeft;
-			model.LegendFontSize = 12;
-			model.LegendBorder = OxyColors.Black;
-			model.LegendBorderThickness = 1;
-			return model;
-		}
-
-		private ScatterSeries Scatter(int which, string title)
-		{
-			int size = 3;	// plot dot size
-			int end = (start[which] <= ln2) ? start[which] + ln2 : length;
-
-//			samples = new List<XYvalue> ();
-			var scatterSeries = new ScatterSeries { MarkerType = MarkerType.Circle };
-			for (int i = start[which]; i < end; i++)
-			{
-//				samples.Add(new XYvalue { X = x[i], Y = y[i] });
-				scatterSeries.Points.Add(new ScatterPoint(x[i], y[i], size));
-			}
-			scatterSeries.MarkerFill = OxyColors.Red;
-			if (null != title)
-				scatterSeries.Title = title;
-			return scatterSeries;
-		}
-
-		LineSeries BestFit(double m, double B, string title)
-		{
-			LineSeries line = new LineSeries();
-			line.Points.Add(new DataPoint(0, B));
-			line.Points.Add(new DataPoint(Plugin.xmax[Plugin.which],
-							 m * Plugin.xmax[Plugin.which]));
-			line.Title = title;
-			return line;
-		}
-
-		// handle slider changes
-		private void SLdone(object sender, MouseButtonEventArgs e)
-		{
-			TBL.Text = "X Below " + (lowX = (int)((Slider)sender).Value) + "%";
-		}
-
-		private void SRdone(object sender, MouseButtonEventArgs e)
-		{
-			TBR.Text = "Y Below " + (lowY = (int)((Slider)sender).Value) + "%";
-		}
-
-		private void STdone(object sender, MouseButtonEventArgs e)
-		{
-			TBT.Text = "X Threshold " + (Model.ThresVal = (int)((Slider)sender).Value);
 		}
 	}	// class
 }

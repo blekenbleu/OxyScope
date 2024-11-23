@@ -7,65 +7,59 @@
 			 xmlns:local="clr-namespace:blekenbleu.OxyScope"
 			 mc:Ignorable="d"
 			 xmlns:oxy="http://oxyplot.org/wpf"
-             d:DataContext="{d:DesignInstance Type=local:Model}"
-             Height="770" Width="800">
-			<Grid>
-				<Grid.RowDefinitions>
-					<RowDefinition Height="50"/>
-					<RowDefinition Height="50"/>
-					<RowDefinition Height="560"/>
-					<RowDefinition Height="55"/>
-					<RowDefinition Height="50"/>
-				</Grid.RowDefinitions>
-			<Canvas Grid.Row="0" Grid.Column="0" VerticalAlignment="Top">
-            <TextBlock Width="45" Height="30" Margin="4,8" FontSize="18" Background="White" TextAlignment="Center">
-                <Hyperlink RequestNavigate="Hyperlink_RequestNavigate"
-                    NavigateUri="https://blekenbleu.github.io/SimHub/oxyhelp.htm">Help</Hyperlink>
-            </TextBlock>
-            <Slider Maximum="199" TickPlacement="BottomRight" TickFrequency="2" IsSnapToTickEnabled="True" Width="425" Height="22"
-						Name="ST" Margin="50,2" Minimum="1" Value="99" PreviewMouseUp="STdone" Visibility="{Binding TVis}"/>
-				<Button Width="65" Height="42" Margin="480,2" Click="ARclick">
-					<TextBlock Text="Auto Replot" TextWrapping="Wrap" TextAlignment="Center" Name="TR"/>
-				</Button>
-				<TextBox Name="TBT" TextWrapping="Wrap" Height="42" Margin="552,2" Text="X Threshold" Width="80" Visibility="{Binding TVis}"/>
-				<Button Width="70" Height="42" Margin="640,2" Click="THclick">
-					<TextBlock Text="Disable Threshold" TextWrapping="Wrap" TextAlignment="Center" Name="TH"/>
-				</Button>
-				<Button Width="70" Height="42" Margin="715,2" Click="LFclick">
-					<TextBlock Text="Linear Fit enabled" TextWrapping="Wrap" TextAlignment="Center" Name="LF"/>
-				</Button>
-			</Canvas>
-			<Canvas Grid.Row="1" Grid.Column="0">
-				<Slider Maximum="99" TickPlacement="BottomRight" TickFrequency="3" IsSnapToTickEnabled="True" Width="300" Height="22"
-						Name="SL" Margin="0,2" Minimum="1" Value="10" PreviewMouseUp="SLdone"/>
-				<TextBox Name="TBL" Margin="302,2" TextWrapping="Wrap" Text="X Below 10%" Width="55" Height="42"/>
-				<Button Content="Replot" Width="60" Height="22" Margin="360,2" Click="SSclick" Visibility="{Binding RVis}" Background="Red" />
-				<Slider Maximum="99" TickPlacement="BottomRight" TickFrequency="3" IsSnapToTickEnabled="True" Width="300" Height="22"
-						Name="SR" Margin="430,2" Value="40" PreviewMouseUp="SRdone"/>
-				<TextBox Name="TBR" Margin="732,2" TextWrapping="Wrap" Text="Y Below 40%" Width="54" Height="42"/>
-			</Canvas>
-			<GroupBox Grid.Row="2" Grid.Column="0" Height="550" VerticalAlignment="Top">
-				<GroupBox.Header> <TextBlock FontWeight="Bold"> Properties XY plot</TextBlock> </GroupBox.Header>
-				<oxy:PlotView Name="plot"/>
-			</GroupBox>
-			<Canvas Grid.Row="3" Grid.Column="0" VerticalAlignment="Top">
-				<TextBox Canvas.Left="0" TextWrapping="Wrap" Text="{Binding XYprop}" Height="25" Width="800" Name="XYprop"/>
-				<TextBox Margin="0,28"   TextWrapping="Wrap" Height="25" Width="390"
-						 Name="Yprop" Text="{Binding Yprop, Mode=TwoWay}"/>
-				<TextBox Margin="410,28" TextWrapping="Wrap" Height="25" Width="390"
-						 Name="Xprop" Text="{Binding Xprop, Mode=TwoWay}"/>
-				<TextBox Margin="390,28" Text="vs" Width="20" Height="25"/>
-			</Canvas>
-			<Canvas Grid.Row="4" Grid.Column="0" VerticalAlignment="Top">
-				<ui:TitledSlider Title="	 Y-axis filter" Width="400"
-					 Value="{Binding FilterY, Mode=TwoWay}" Margin="0,5"
-					 TickFrequency = "1" IsSnapToTickEnabled = "True"
-					 Maximum="10" Minimum="1" x:Name="sv"/>
-				<ui:TitledSlider Title="	 X-axis filter" Width="400"
-					 Value="{Binding FilterX, Mode=TwoWay}" Margin="400,5"
-					 TickFrequency = "1" IsSnapToTickEnabled = "True"
-					 Maximum="10" Minimum="1" x:Name="ss"/> 
-			</Canvas>
-
-		</Grid>
+			 d:DataContext="{d:DesignInstance Type=local:Model}"
+			 Height="720" Width="800">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="50"/>
+			<RowDefinition Height="560"/>
+			<RowDefinition Height="55"/>
+			<RowDefinition Height="50"/>
+		</Grid.RowDefinitions>
+		<Canvas Grid.Row="0" Grid.Column="0" VerticalAlignment="Top">
+			<TextBlock Width="45" Height="30" Margin="4,8" FontSize="18"
+				Background="White" TextAlignment="Center">
+				<Hyperlink RequestNavigate="Hyperlink_RequestNavigate"
+				NavigateUri="https://blekenbleu.github.io/SimHub/oxyhelp.htm">Help</Hyperlink>
+			</TextBlock>
+			<TextBox Width="455" Height="22" Margin="50,12"
+				Name="Current" Text="{Binding Current}"/>
+			<Button Content="Replot" Width="60" Height="22" Margin="510,12"
+				Click="SSclick" Visibility="{Binding RVis}" Background="Red" />
+			<Button Width="65" Height="42" Margin="575,2" Click="ARclick">
+				<TextBlock Text="Auto Replot" TextWrapping="Wrap" TextAlignment="Center" Name="TR"/>
+			</Button>
+			<Button Width="68" Height="42" Margin="643,2" Click="THclick">
+				<TextBlock Text="3 second refresh" TextWrapping="Wrap" TextAlignment="Center" Name="TH"/>
+			</Button>
+			<Button Width="70" Height="42" Margin="716,2" Click="LFclick">
+				<TextBlock Text="Linear Fit enabled" TextWrapping="Wrap" TextAlignment="Center" Name="LF"/>
+			</Button>
+		</Canvas>
+		<GroupBox Grid.Row="1" Grid.Column="0" Height="550" VerticalAlignment="Top">
+			<GroupBox.Header>
+				<TextBlock FontWeight="Bold"> Properties XY plot</TextBlock>
+			</GroupBox.Header>
+			<oxy:PlotView Name="plot"/>
+		</GroupBox>
+		<Canvas Grid.Row="2" Grid.Column="0" VerticalAlignment="Top">
+			<TextBox Canvas.Left="0" TextWrapping="Wrap" Height="25" Width="800"
+					 Name="XYprop" Text="{Binding XYprop}"/>
+			<TextBox Margin="0,28"   TextWrapping="Wrap" Height="25" Width="390"
+					 Name="Yprop" Text="{Binding Yprop, Mode=TwoWay}"/>
+			<TextBox Margin="390,28" Text="vs" Width="20" Height="25"/>
+			<TextBox Margin="410,28" TextWrapping="Wrap" Height="25" Width="390"
+					 Name="Xprop" Text="{Binding Xprop, Mode=TwoWay}"/>
+		</Canvas>
+		<Canvas Grid.Row="3" Grid.Column="0" VerticalAlignment="Top">
+			<ui:TitledSlider Title="	 Y-axis filter" Width="400"
+				 Value="{Binding FilterY, Mode=TwoWay}" Margin="0,5"
+				 TickFrequency = "1" IsSnapToTickEnabled = "True"
+				 Maximum="10" Minimum="1" x:Name="sv"/>
+			<ui:TitledSlider Title="	 X-axis filter" Width="400"
+				 Value="{Binding FilterX, Mode=TwoWay}" Margin="400,5"
+				 TickFrequency = "1" IsSnapToTickEnabled = "True"
+				 Maximum="10" Minimum="1" x:Name="ss"/> 
+		</Canvas>
+	</Grid>
 </UserControl>
