@@ -13,17 +13,19 @@ namespace blekenbleu.OxyScope
 	{
 		public OxyScope Plugin { get; }
 		public Model Model;
-		public double[] x, y;			// plot samples
 		public int length, ln2;
 		public int[] start;				// circular buffer
-		private double xmax, ymax;		// somewhat arbitrary axis limits
-		double[] c;
+		public double[] x, y;			// plot samples
+		int which = 0;					// which samples to plot
+		double xmax, ymax;				// somewhat arbitrary axis limits
+		double[] c;						// least squares fit coefficient[s]
+		bool running = true;			// don't replot when already busy
 
 		public Control()
 		{
 			DataContext = Model = new Model();
 			InitializeComponent();
-			length = 360;
+			length = 360;				// 2 x 3 seconds of 60 Hz samples
 			ln2 = length >> 1; 
 			start = new int[] { 0, ln2 };
 			x = new double[length];
@@ -38,7 +40,7 @@ namespace blekenbleu.OxyScope
 				Model.FilterX = Plugin.Settings.FilterX;
 				Model.FilterY = Plugin.Settings.FilterY;
 				Model.Refresh = Plugin.Settings.Refresh;
-				Model.Replot = Plugin.Settings.Replot;
+				Model.Plot = Plugin.Settings.Plot;
 				Model.LinFit = Plugin.Settings.LinFit;
 				Model.Xprop = plugin.Settings.Xprop;
 				Model.Yprop = plugin.Settings.Yprop;
@@ -49,7 +51,6 @@ namespace blekenbleu.OxyScope
 
 			Bupdate();
 			Init();								// random plot
-			Plugin.running = true;				// enable OxyScope updates
 		}
 
 		private void Hyperlink_RequestNavigate(object sender,
@@ -58,44 +59,47 @@ namespace blekenbleu.OxyScope
 			System.Diagnostics.Process.Start(e.Uri.AbsoluteUri);
 		}
 
-		internal void Replot()
+		internal void Replot(int choose, bool force)
 		{
-			if (Model.Xrange > Plugin.xmax[Plugin.which] - Plugin.xmin[Plugin.which] && !Model.Refresh)
+			which = choose;
+			if (!running)
+				return;
+			if (Model.Xrange > Plugin.xmax[which] - Plugin.xmin[which] && !Model.Refresh)
 				return;
 
-			if (!Model.Replot)
+			if (!Model.Plot && !force)
 			{
 				Model.RVis = Visibility.Visible;
 				return;
 			}
 
-			Plugin.running = false;		// disable OxyScope updates
-			ymax = 1.2 * (Plugin.ymax[Plugin.which] - Plugin.ymin[Plugin.which])
-				 + Plugin.ymin[Plugin.which];	// legend space
-			xmax = Plugin.xmax[Plugin.which];
-			Model.Xrange = Model.Refresh ? 0 : xmax - Plugin.xmin[Plugin.which];
+			running = false;		// disable OxyScope updates
+			ymax = 1.2 * (Plugin.ymax[which] - Plugin.ymin[which])
+				 + Plugin.ymin[which];	// legend space
+			xmax = Plugin.xmax[which];
+			Model.Xrange = Model.Refresh ? 0 : xmax - Plugin.xmin[which];
 
-			PlotModel model = ScatterPlot(Plugin.which, "60 Hz samples");
-			Model.XYprop = $"{Plugin.xmin[Plugin.which]:#0.000} <= X <= "
+			PlotModel model = ScatterPlot(which, "60 Hz samples");
+			Model.XYprop = $"{Plugin.xmin[which]:#0.000} <= X <= "
 					     + $"{xmax:#0.000};  "
-					     + $"{Plugin.ymin[Plugin.which]:#0.000} <= Y <= "
-					     + $"{Plugin.ymax[Plugin.which]:#0.000}";
+					     + $"{Plugin.ymin[which]:#0.000} <= Y <= "
+					     + $"{Plugin.ymax[which]:#0.000}";
 
 			if (Model.LinFit)
 			{
 				// https://numerics.mathdotnet.com/Regression
-				double[] xs = SubArray(x, start[Plugin.which], ln2),
-						 ys = SubArray(y, start[Plugin.which], ln2);
+				double[] xs = SubArray(x, start[which], ln2),
+						 ys = SubArray(y, start[which], ln2);
 				(double, double)p = Fit.Line(xs, ys);
 				Model.B = p.Item1;
 				Model.m = p.Item2;
-				model.Series.Add(BestFit(Plugin.xmin[Plugin.which], Model.m, Model.B, "Fit.Line"));
+				model.Series.Add(BestFit(Plugin.xmin[which], Model.m, Model.B, "Fit.Line"));
 				Model.XYprop += $";  intercept = {Model.B:#0.0000}, slope = {Model.m:#0.0000}";
 
 				// 	LinearBestFit(out Model.m, out Model.B);
 				//	model.Series.Add(BestFit(Model.m, Model.B, "LinearBestFit"));
 
-				if (0 >= Plugin.ymin[Plugin.which] && 0 <= Plugin.ymax[Plugin.which])
+				if (0 >= Plugin.ymin[which] && 0 <= Plugin.ymax[which])
 				{
 					c = Fit.LinearCombination(xs, ys, x => x);
 					model.Series.Add(BestFit(0, c[0], 0, "Fit thru origin"));
@@ -104,33 +108,30 @@ namespace blekenbleu.OxyScope
 
 			}
 			plot.Model = model;											// OxyPlot
-			Plugin.ymax[Plugin.which] = Plugin.xmax[Plugin.which]		// free this buffer for reuse
-									  = Plugin.xmin[Plugin.which] = 0;
-			Model.RVis = Visibility.Hidden;								// Replot button
-			Plugin.running = true;										// enable OxyScope updates
+			Plugin.ymax[which] = Plugin.xmax[which]		// free this buffer for reuse
+									  = Plugin.xmin[which] = 0;
+			Model.RVis = Visibility.Hidden;								// Plot button
+			running = true;										// enable OxyScope updates
 		}
 
-		private void SSclick(object sender, RoutedEventArgs e)			// Replot button
+		private void PBclick(object sender, RoutedEventArgs e)			// Plot button
 		{
-			Model.Replot = true;
-			Replot();
-			Model.Replot = false;
-			Model.RVis = Visibility.Hidden;
+			Replot(which, true);
 		}
 
-		private void THclick(object sender, RoutedEventArgs e)			// Refresh button
+		private void RBclick(object sender, RoutedEventArgs e)			// Refresh button
 		{
 			Model.Refresh = !Model.Refresh;
 			Bupdate();
 		}
 
-		private void ARclick(object sender, RoutedEventArgs e)			// Auto Replot
+		private void APclick(object sender, RoutedEventArgs e)			// Auto Plot
 		{
-			Model.Replot = !Model.Replot;
+			Model.Plot = !Model.Plot;
 			Bupdate();
 		}
 
-		private void LFclick(object sender, RoutedEventArgs e)	// Linear Fit button
+		private void LFclick(object sender, RoutedEventArgs e)			// Linear Fit button
 		{
 			Model.LinFit = !Model.LinFit;
 			Bupdate();	
@@ -139,20 +140,14 @@ namespace blekenbleu.OxyScope
 		void Bupdate()
 		{
 			LF.Text = "Linear Fit " + (Model.LinFit ? "enabled" : "disabled");
-			if (Model.Replot)
+			TH.Text = Model.Refresh ? "3 second refresh" : "Hold max  X range";
+			if (Model.Plot)
 			{
 				TR.Text = "Auto";
 				Model.RVis = Visibility.Hidden;
 			}
 			else TR.Text = "Manual";
-			TR.Text += " Replot";
-			if (Model.Refresh)
-			{
-				TH.Text = "3 second refresh";
-				Model.Xrange = 0;
-				Model.RVis = Visibility.Hidden;	 // Replot button
-			}
-			else TH.Text = "Hold max  X range";
+			TR.Text += " Plot";
 		}
 	}	// class
 }

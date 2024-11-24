@@ -15,7 +15,7 @@ namespace blekenbleu.OxyScope
 			{
 				Position = AxisPosition.Left,
 				Title = Model.Yprop,
-				Minimum = Plugin.ymin[Plugin.which],
+				Minimum = Plugin.ymin[which],
 				Maximum = ymax
 			});
 
@@ -23,7 +23,7 @@ namespace blekenbleu.OxyScope
 			{
 				Position = AxisPosition.Bottom,
 				Title = Model.Xprop,
-				Minimum = Plugin.xmin[Plugin.which],
+				Minimum = Plugin.xmin[which],
 				Maximum = xmax
 			});
 
@@ -53,8 +53,8 @@ namespace blekenbleu.OxyScope
 		{
 			LineSeries line = new LineSeries();
 			line.Points.Add(new DataPoint(start, B + m * start));
-			line.Points.Add(new DataPoint(Plugin.xmax[Plugin.which],
-						 				  B + m * Plugin.xmax[Plugin.which]));
+			line.Points.Add(new DataPoint(Plugin.xmax[which],
+						 				  B + m * Plugin.xmax[which]));
 			line.Title = title;
 			return line;
 		}
@@ -63,11 +63,11 @@ namespace blekenbleu.OxyScope
 		{
 			// fill the plot with random data
 			Random rnd = new Random();
-			double xp, xi, yp, ymin  = Plugin.ymin[Plugin.which];
-			ymax = Plugin.ymax[Plugin.which];
-			xmax = Plugin.xmax[Plugin.which];
+			double xp, xi, yp, ymin  = Plugin.ymin[which];
+			ymax = Plugin.ymax[which];
+			xmax = Plugin.xmax[which];
 			yp = ymax - ymin;
-			xp = Plugin.xmin[Plugin.which];
+			xp = Plugin.xmin[which];
 			xi = (xmax - xp) / ln2;
 			for (int i = 0; i < ln2; i++)	// fill the plot
 			{

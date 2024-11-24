@@ -25,11 +25,11 @@
 			<TextBox Width="455" Height="22" Margin="50,12"
 				Name="Current" Text="{Binding Current}"/>
 			<Button Content="Replot" Width="60" Height="22" Margin="510,12"
-				Click="SSclick" Visibility="{Binding RVis}" Background="Red" />
-			<Button Width="65" Height="42" Margin="575,2" Click="ARclick">
+				Click="PBclick" Visibility="{Binding RVis}" Background="Red" />
+			<Button Width="65" Height="42" Margin="575,2" Click="APclick">
 				<TextBlock Text="Auto Replot" TextWrapping="Wrap" TextAlignment="Center" Name="TR"/>
 			</Button>
-			<Button Width="68" Height="42" Margin="643,2" Click="THclick">
+			<Button Width="68" Height="42" Margin="643,2" Click="RBclick">
 				<TextBlock Text="3 second refresh" TextWrapping="Wrap" TextAlignment="Center" Name="TH"/>
 			</Button>
 			<Button Width="70" Height="42" Margin="716,2" Click="LFclick">

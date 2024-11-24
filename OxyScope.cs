@@ -13,7 +13,6 @@ namespace blekenbleu.OxyScope
 	{
 		public Settings Settings;
 		string CarId = "";
-		public bool running = false;
 		public static string PluginVersion = FileVersionInfo.GetVersionInfo(
             Assembly.GetExecutingAssembly().Location).FileVersion.ToString();
 
@@ -46,7 +45,6 @@ namespace blekenbleu.OxyScope
 		/// <param name="data">Current game data, including current and previous data frame.</param>
 		double IIRX = 0, IIRY = 0;
 		private int i, work;					// arrays currently being sampled
-		public int which;						// which x and y array to plot
 		public double[] xmin, ymin, xmax, ymax; // View uses for axes scaling
 		bool oops = false;
 		public void DataUpdate(PluginManager pluginManager, ref GameData data)
@@ -122,13 +120,13 @@ namespace blekenbleu.OxyScope
 								   + $"{ymax[work]:#0.000}";
 
 				int n = 1 - work;
-
-				if (View.Model.Refresh || (xmax[work] - xmin[work]) > (xmax[n] - xmin[n]))
+				bool bigger = (xmax[work] - xmin[work]) > (xmax[n] - xmin[n]);
+                if (View.Model.Refresh || bigger)
 				{
-					which = work;		// plot this buffer
-					if (running)
-						View.Dispatcher.Invoke(() => View.Replot());
-					work = n;			// refill buffer with larger range
+                    View.Dispatcher.Invoke(() => View.Replot(work, false));
+					// Replot typically frees buffers
+					if((xmax[work] - xmin[work]) > (xmax[n] - xmin[n]))
+						work = n;			// refill the buffer with smaller range
 				}
 				i = View.start[work];
 			}
@@ -147,7 +145,7 @@ namespace blekenbleu.OxyScope
 			Settings.Yprop = View.Model.Yprop;
 			Settings.LinFit = View.Model.LinFit;
 			Settings.Refresh = View.Model.Refresh;
-			Settings.Replot = View.Model.Replot;
+			Settings.Plot = View.Model.Plot;
 			// Save settings
 			this.SaveCommonSettings("GeneralSettings", Settings);
 		}
@@ -170,7 +168,7 @@ namespace blekenbleu.OxyScope
 		/// <param name="pluginManager"></param>
 		public void Init(PluginManager pluginManager)
 		{
-			which = work = 0;
+			work = 0;
 			string where = "DataCorePlugin.GameData.",					// defaults
 				x = "AccelerationHeave", y = "GlobalAccelerationG";
 
@@ -201,7 +199,6 @@ namespace blekenbleu.OxyScope
 			this.AttachDelegate("Yprop", () => View.Model.Yprop);
 			this.AttachDelegate("IIRX", () => IIRX);
 			this.AttachDelegate("IIRY", () => IIRY);
-			this.AttachDelegate("current", () => which);
 		}
 	}
 }

@@ -6,7 +6,7 @@
 	public class Settings
 	{
 		public double FilterX = 1, FilterY = 1;
-		public bool Refresh = true, LinFit = true, Replot = true;
+		public bool Refresh = true, LinFit = true, Plot = true;
 		public string Xprop = "DataCorePlugin.GameData.AccelerationHeave",
 					  Yprop = "DataCorePlugin.GameData.GlobalAccelerationG";
 	}

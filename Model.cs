@@ -14,7 +14,7 @@ namespace blekenbleu.OxyScope
 		readonly PropertyChangedEventArgs FXevent = new PropertyChangedEventArgs(nameof(FilterX));
 		readonly PropertyChangedEventArgs FYevent = new PropertyChangedEventArgs(nameof(FilterY));
 		readonly PropertyChangedEventArgs Levent = new PropertyChangedEventArgs(nameof(LinFit));
-		readonly PropertyChangedEventArgs Revent = new PropertyChangedEventArgs(nameof(Replot));
+		readonly PropertyChangedEventArgs Revent = new PropertyChangedEventArgs(nameof(Plot));
 		readonly PropertyChangedEventArgs RVevent = new PropertyChangedEventArgs(nameof(RVis));
 		readonly PropertyChangedEventArgs TBevent = new PropertyChangedEventArgs(nameof(Refresh));
 		readonly PropertyChangedEventArgs TIevent = new PropertyChangedEventArgs(nameof(Title));
@@ -171,7 +171,7 @@ namespace blekenbleu.OxyScope
 		}
 
 		private bool _replot = true;
-		public bool Replot
+		public bool Plot
 		{	get => _replot;
 			set
 			{
