@@ -122,12 +122,16 @@ namespace blekenbleu.OxyScope
 		private void RBclick(object sender, RoutedEventArgs e)			// Refresh button
 		{
 			Model.Refresh = !Model.Refresh;
+			if (Model.Refresh)
+				Plugin.xmax[which] = Plugin.xmin[which] = 0;
 			Bupdate();
 		}
 
 		private void APclick(object sender, RoutedEventArgs e)			// Auto Plot
 		{
 			Model.Plot = !Model.Plot;
+			if (Model.Plot)
+				Plugin.xmax[which] = Plugin.xmin[which] = 0;
 			Bupdate();
 		}
 
