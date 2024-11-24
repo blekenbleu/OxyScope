@@ -45,8 +45,7 @@ namespace blekenbleu.OxyScope
 		/// <param name="pluginManager"></param>
 		/// <param name="data">Current game data, including current and previous data frame.</param>
 		double IIRX = 0, IIRY = 0;
-		private int i;
-		internal int work;
+		private int i, work;					// arrays currently being sampled
 		public int which;						// which x and y array to plot
 		public double[] xmin, ymin, xmax, ymax; // View uses for axes scaling
 		bool oops = false;
@@ -89,7 +88,7 @@ namespace blekenbleu.OxyScope
 				xmin[0] = xmin[1] = ymin[0] = ymin[1] = xmax[0] = ymax[0] = xmax[1] = ymax[1] = 0;
            		View.Model.Title =
                     	pluginManager.GetPropertyValue("DataCorePlugin.CurrentGame")?.ToString()
-                	    + ":  " + pluginManager.GetPropertyValue("CarName")?.ToString()
+                	    + ":  " + pluginManager.GetPropertyValue("DataCorePlugin.GameData.CarModel")?.ToString()
                     	+ "@" + pluginManager.GetPropertyValue("DataCorePlugin.GameData.TrackName")?.ToString();  
 			}
 

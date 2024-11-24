@@ -1,6 +1,7 @@
 using OxyPlot;
 using OxyPlot.Series;
 using OxyPlot.Axes;
+using System;
 
 namespace blekenbleu.OxyScope
 {
@@ -56,6 +57,26 @@ namespace blekenbleu.OxyScope
 						 				  B + m * Plugin.xmax[Plugin.which]));
 			line.Title = title;
 			return line;
+		}
+
+		void Init()
+		{
+			// fill the plot with random data
+			Random rnd = new Random();
+			double xp, xi, yp, ymin  = Plugin.ymin[Plugin.which];
+			ymax = Plugin.ymax[Plugin.which];
+			xmax = Plugin.xmax[Plugin.which];
+			yp = ymax - ymin;
+			xp = Plugin.xmin[Plugin.which];
+			xi = (xmax - xp) / ln2;
+			for (int i = 0; i < ln2; i++)	// fill the plot
+			{
+				y[i] = ymin + yp * rnd.NextDouble();
+				x[i] = xp;
+				xp += xi;
+			}
+
+			plot.Model = ScatterPlot(0, null);
 		}
 	}
 }

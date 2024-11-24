@@ -1,5 +1,4 @@
 ﻿using OxyPlot;
-using System;
 using System.Windows;
 using System.Windows.Controls;
 using MathNet.Numerics;
@@ -38,45 +37,30 @@ namespace blekenbleu.OxyScope
 			{
 				Model.FilterX = Plugin.Settings.FilterX;
 				Model.FilterY = Plugin.Settings.FilterY;
-				Model.Refresh = !Plugin.Settings.Refresh;
-				Model.Replot = !Plugin.Settings.Replot;
-				Model.LinFit = !Plugin.Settings.LinFit;
 				Model.Refresh = Plugin.Settings.Refresh;
 				Model.Replot = Plugin.Settings.Replot;
 				Model.LinFit = Plugin.Settings.LinFit;
 				Model.Xprop = plugin.Settings.Xprop;
 				Model.Yprop = plugin.Settings.Yprop;
-			} else Model.Xprop = Model.Yprop = "random";
-
-			LF.Text = "Linear Fit " + (Model.LinFit ? "enabled" : "disabled");
-			// fill the plot with random data
-			Random rnd = new Random();
-			double xp, xi, yp, ymin  = Plugin.ymin[Plugin.which];
-			ymax = Plugin.ymax[Plugin.which];
-			xmax = Plugin.xmax[Plugin.which];
-			yp = ymax - ymin;
-			xp = Plugin.xmin[Plugin.which];
-			xi = (xmax - xp) / ln2;
-			for (int i = 0; i < ln2; i++)	// fill the plot
-			{
-				y[i] = ymin + yp * rnd.NextDouble();
-				x[i] = xp;
-				xp += xi;
+			} else {
+				Model.Xprop = Model.Yprop = "random";
+				Model.FilterY = Model.FilterX = 1;
 			}
 
-			plot.Model = ScatterPlot(0, null);
+			Bupdate();
+			Init();								// random plot
 			Plugin.running = true;				// enable OxyScope updates
 		}
 
-        private void Hyperlink_RequestNavigate(object sender,
-                                       System.Windows.Navigation.RequestNavigateEventArgs e)
-        {
-            System.Diagnostics.Process.Start(e.Uri.AbsoluteUri);
-        }
-
-        internal void Replot()
+		private void Hyperlink_RequestNavigate(object sender,
+									   System.Windows.Navigation.RequestNavigateEventArgs e)
 		{
-			if (Model.Xrange > Plugin.xmax[Plugin.work] - Plugin.xmin[Plugin.work] && !Model.Refresh)
+			System.Diagnostics.Process.Start(e.Uri.AbsoluteUri);
+		}
+
+		internal void Replot()
+		{
+			if (Model.Xrange > Plugin.xmax[Plugin.which] - Plugin.xmin[Plugin.which] && !Model.Refresh)
 				return;
 
 			if (!Model.Replot)
@@ -92,7 +76,11 @@ namespace blekenbleu.OxyScope
 			Model.Xrange = Model.Refresh ? 0 : xmax - Plugin.xmin[Plugin.which];
 
 			PlotModel model = ScatterPlot(Plugin.which, "60 Hz samples");
-			Model.XYprop = Model.Current;
+			Model.XYprop = $"{Plugin.xmin[Plugin.which]:#0.000} <= X <= "
+					     + $"{xmax:#0.000};  "
+					     + $"{Plugin.ymin[Plugin.which]:#0.000} <= Y <= "
+					     + $"{Plugin.ymax[Plugin.which]:#0.000}";
+
 			if (Model.LinFit)
 			{
 				// https://numerics.mathdotnet.com/Regression
@@ -111,18 +99,18 @@ namespace blekenbleu.OxyScope
 				{
 					c = Fit.LinearCombination(xs, ys, x => x);
 					model.Series.Add(BestFit(0, c[0], 0, "Fit thru origin"));
-                    Model.XYprop += $", origin slope = {c[0]:#0.0000}"; 
+					Model.XYprop += $", origin slope = {c[0]:#0.0000}"; 
 				}
 
 			}
-			plot.Model = model;					// OxyPlot
+			plot.Model = model;											// OxyPlot
 			Plugin.ymax[Plugin.which] = Plugin.xmax[Plugin.which]		// free this buffer for reuse
 									  = Plugin.xmin[Plugin.which] = 0;
 			Model.RVis = Visibility.Hidden;								// Replot button
 			Plugin.running = true;										// enable OxyScope updates
 		}
 
-		private void SSclick(object sender, RoutedEventArgs e)	// Replot button
+		private void SSclick(object sender, RoutedEventArgs e)			// Replot button
 		{
 			Model.Replot = true;
 			Replot();
@@ -130,32 +118,41 @@ namespace blekenbleu.OxyScope
 			Model.RVis = Visibility.Hidden;
 		}
 
-		private void THclick(object sender, RoutedEventArgs e)	// Refresh button
+		private void THclick(object sender, RoutedEventArgs e)			// Refresh button
 		{
 			Model.Refresh = !Model.Refresh;
-			if (Model.Refresh)
-			{
-				TH.Text = "3 second refresh";
-				Model.Xrange = 0;
-				Model.RVis = Visibility.Hidden;		// Replot button
-			} else TH.Text = "Hold max  X range";
+			Bupdate();
 		}
 
-		private void ARclick(object sender, RoutedEventArgs e)	// Auto Replot
+		private void ARclick(object sender, RoutedEventArgs e)			// Auto Replot
 		{
 			Model.Replot = !Model.Replot;
-			if (Model.Replot)
-			{
-				TR.Text = "Auto";
-				Model.RVis = Visibility.Hidden;
-			} else TR.Text = "Manual";
-			TR.Text += " Replot";
+			Bupdate();
 		}
 
 		private void LFclick(object sender, RoutedEventArgs e)	// Linear Fit button
 		{
 			Model.LinFit = !Model.LinFit;
+			Bupdate();	
+		}
+
+		void Bupdate()
+		{
 			LF.Text = "Linear Fit " + (Model.LinFit ? "enabled" : "disabled");
+			if (Model.Replot)
+			{
+				TR.Text = "Auto";
+				Model.RVis = Visibility.Hidden;
+			}
+			else TR.Text = "Manual";
+			TR.Text += " Replot";
+			if (Model.Refresh)
+			{
+				TH.Text = "3 second refresh";
+				Model.Xrange = 0;
+				Model.RVis = Visibility.Hidden;	 // Replot button
+			}
+			else TH.Text = "Hold max  X range";
 		}
 	}	// class
 }
