@@ -1,55 +1,64 @@
+using MathNet.Numerics;
 using OxyPlot;
 using OxyPlot.Series;
-using OxyPlot.Axes;
-using System;
 
 namespace blekenbleu.OxyScope
 {
 	public partial class Control
 	{
-		PlotModel ScatterPlot(int which, string title)
+		static double[] c;				// least squares fit coefficient[s]
+		bool plotting = false;			// don't replot when already busy
+
+		void Plot()
 		{
-			PlotModel model = new PlotModel { Title = Model.Title };
+			if (plotting)
+				return;
+			plotting = true;			// disable OxyScope multiple invocations
 
-			model.Axes.Add(new LinearAxis
+			ymax = 1.2 * (Plugin.ymax[which] - Plugin.ymin[which])
+				 + Plugin.ymin[which];	// legend space
+			xmax = Plugin.xmax[which];
+			Model.Xrange = Model.Refresh ? 0 : xmax - Plugin.xmin[which];
+
+			PlotModel model = ScatterPlot(which, "60 Hz samples");
+			Model.XYprop = $"{Plugin.xmin[which]:#0.000} <= X <= "
+					     + $"{xmax:#0.000};  "
+					     + $"{Plugin.ymin[which]:#0.000} <= Y <= "
+					     + $"{Plugin.ymax[which]:#0.000}";
+
+			if (Model.LinFit)
 			{
-				Position = AxisPosition.Left,
-				Title = Model.Yprop,
-				Minimum = Plugin.ymin[which],
-				Maximum = ymax
-			});
+				// https://numerics.mathdotnet.com/Regression
+				double[] xs = SubArray(x, start[which], ln2),
+						 ys = SubArray(y, start[which], ln2);
+				(double, double)p = Fit.Line(xs, ys);
+				Model.B = p.Item1;
+				Model.m = p.Item2;
+				model.Series.Add(LineDraw(Plugin.xmin[which], Model.m, Model.B, "linear fit"));
+				Model.XYprop += $";  intercept = {Model.B:#0.0000}, slope = {Model.m:#0.0000}";
 
-			model.Axes.Add(new LinearAxis
-			{
-				Position = AxisPosition.Bottom,
-				Title = Model.Xprop,
-				Minimum = Plugin.xmin[which],
-				Maximum = xmax
-			});
+                // cubic fit https://posts5865.rssing.com/chan-58562618/latest.php
+                c = Fit.Polynomial(xs, ys, 3, MathNet.Numerics.LinearRegression.DirectRegressionMethod.QR);
 
-			model.Series.Add(Scatter(which, title));
-			model.LegendPosition = LegendPosition.TopLeft;
-			model.LegendFontSize = 12;
-			model.LegendBorder = OxyColors.Black;
-			model.LegendBorderThickness = 1;
-			return model;
+                // https://oxyplot.readthedocs.io/en/latest/models/series/FunctionSeries.html
+                model.Series.Add(new FunctionSeries(cubicfit, Plugin.xmin[which], Plugin.xmax[which], 0.005, "cubic fit"));
+				Model.XYprop += $";  {c[0]:#0.0000} + {c[1]:#0.000000}*x + {c[2]:#0.000000}*x**2 + {c[3]:#0.000000}*x**3";
+
+                if (0 >= Plugin.ymin[which] && 0 <= Plugin.ymax[which])
+				{
+					c = Fit.LinearCombination(xs, ys, x => x);
+					model.Series.Add(LineDraw(0, c[0], 0, "Fit thru origin"));
+					Model.XYprop += $", origin slope = {c[0]:#0.0000}";
+				}
+
+			}
+
+			plot.Model = model;								// OxyPlot
+			Plugin.xmax[which] = Plugin.xmin[which] = 0;	// free which buffer for reuse
+            plotting = false;								// enable OxyScope updates
 		}
 
-		private ScatterSeries Scatter(int which, string title)
-		{
-			int size = 2;	// plot dot size
-			int end = (start[which] <= ln2) ? start[which] + ln2 : length;
-
-			var scatterSeries = new ScatterSeries { MarkerType = MarkerType.Circle };
-			for (int i = start[which]; i < end; i++)
-				scatterSeries.Points.Add(new ScatterPoint(x[i], y[i], size));
-			scatterSeries.MarkerFill = OxyColors.Red;
-			if (null != title)
-				scatterSeries.Title = title;
-			return scatterSeries;
-		}
-
-		LineSeries BestFit(double start, double m, double B, string title)
+		LineSeries LineDraw(double start, double m, double B, string title)
 		{
 			LineSeries line = new LineSeries();
 			line.Points.Add(new DataPoint(start, B + m * start));
@@ -57,26 +66,6 @@ namespace blekenbleu.OxyScope
 						 				  B + m * Plugin.xmax[which]));
 			line.Title = title;
 			return line;
-		}
-
-		void Init()
-		{
-			// fill the plot with random data
-			Random rnd = new Random();
-			double xp, xi, yp, ymin  = Plugin.ymin[which];
-			ymax = Plugin.ymax[which];
-			xmax = Plugin.xmax[which];
-			yp = ymax - ymin;
-			xp = Plugin.xmin[which];
-			xi = (xmax - xp) / ln2;
-			for (int i = 0; i < ln2; i++)	// fill the plot
-			{
-				y[i] = ymin + yp * rnd.NextDouble();
-				x[i] = xp;
-				xp += xi;
-			}
-
-			plot.Model = ScatterPlot(0, null);
 		}
 	}
 }

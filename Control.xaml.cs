@@ -1,9 +1,5 @@
-﻿using OxyPlot;
-using System.Windows;
+﻿using System.Windows;			// Visibility
 using System.Windows.Controls;
-using MathNet.Numerics;
-using OxyPlot.Series;
-using System;
 
 namespace blekenbleu.OxyScope
 {
@@ -20,8 +16,6 @@ namespace blekenbleu.OxyScope
 		public double[] x, y;			// plot samples
 		int which = 0;					// which samples to plot
 		double xmax, ymax;				// somewhat arbitrary axis limits
-		static double[] c;						// least squares fit coefficient[s]
-		bool running = true;			// don't replot when already busy
 
 		public Control()
 		{
@@ -61,76 +55,29 @@ namespace blekenbleu.OxyScope
 			System.Diagnostics.Process.Start(e.Uri.AbsoluteUri);
 		}
 
-		internal void Replot(int choose, bool force)
+		internal void Replot(int choose)
 		{
 			which = choose;
-			if (!running)
-				return;
+
 			if (Model.Xrange > Plugin.xmax[which] - Plugin.xmin[which] && !Model.Refresh)
 				return;
 
-			if (!Model.Plot && !force)
+			if (!Model.Plot)
 			{
 				Model.RVis = Visibility.Visible;
 				return;
 			}
 
-			running = false;		// disable OxyScope updates
-			ymax = 1.2 * (Plugin.ymax[which] - Plugin.ymin[which])
-				 + Plugin.ymin[which];	// legend space
-			xmax = Plugin.xmax[which];
-			Model.Xrange = Model.Refresh ? 0 : xmax - Plugin.xmin[which];
-
-			PlotModel model = ScatterPlot(which, "60 Hz samples");
-			Model.XYprop = $"{Plugin.xmin[which]:#0.000} <= X <= "
-					     + $"{xmax:#0.000};  "
-					     + $"{Plugin.ymin[which]:#0.000} <= Y <= "
-					     + $"{Plugin.ymax[which]:#0.000}";
-
-			if (Model.LinFit)
-			{
-				// https://numerics.mathdotnet.com/Regression
-				double[] xs = SubArray(x, start[which], ln2),
-						 ys = SubArray(y, start[which], ln2);
-				(double, double)p = Fit.Line(xs, ys);
-				Model.B = p.Item1;
-				Model.m = p.Item2;
-				model.Series.Add(BestFit(Plugin.xmin[which], Model.m, Model.B, "linear fit"));
-				Model.XYprop += $";  intercept = {Model.B:#0.0000}, slope = {Model.m:#0.0000}";
-
-                // 	LinearBestFit(out Model.m, out Model.B);
-                //	model.Series.Add(BestFit(Model.m, Model.B, "LinearBestFit"));
-
-                // cubic fit https://posts5865.rssing.com/chan-58562618/latest.php
-                c = Fit.Polynomial(xs, ys, 3, MathNet.Numerics.LinearRegression.DirectRegressionMethod.QR);
-
-                // https://oxyplot.readthedocs.io/en/latest/models/series/FunctionSeries.html
-                model.Series.Add(new FunctionSeries(cubicfit, Plugin.xmin[which], Plugin.xmax[which], 0.005, "cubic fit"));
-				Model.XYprop += $";  {c[0]:#0.0000} + {c[1]:#0.000000}*x + {c[2]:#0.000000}*x**2 + {c[3]:#0.000000}*x**3";
-
-                if (0 >= Plugin.ymin[which] && 0 <= Plugin.ymax[which])
-				{
-					c = Fit.LinearCombination(xs, ys, x => x);
-					model.Series.Add(BestFit(0, c[0], 0, "Fit thru origin"));
-					Model.XYprop += $", origin slope = {c[0]:#0.0000}";
-				}
-
-			}
-			plot.Model = model;											// OxyPlot
-			Plugin.ymax[which] = Plugin.xmax[which]		// free this buffer for reuse
-									  = Plugin.xmin[which] = 0;
-			Model.RVis = Visibility.Hidden;								// Plot button
-			running = true;										// enable OxyScope updates
+			Plot();
 		}
-
-        readonly Func<double, double> cubicfit = (x) => c[0] + c[1] * x + c[2] * x * x + c[3] * x * x * x;
 
         private void PBclick(object sender, RoutedEventArgs e)			// Plot button
 		{
-			Replot(which, true);
-		}
+			Plot();
+            Model.RVis = Visibility.Hidden;                             // Plot button
+        }
 
-		private void RBclick(object sender, RoutedEventArgs e)			// Refresh button
+        private void RBclick(object sender, RoutedEventArgs e)			// Refresh button
 		{
 			Model.Refresh = !Model.Refresh;
 			if (Model.Refresh)

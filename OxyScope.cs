@@ -113,7 +113,7 @@ namespace blekenbleu.OxyScope
 			}
 			if ((++i - View.start[work]) >= View.length >> 1)	// filled?
 			{
-				// Coordination:  View should disable running while loading Plot
+				// Coordination:  View should disable plotting while loading Plot
 				View.Model.Current = $"{xmin[work]:#0.000} <= X <= "
 								   + $"{xmax[work]:#0.000};  "
 								   + $"{ymin[work]:#0.000} <= Y <= "
@@ -123,7 +123,7 @@ namespace blekenbleu.OxyScope
 				bool bigger = (xmax[work] - xmin[work]) > (xmax[n] - xmin[n]);
                 if (View.Model.Refresh || bigger)
 				{
-                    View.Dispatcher.Invoke(() => View.Replot(work, false));
+                    View.Dispatcher.Invoke(() => View.Replot(work));
 					// Replot typically frees buffers
 					if((xmax[work] - xmin[work]) > (xmax[n] - xmin[n]))
 						work = n;			// refill the buffer with smaller range

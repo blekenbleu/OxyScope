@@ -14,19 +14,8 @@ namespace blekenbleu.OxyScope
 
     public partial class Control
     {
-/*		List<XYvalue> samples;
+        readonly Func<double, double> cubicfit = (x) => c[0] + c[1] * x + c[2] * x * x + c[3] * x * x * x;
 
-		void LinearBestFit(out double m, out double b)
-		{
-			double meanX = samples.Average(point => point.X);
-			double meanY = samples.Average(point => point.Y);
-			double sumXX = samples.Sum(point => point.X * point.X);
-			double sumXY = samples.Sum(point => point.X * point.Y);
-
-			m = (sumXY / ln2 - meanX * meanY) / (sumXX / ln2 - meanX * meanX);
-			b = (meanY - m * meanX);
-		}
- */
 		double[] SubArray(double[] din, int offset, int length)
 		{
 			double[] result = new double[length];
