@@ -93,7 +93,7 @@ namespace blekenbleu.OxyScope
             ButtonUpdate();
         }
 
-        private void LFclick(object sender, RoutedEventArgs e)			// Linear Fit button
+        private void LFclick(object sender, RoutedEventArgs e)			// Line Fit button
 		{
 			Model.LinFit = !Model.LinFit;
 			ButtonUpdate();	
@@ -101,7 +101,7 @@ namespace blekenbleu.OxyScope
 
 		void ButtonUpdate()
 		{
-			LF.Text = "Linear Fit " + (Model.LinFit ? "enabled" : "disabled");
+			LF.Text = "Fit Lines " + (Model.LinFit ? "enabled" : "disabled");
 			TH.Text = Model.Refresh ? "3 second refresh" : "Hold max  X range";
         
             if (Model.AutoPlot)

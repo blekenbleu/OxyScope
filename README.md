@@ -54,8 +54,9 @@ XY plot of *positive* property values
 - separately report current *sample* X, Y min, max  
 - also always show current *plot* statistics
 - eliminate Threshold, Below sliders
-- Replot button: **Auto*8 vs **Manual**
+- Replot button: **Auto** vs **Manual**
 - update button: **3 second refresh** vs **Hold max X range**
+- cubic fit added
 
 #### Property folder changes from default WPF project for SimHub plugins
 <details><summary>click for differences</summary>
