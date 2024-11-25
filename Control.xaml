@@ -25,7 +25,7 @@
 			<TextBox Width="455" Height="22" Margin="50,12"
 				Name="Current" Text="{Binding Current}"/>
 			<Button Content="Replot" Width="60" Height="22" Margin="510,12"
-				Click="PBclick" Visibility="{Binding RVis}" Background="Red" />
+				Click="PBclick" Visibility="{Binding PVis}" Background="Red" />
 			<Button Width="65" Height="42" Margin="575,2" Click="APclick">
 				<TextBlock Text="Auto Replot" TextWrapping="Wrap" TextAlignment="Center" Name="TR"/>
 			</Button>

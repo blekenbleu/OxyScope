@@ -43,7 +43,7 @@ namespace blekenbleu.OxyScope
 		/// </summary>
 		/// <param name="pluginManager"></param>
 		/// <param name="data">Current game data, including current and previous data frame.</param>
-		double IIRX = 0, IIRY = 0;
+		double IIRX = 0, IIRY = 0;				// filtered property values
 		private int i, work;					// arrays currently being sampled
 		public double[] xmin, ymin, xmax, ymax; // View uses for axes scaling
 		bool oops = false;
@@ -113,7 +113,6 @@ namespace blekenbleu.OxyScope
 			}
 			if ((++i - View.start[work]) >= View.length >> 1)	// filled?
 			{
-				// Coordination:  View should disable plotting while loading Plot
 				View.Model.Current = $"{xmin[work]:#0.000} <= X <= "
 								   + $"{xmax[work]:#0.000};  "
 								   + $"{ymin[work]:#0.000} <= Y <= "
@@ -145,7 +144,7 @@ namespace blekenbleu.OxyScope
 			Settings.Yprop = View.Model.Yprop;
 			Settings.LinFit = View.Model.LinFit;
 			Settings.Refresh = View.Model.Refresh;
-			Settings.Plot = View.Model.Plot;
+			Settings.Plot = View.Model.AutoPlot;
 			// Save settings
 			this.SaveCommonSettings("GeneralSettings", Settings);
 		}

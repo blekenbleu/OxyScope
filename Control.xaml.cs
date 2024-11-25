@@ -36,7 +36,7 @@ namespace blekenbleu.OxyScope
 				Model.FilterX = Plugin.Settings.FilterX;
 				Model.FilterY = Plugin.Settings.FilterY;
 				Model.Refresh = Plugin.Settings.Refresh;
-				Model.Plot = Plugin.Settings.Plot;
+				Model.AutoPlot = Plugin.Settings.Plot;
 				Model.LinFit = Plugin.Settings.LinFit;
 				Model.Xprop = plugin.Settings.Xprop;
 				Model.Yprop = plugin.Settings.Yprop;
@@ -45,8 +45,8 @@ namespace blekenbleu.OxyScope
 				Model.FilterY = Model.FilterX = 1;
 			}
 
-			Bupdate();
-			Init();								// random plot
+			ButtonUpdate();
+			RandomPlot();
 		}
 
 		private void Hyperlink_RequestNavigate(object sender,
@@ -62,9 +62,9 @@ namespace blekenbleu.OxyScope
 			if (Model.Xrange > Plugin.xmax[which] - Plugin.xmin[which] && !Model.Refresh)
 				return;
 
-			if (!Model.Plot)
+			if (!Model.AutoPlot)
 			{
-				Model.RVis = Visibility.Visible;
+				Model.PVis = Visibility.Visible;
 				return;
 			}
 
@@ -74,7 +74,7 @@ namespace blekenbleu.OxyScope
         private void PBclick(object sender, RoutedEventArgs e)			// Plot button
 		{
 			Plot();
-            Model.RVis = Visibility.Hidden;                             // Plot button
+            Model.PVis = Visibility.Hidden;
         }
 
         private void RBclick(object sender, RoutedEventArgs e)			// Refresh button
@@ -82,34 +82,35 @@ namespace blekenbleu.OxyScope
 			Model.Refresh = !Model.Refresh;
 			if (Model.Refresh)
 				Plugin.xmax[which] = Plugin.xmin[which] = 0;
-			Bupdate();
+			ButtonUpdate();
 		}
 
-		private void APclick(object sender, RoutedEventArgs e)			// Auto Plot
+		private void APclick(object sender, RoutedEventArgs e)          // AutoPlot
 		{
-			Model.Plot = !Model.Plot;
-			if (Model.Plot)
-				Plugin.xmax[which] = Plugin.xmin[which] = 0;
-			Bupdate();
-		}
+            Model.AutoPlot = !Model.AutoPlot;
+            if (Model.AutoPlot)
+                Plugin.xmax[which] = Plugin.xmin[which] = 0;
+            ButtonUpdate();
+        }
 
-		private void LFclick(object sender, RoutedEventArgs e)			// Linear Fit button
+        private void LFclick(object sender, RoutedEventArgs e)			// Linear Fit button
 		{
 			Model.LinFit = !Model.LinFit;
-			Bupdate();	
+			ButtonUpdate();	
 		}
 
-		void Bupdate()
+		void ButtonUpdate()
 		{
 			LF.Text = "Linear Fit " + (Model.LinFit ? "enabled" : "disabled");
 			TH.Text = Model.Refresh ? "3 second refresh" : "Hold max  X range";
-			if (Model.Plot)
+        
+            if (Model.AutoPlot)
 			{
 				TR.Text = "Auto";
-				Model.RVis = Visibility.Hidden;
+				Model.PVis = Visibility.Hidden;
 			}
 			else TR.Text = "Manual";
-			TR.Text += " Plot";
-		}
+            TR.Text += " Replot";
+        }
 	}	// class
 }

@@ -49,7 +49,7 @@ namespace blekenbleu.OxyScope
 			return scatterSeries;
 		}
 
-		void Init()
+		void RandomPlot()
 		{
 			// fill the plot with random data
 			Random rnd = new Random();

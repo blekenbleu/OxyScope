@@ -10,12 +10,12 @@ namespace blekenbleu.OxyScope
 		public event PropertyChangedEventHandler PropertyChanged;
 		public void OnPropertyChanged(PropertyChangedEventArgs myevent) => PropertyChanged?.Invoke(this, myevent);
 
+		readonly PropertyChangedEventArgs APevent = new PropertyChangedEventArgs(nameof(AutoPlot));
 		readonly PropertyChangedEventArgs Cevent = new PropertyChangedEventArgs(nameof(Current));
 		readonly PropertyChangedEventArgs FXevent = new PropertyChangedEventArgs(nameof(FilterX));
 		readonly PropertyChangedEventArgs FYevent = new PropertyChangedEventArgs(nameof(FilterY));
 		readonly PropertyChangedEventArgs Levent = new PropertyChangedEventArgs(nameof(LinFit));
-		readonly PropertyChangedEventArgs Revent = new PropertyChangedEventArgs(nameof(Plot));
-		readonly PropertyChangedEventArgs RVevent = new PropertyChangedEventArgs(nameof(RVis));
+		readonly PropertyChangedEventArgs PVevent = new PropertyChangedEventArgs(nameof(PVis));
 		readonly PropertyChangedEventArgs TBevent = new PropertyChangedEventArgs(nameof(Refresh));
 		readonly PropertyChangedEventArgs TIevent = new PropertyChangedEventArgs(nameof(Title));
 		readonly PropertyChangedEventArgs Xevent = new PropertyChangedEventArgs(nameof(Xprop));
@@ -38,14 +38,14 @@ namespace blekenbleu.OxyScope
 		}
 
 		private Visibility _unseen = Visibility.Hidden;
-		public Visibility RVis
+		public Visibility PVis
 		{ 	get => _unseen;
 			set
 			{
 				if (_unseen != value)
 				{
 					_unseen = value;
-					PropertyChanged?.Invoke(this, RVevent);
+					PropertyChanged?.Invoke(this, PVevent);
 				}
 			} 
 		}
@@ -170,15 +170,15 @@ namespace blekenbleu.OxyScope
 			}
 		}
 
-		private bool _replot = true;
-		public bool Plot
-		{	get => _replot;
+		private bool _aplot = true;
+		public bool AutoPlot
+		{	get => _aplot;
 			set
 			{
-				if (_replot != value)
+				if (_aplot != value)
 				{
-					_replot = value;
-					PropertyChanged?.Invoke(this, Revent);
+					_aplot = value;
+					PropertyChanged?.Invoke(this, APevent);
 				}
 			}
 		}
