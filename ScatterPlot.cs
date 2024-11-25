@@ -53,15 +53,14 @@ namespace blekenbleu.OxyScope
 		{
 			// fill the plot with random data
 			Random rnd = new Random();
-			double xp, xi, yp, ymin  = Plugin.ymin[which];
-			ymax = Plugin.ymax[which];
-			xmax = Plugin.xmax[which];
-			yp = ymax - ymin;
-			xp = Plugin.xmin[which];
-			xi = (xmax - xp) / ln2;
+			double xp, xi, ymin  = Plugin.ymin[Model.which];
+			ymax = 100 + Plugin.ymin[Model.which];
+			xp = Plugin.xmin[Model.which];
+			xmax = 100 + xp;
+			xi = 100.0 / ln2;
 			for (int i = 0; i < ln2; i++)	// fill the plot
 			{
-				y[i] = ymin + yp * rnd.NextDouble();
+				y[i] = ymin + 100 * rnd.NextDouble();
 				x[i] = xp;
 				xp += xi;
 			}

@@ -34,11 +34,10 @@ XY plot of *positive* property values
 - update plot data from Plugin.cs  
 	![](Doc/proto.png)  
 - ping pong buffers for capturing high dynamic range sample sets  
-- min/max X sample range sliders
-- "autoexposure" `Refresh` button visible only for value captures based on sliders
+- "autoexposure" `Refresh` button visible only for value captures
 - capture property names and validate values of selected properties  
 
-### Many plot properties can change for any plot
+### Many plot properties can change between plots
 - `new ScatterSeries` each time...
 
 #### 10 Nov:&nbsp; better prompts and feedback
@@ -46,7 +45,6 @@ XY plot of *positive* property values
 - both X and Y autorange based on max property sample values
 - **Replot** when min sample values < `X Below`, `Y Below` % of corresponding max values
 #### 21 Nov:
-- added a threshold slider for minimum useful X values.
 - `View.Dispatcher.Invoke()` to auto `View.Replot()` *from* `DataUpdate()` *thread*
 - least squares linear estimators
 - added X, Y property IIR filter sliders

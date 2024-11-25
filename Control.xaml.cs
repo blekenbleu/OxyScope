@@ -14,7 +14,6 @@ namespace blekenbleu.OxyScope
 		public int length, ln2;
 		public int[] start;				// circular buffer
 		public double[] x, y;			// plot samples
-		int which = 0;					// which samples to plot
 		double xmax, ymax;				// somewhat arbitrary axis limits
 
 		public Control()
@@ -30,7 +29,7 @@ namespace blekenbleu.OxyScope
 
 		public Control(OxyScope plugin) : this()
 		{
-			Plugin = plugin;
+			Model.Plugin = Plugin = plugin;
 			if (null != Plugin.Settings)
 			{
 				Model.FilterX = Plugin.Settings.FilterX;
@@ -57,11 +56,12 @@ namespace blekenbleu.OxyScope
 
 		internal void Replot(int choose)
 		{
-			which = choose;
+			Model.which = choose;
 
-			if (Model.Xrange > Plugin.xmax[which] - Plugin.xmin[which] && !Model.Refresh)
+			if (Model.Xrange > (Plugin.xmax[Model.which] - Plugin.xmin[Model.which]) && 1 > Model.Refresh)
 				return;
 
+			Model.Xrange = 0 < Model.Refresh ? 0 : Plugin.xmax[Model.which] - Plugin.xmin[Model.which];
 			if (!Model.AutoPlot)
 			{
 				Model.PVis = Visibility.Visible;
@@ -73,15 +73,13 @@ namespace blekenbleu.OxyScope
 
         private void PBclick(object sender, RoutedEventArgs e)			// Plot button
 		{
-			Plot();
             Model.PVis = Visibility.Hidden;
+			Plot();
         }
 
         private void RBclick(object sender, RoutedEventArgs e)			// Refresh button
 		{
-			Model.Refresh = !Model.Refresh;
-			if (Model.Refresh)
-				Plugin.xmax[which] = Plugin.xmin[which] = 0;
+			Model.Refresh = (++Model.Refresh) % 3;
 			ButtonUpdate();
 		}
 
@@ -89,7 +87,7 @@ namespace blekenbleu.OxyScope
 		{
             Model.AutoPlot = !Model.AutoPlot;
             if (Model.AutoPlot)
-                Plugin.xmax[which] = Plugin.xmin[which] = 0;
+                Plugin.xmax[Model.which] = Plugin.xmin[Model.which] = 0;
             ButtonUpdate();
         }
 
@@ -101,16 +99,15 @@ namespace blekenbleu.OxyScope
 
 		void ButtonUpdate()
 		{
+			string[] refresh = new string[]
+			{ 	"Hold max  X range",
+				"3 second refresh",
+				"Hold max R-squared"
+			};
+
+			TH.Text = refresh[Model.Refresh];
 			LF.Text = "Fit Lines " + (Model.LinFit ? "enabled" : "disabled");
-			TH.Text = Model.Refresh ? "3 second refresh" : "Hold max  X range";
-        
-            if (Model.AutoPlot)
-			{
-				TR.Text = "Auto";
-				Model.PVis = Visibility.Hidden;
-			}
-			else TR.Text = "Manual";
-            TR.Text += " Replot";
+            TR.Text = (Model.AutoPlot ? "Auto" : "Manual") + " Replot";
         }
 	}	// class
 }

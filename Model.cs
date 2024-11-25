@@ -23,15 +23,17 @@ namespace blekenbleu.OxyScope
 		readonly PropertyChangedEventArgs XYevent = new PropertyChangedEventArgs(nameof(XYprop));
 		readonly PropertyChangedEventArgs Yevent = new PropertyChangedEventArgs(nameof(Yprop));
 
-		public double m, B;		// for linear least-squares fit
-		private string _title = "launch a game or Replay to collect XY property samples";
+		internal OxyScope Plugin;
+		public double m, B, R2;     // for linear least-squares fit
+		internal int which = 0;     // which samples to plot
+        private string _title = "launch a game or Replay to collect XY property samples";
 		public string Title { get => _title;
 			set
 			{
 				if (_title != value)
 				{
 					_title = value;
-					Xrange = 0;
+					R2 = Xrange = 0;
 					PropertyChanged?.Invoke(this, TIevent);
 				}
 			}
@@ -72,7 +74,7 @@ namespace blekenbleu.OxyScope
 				if (_xprop != value)
 				{
 					_xprop = value;
-					Xrange = 0;	
+					R2 = Plugin.xmax[which] = Plugin.xmin[which] = Xrange = 0;	
 					PropertyChanged?.Invoke(this, Xevent);
 				}
 			}
@@ -86,7 +88,7 @@ namespace blekenbleu.OxyScope
 				if (_yprop != value)
 				{
 					_yprop = value;
-					Xrange = 0;
+					R2 = Plugin.xmax[which] = Plugin.xmin[which] = Xrange = 0;	
 					PropertyChanged?.Invoke(this, Yevent);
 				}
 			}
@@ -105,15 +107,16 @@ namespace blekenbleu.OxyScope
 			}
 		}
 
-		private bool _tbool = true;
-		public bool Refresh
-		{	get => _tbool;
+		private uint _ref = 0;
+		public uint Refresh
+		{	get => _ref;
 			set
 			{
-				if (_tbool != value)
+				if (_ref != value)
 				{
-					_tbool = value;
+					_ref = value;
 					PropertyChanged?.Invoke(this, TBevent);
+					R2 = Plugin.xmax[which] = Plugin.xmax[which] = Xrange = 0;
 				}
 			}
 		}
@@ -179,6 +182,8 @@ namespace blekenbleu.OxyScope
 				{
 					_aplot = value;
 					PropertyChanged?.Invoke(this, APevent);
+					if (_aplot)
+						PVis = Visibility.Hidden;
 				}
 			}
 		}

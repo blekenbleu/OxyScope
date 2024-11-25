@@ -52,10 +52,9 @@ namespace blekenbleu.OxyScope
 			if (!data.GameRunning || null == data.OldData || null == data.NewData)
 				return;
 
-			float xf, yf;
-			var xp = pluginManager.GetPropertyValue(View.Model.Xprop);
+            var xp = pluginManager.GetPropertyValue(View.Model.Xprop);
 
-			if (null == xp || !float.TryParse(xp.ToString(), out xf))
+            if (null == xp || !float.TryParse(xp.ToString(), out float xf))
 			{
 				View.Model.XYprop = "invalid X property:  " + View.Model.Xprop;
 				oops = true;
@@ -63,7 +62,7 @@ namespace blekenbleu.OxyScope
 			}
 
 			var yp = pluginManager.GetPropertyValue(View.Model.Yprop);
-			if (null == yp || !float.TryParse(yp.ToString(), out yf))
+			if (null == yp || !float.TryParse(yp.ToString(), out float yf))
 			{
 				View.Model.XYprop = "invalid Y property:  " + View.Model.Yprop;
 				oops = true;
@@ -119,8 +118,7 @@ namespace blekenbleu.OxyScope
 								   + $"{ymax[work]:#0.000}";
 
 				int n = 1 - work;
-				bool bigger = (xmax[work] - xmin[work]) > (xmax[n] - xmin[n]);
-                if (View.Model.Refresh || bigger)
+                if (0 < View.Model.Refresh || (xmax[work] - xmin[work]) > (xmax[n] - xmin[n]))
 				{
                     View.Dispatcher.Invoke(() => View.Replot(work));
 					// Replot typically frees buffers
@@ -181,7 +179,7 @@ namespace blekenbleu.OxyScope
 				Settings = new Settings() {
 					Xprop = where+x,
                     Yprop = where+y,
-					FilterX = 1, FilterY = 1, Refresh = true, LinFit = true
+					FilterX = 1, FilterY = 1, Refresh = 1, LinFit = true
                 };
 			else {
 				if (0 == Settings.Xprop.Length)
