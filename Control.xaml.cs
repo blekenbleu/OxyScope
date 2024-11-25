@@ -2,6 +2,8 @@
 using System.Windows;
 using System.Windows.Controls;
 using MathNet.Numerics;
+using OxyPlot.Series;
+using System;
 
 namespace blekenbleu.OxyScope
 {
@@ -18,7 +20,7 @@ namespace blekenbleu.OxyScope
 		public double[] x, y;			// plot samples
 		int which = 0;					// which samples to plot
 		double xmax, ymax;				// somewhat arbitrary axis limits
-		double[] c;						// least squares fit coefficient[s]
+		static double[] c;						// least squares fit coefficient[s]
 		bool running = true;			// don't replot when already busy
 
 		public Control()
@@ -93,17 +95,24 @@ namespace blekenbleu.OxyScope
 				(double, double)p = Fit.Line(xs, ys);
 				Model.B = p.Item1;
 				Model.m = p.Item2;
-				model.Series.Add(BestFit(Plugin.xmin[which], Model.m, Model.B, "Fit.Line"));
+				model.Series.Add(BestFit(Plugin.xmin[which], Model.m, Model.B, "linear fit"));
 				Model.XYprop += $";  intercept = {Model.B:#0.0000}, slope = {Model.m:#0.0000}";
 
-				// 	LinearBestFit(out Model.m, out Model.B);
-				//	model.Series.Add(BestFit(Model.m, Model.B, "LinearBestFit"));
+                // 	LinearBestFit(out Model.m, out Model.B);
+                //	model.Series.Add(BestFit(Model.m, Model.B, "LinearBestFit"));
 
-				if (0 >= Plugin.ymin[which] && 0 <= Plugin.ymax[which])
+                // cubic fit https://posts5865.rssing.com/chan-58562618/latest.php
+                c = Fit.Polynomial(xs, ys, 3, MathNet.Numerics.LinearRegression.DirectRegressionMethod.QR);
+
+                // https://oxyplot.readthedocs.io/en/latest/models/series/FunctionSeries.html
+                model.Series.Add(new FunctionSeries(cubicfit, Plugin.xmin[which], Plugin.xmax[which], 0.005, "cubic fit"));
+				Model.XYprop += $";  {c[0]:#0.0000} + {c[1]:#0.000000}*x + {c[2]:#0.000000}*x**2 + {c[3]:#0.000000}*x**3";
+
+                if (0 >= Plugin.ymin[which] && 0 <= Plugin.ymax[which])
 				{
 					c = Fit.LinearCombination(xs, ys, x => x);
 					model.Series.Add(BestFit(0, c[0], 0, "Fit thru origin"));
-					Model.XYprop += $", origin slope = {c[0]:#0.0000}"; 
+					Model.XYprop += $", origin slope = {c[0]:#0.0000}";
 				}
 
 			}
@@ -114,7 +123,9 @@ namespace blekenbleu.OxyScope
 			running = true;										// enable OxyScope updates
 		}
 
-		private void PBclick(object sender, RoutedEventArgs e)			// Plot button
+        readonly Func<double, double> cubicfit = (x) => c[0] + c[1] * x + c[2] * x * x + c[3] * x * x * x;
+
+        private void PBclick(object sender, RoutedEventArgs e)			// Plot button
 		{
 			Replot(which, true);
 		}
