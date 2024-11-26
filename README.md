@@ -55,8 +55,11 @@ XY plot of *positive* property values
 - Replot button: **Auto** vs **Manual**
 - update button: **3 second refresh** vs **Hold max X range**
 - cubic fit added
+#### 26 Nov:&nbsp; force monotonic cubic slope at Xmin or Xmax
+- update button: **3 second refresh** vs **Hold max X range** vs **Hold max R-squared**
 
-#### Property folder changes from default WPF project for SimHub plugins
+<hr>
+<b><i>Property folder changes from default WPF project for SimHub plugins</i></b>
 <details><summary>click for differences</summary>
 <ul>
 <li>delete <code>Settings.Designer.cs<code> and <code>Settings.settings</code>

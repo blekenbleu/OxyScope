@@ -116,7 +116,7 @@ namespace blekenbleu.OxyScope
 				{
 					_ref = value;
 					PropertyChanged?.Invoke(this, TBevent);
-					R2 = Plugin.xmax[which] = Plugin.xmax[which] = Xrange = 0;
+					R2 = Plugin.xmin[which] = Plugin.xmax[which] = Xrange = 0;
 				}
 			}
 		}
