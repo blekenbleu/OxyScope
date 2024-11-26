@@ -13,7 +13,7 @@
 		<Grid.RowDefinitions>
 			<RowDefinition Height="50"/>
 			<RowDefinition Height="560"/>
-			<RowDefinition Height="55"/>
+			<RowDefinition Height="80"/>
 			<RowDefinition Height="50"/>
 		</Grid.RowDefinitions>
 		<Canvas Grid.Row="0" Grid.Column="0" VerticalAlignment="Top">
@@ -43,12 +43,12 @@
 			<oxy:PlotView Name="plot"/>
 		</GroupBox>
 		<Canvas Grid.Row="2" Grid.Column="0" VerticalAlignment="Top">
-			<TextBox Canvas.Left="0" TextWrapping="Wrap" Height="25" Width="800"
+			<TextBox Canvas.Left="0" TextWrapping="Wrap" Height="50" Width="800"
 					 Name="XYprop" Text="{Binding XYprop}"/>
-			<TextBox Margin="0,28"   TextWrapping="Wrap" Height="25" Width="390"
+			<TextBox Margin="0,53"   TextWrapping="Wrap" Height="25" Width="390"
 					 Name="Yprop" Text="{Binding Yprop, Mode=TwoWay}"/>
-			<TextBox Margin="390,28" Text="vs" Width="20" Height="25"/>
-			<TextBox Margin="410,28" TextWrapping="Wrap" Height="25" Width="390"
+			<TextBox Margin="390,53" Text="vs" Width="20" Height="25"/>
+			<TextBox Margin="410,53" TextWrapping="Wrap" Height="25" Width="390"
 					 Name="Xprop" Text="{Binding Xprop, Mode=TwoWay}"/>
 		</Canvas>
 		<Canvas Grid.Row="3" Grid.Column="0" VerticalAlignment="Top">

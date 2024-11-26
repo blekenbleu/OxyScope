@@ -8,6 +8,7 @@ namespace blekenbleu.OxyScope
 	public partial class Control
 	{
 		static double[] c;				// least squares fit coefficient[s]
+		string lfs;
 
 		internal void Plot()
 		{
@@ -17,7 +18,7 @@ namespace blekenbleu.OxyScope
 
 			PlotModel model = ScatterPlot(Model.which, "60 Hz samples");
 
-			string lfs = "";
+			lfs = "";
 			if (Model.LinFit)
 			{
 				// https://numerics.mathdotnet.com/Regression
@@ -37,6 +38,8 @@ namespace blekenbleu.OxyScope
 
                 // cubic fit https://posts5865.rssing.com/chan-58562618/latest.php
                 c = Fit.Polynomial(xs, ys, 3, MathNet.Numerics.LinearRegression.DirectRegressionMethod.QR);
+				// cubic slopes at xmin and xmax should not have signs opposite Model.m
+				c = TweakCubic(c);
 
                 // https://oxyplot.readthedocs.io/en/latest/models/series/FunctionSeries.html
                 model.Series.Add(new FunctionSeries(cubicfit, Plugin.xmin[Model.which], Plugin.xmax[Model.which],
@@ -46,8 +49,8 @@ namespace blekenbleu.OxyScope
                 if (0 >= Plugin.ymin[Model.which] && 0 <= Plugin.ymax[Model.which])
 				{
 					c = Fit.LinearCombination(xs, ys, x => x);
-					model.Series.Add(LineDraw(0, c[0], 0, "Fit thru origin"));
-					lfs += $", origin slope = {c[0]:#0.0000}";
+					model.Series.Add(LineDraw(Plugin.xmin[Model.which], c[0], 0, "Fit thru origin"));
+					lfs += $";       origin slope = {c[0]:#0.0000}";
 				}
 
 			}
