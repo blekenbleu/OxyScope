@@ -182,8 +182,11 @@ namespace blekenbleu.OxyScope
 				{
 					_aplot = value;
 					PropertyChanged?.Invoke(this, APevent);
-					if (_aplot)
+					if (_aplot && Visibility.Visible == _unseen)
+					{
 						PVis = Visibility.Hidden;
+						Plugin.View.Plot();
+					}
 				}
 			}
 		}

@@ -86,8 +86,6 @@ namespace blekenbleu.OxyScope
 		private void APclick(object sender, RoutedEventArgs e)          // AutoPlot
 		{
             Model.AutoPlot = !Model.AutoPlot;
-            if (Model.AutoPlot)
-                Plugin.xmax[Model.which] = Plugin.xmin[Model.which] = 0;
             ButtonUpdate();
         }
 

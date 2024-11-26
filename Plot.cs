@@ -9,7 +9,7 @@ namespace blekenbleu.OxyScope
 	{
 		static double[] c;				// least squares fit coefficient[s]
 
-		void Plot()
+		internal void Plot()
 		{
 			ymax = 1.3 * (Plugin.ymax[Model.which] - Plugin.ymin[Model.which])
 				 + Plugin.ymin[Model.which];	// legend space

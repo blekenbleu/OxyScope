@@ -152,7 +152,7 @@ namespace blekenbleu.OxyScope
 		/// </summary>
 		/// <param name="pluginManager"></param>
 		/// <returns></returns>
-		private Control View;
+		internal Control View;
 		public System.Windows.Controls.Control GetWPFSettingsControl(PluginManager pluginManager)
 		{
 			return View = new Control(this);
