@@ -43,8 +43,10 @@
 			<oxy:PlotView Name="plot"/>
 		</GroupBox>
 		<Canvas Grid.Row="2" Grid.Column="0" VerticalAlignment="Top">
-			<TextBox Canvas.Left="0" TextWrapping="Wrap" Height="50" Width="800"
+			<TextBox Canvas.Left="0" Height="25" Width="800"
 					 Name="XYprop" Text="{Binding XYprop}"/>
+			<TextBox Margin="0,25" Canvas.Left="0" Height="25" Width="800"
+					 Name="XYprop2" Text="{Binding XYprop2}"/>
 			<TextBox Margin="0,53"   TextWrapping="Wrap" Height="25" Width="390"
 					 Name="Yprop" Text="{Binding Yprop, Mode=TwoWay}"/>
 			<TextBox Margin="390,53" Text="vs" Width="20" Height="25"/>
