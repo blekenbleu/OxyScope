@@ -115,10 +115,10 @@ namespace blekenbleu.OxyScope
 				View.Model.Current = $"{xmin[work]:#0.000} <= X <= "
 								   + $"{xmax[work]:#0.000};  "
 								   + $"{ymin[work]:#0.000} <= Y <= "
-								   + $"{ymax[work]:#0.000}";
+								   + $"{ymax[work]:#0.000}; work = {work}; which = {View.Model.which};  Xrange = {View.Model.Xrange:0.00}";
 
 				int n = 1 - work;
-                if (0 < View.Model.Refresh || (xmax[work] - xmin[work]) > (xmax[n] - xmin[n]))
+                if (0 < View.Model.Refresh || (xmax[work] - xmin[work]) > View.Model.Xrange)
 				{
                     View.Dispatcher.Invoke(() => View.Replot(work));
 					// Replot typically frees buffers
@@ -127,7 +127,8 @@ namespace blekenbleu.OxyScope
 				}
 				i = View.start[work];
 			}
-		}
+
+        }
 
 		/// <summary>
 		/// Called at plugin manager stop, close/dispose anything needed here !

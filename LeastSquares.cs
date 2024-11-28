@@ -14,7 +14,9 @@ namespace blekenbleu.OxyScope
 
 	public partial class Control
 	{
-		readonly Func<double, double> cubicfit = (x) => c[0] + c[1] * x + c[2] * x * x + c[3] * x * x * x;
+		readonly Func<double, double> cubicfit = (x) => c[0] + x * (c[1] + x * (c[2] +  x * c[3]));
+
+		readonly Func<double, double> ccubicfit = (x) => Ft.Item1 + Rx(x) * (Ft.Item2 + Rx(x) * (Ft.Item3 +  Rx(x) * Ft.Item4));
 
 		double[] SubArray(double[] din, int offset, int length)
 		{
@@ -72,6 +74,17 @@ namespace blekenbleu.OxyScope
 			}
 			lfs += rs + sx[1 - i];
 			return ZeroSlope(mm[1 - i], cubic);
+		}
+
+        readonly Func<double, double, double, double, double, double> CurveFunc
+								= (p0, p1, p2, p3, x) => ConstrainedCubic(p0, p1, p2, p3, x);
+		static double Rx(double x) => x1 * (x - xmin);
+		static double ConstrainedCubic(double p0, double p1, double p2, double p3, double x)
+		{
+			Count++; 
+			x = Rx(x);
+			double y = p0 + x * (p1 + x * (p2 + x * p3));
+			return y;	// not yet constrained
 		}
 	}
 }

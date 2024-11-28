@@ -14,7 +14,7 @@ namespace blekenbleu.OxyScope
 		public int length, ln2;
 		public int[] start;				// circular buffer
 		public double[] x, y;			// plot samples
-		double xmax, ymax;				// somewhat arbitrary axis limits
+		static double xmax, ymax, xmin;		// somewhat arbitrary axis limits
 
 		public Control()
 		{
@@ -57,18 +57,10 @@ namespace blekenbleu.OxyScope
 		internal void Replot(int choose)
 		{
 			Model.which = choose;
-
-			if (Model.Xrange > (Plugin.xmax[Model.which] - Plugin.xmin[Model.which]) && 1 > Model.Refresh)
-				return;
-
 			Model.Xrange = 0 < Model.Refresh ? 0 : Plugin.xmax[Model.which] - Plugin.xmin[Model.which];
-			if (!Model.AutoPlot)
-			{
-				Model.PVis = Visibility.Visible;
-				return;
-			}
-
-			Plot();
+			if (Model.AutoPlot)
+				Plot();
+			else Model.PVis = Visibility.Visible;
 		}
 
         private void PBclick(object sender, RoutedEventArgs e)			// Plot button
@@ -95,14 +87,13 @@ namespace blekenbleu.OxyScope
 			ButtonUpdate();	
 		}
 
+		string[] refresh = new string[]
+		{ 	"Hold max  X range",
+			"3 second refresh",
+			"Hold max R-squared"
+		};
 		void ButtonUpdate()
 		{
-			string[] refresh = new string[]
-			{ 	"Hold max  X range",
-				"3 second refresh",
-				"Hold max R-squared"
-			};
-
 			TH.Text = refresh[Model.Refresh];
 			LF.Text = "Fit Lines " + (Model.LinFit ? "enabled" : "disabled");
             TR.Text = (Model.AutoPlot ? "Auto" : "Manual") + " Replot";

@@ -23,7 +23,7 @@ namespace blekenbleu.OxyScope
 			{
 				Position = AxisPosition.Bottom,
 				Title = Model.Xprop,
-				Minimum = Plugin.xmin[which],
+				Minimum = xmin,
 				Maximum = xmax
 			});
 
