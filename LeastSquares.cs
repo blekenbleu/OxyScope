@@ -18,7 +18,7 @@ namespace blekenbleu.OxyScope
 
 		readonly Func<double, double> ccubicfit = (x) => Ft.Item1 + Rx(x) * (Ft.Item2 + Rx(x) * (Ft.Item3 +  Rx(x) * Ft.Item4));
 
-		double[] SubArray(double[] din, int offset, int length)
+		double[] SubArray(double[] din, ushort offset, ushort length)
 		{
 			double[] result = new double[length];
 			Array.Copy(din, offset, result, 0, length);
@@ -76,7 +76,7 @@ namespace blekenbleu.OxyScope
 			return ZeroSlope(mm[1 - i], cubic);
 		}
 
-        readonly Func<double, double, double, double, double, double> CurveFunc
+		readonly Func<double, double, double, double, double, double> CurveFunc
 								= (p0, p1, p2, p3, x) => ConstrainedCubic(p0, p1, p2, p3, x);
 		static double Rx(double x) => x1 * (x - xmin);
 		static double ConstrainedCubic(double p0, double p1, double p2, double p3, double x)

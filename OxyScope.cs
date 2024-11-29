@@ -14,7 +14,7 @@ namespace blekenbleu.OxyScope
 		public Settings Settings;
 		string CarId = "";
 		public static string PluginVersion = FileVersionInfo.GetVersionInfo(
-            Assembly.GetExecutingAssembly().Location).FileVersion.ToString();
+			Assembly.GetExecutingAssembly().Location).FileVersion.ToString();
 
 		/// <summary>
 		/// Instance of the current plugin manager
@@ -44,7 +44,7 @@ namespace blekenbleu.OxyScope
 		/// <param name="pluginManager"></param>
 		/// <param name="data">Current game data, including current and previous data frame.</param>
 		double IIRX = 0, IIRY = 0;				// filtered property values
-		private int i, work;					// arrays currently being sampled
+		private ushort i, work;					// arrays currently being sampled
 		public double[] xmin, ymin, xmax, ymax; // View uses for axes scaling
 		bool oops = false;
 		public void DataUpdate(PluginManager pluginManager, ref GameData data)
@@ -52,9 +52,9 @@ namespace blekenbleu.OxyScope
 			if (!data.GameRunning || null == data.OldData || null == data.NewData)
 				return;
 
-            var xp = pluginManager.GetPropertyValue(View.Model.Xprop);
+			var xp = pluginManager.GetPropertyValue(View.Model.Xprop);
 
-            if (null == xp || !float.TryParse(xp.ToString(), out float xf))
+			if (null == xp || !float.TryParse(xp.ToString(), out float xf))
 			{
 				View.Model.XYprop = "invalid X property:  " + View.Model.Xprop;
 				oops = true;
@@ -73,7 +73,7 @@ namespace blekenbleu.OxyScope
 			{
 				oops = false;
 				View.Model.XYprop = "continuing...";
-            }
+			}
 
 			if (0 == data.NewData.CarId.Length)
 				return;
@@ -83,15 +83,15 @@ namespace blekenbleu.OxyScope
 				CarId = data.NewData.CarId;
 				IIRX = IIRY = 0;
 				xmin[0] = xmin[1] = ymin[0] = ymin[1] = xmax[0] = ymax[0] = xmax[1] = ymax[1] = 0;
-           		View.Model.Title =
-                    	pluginManager.GetPropertyValue("DataCorePlugin.CurrentGame")?.ToString()
-                	    + ":  " + pluginManager.GetPropertyValue("DataCorePlugin.GameData.CarModel")?.ToString()
-                    	+ "@" + pluginManager.GetPropertyValue("DataCorePlugin.GameData.TrackName")?.ToString();  
+		   		View.Model.Title =
+						pluginManager.GetPropertyValue("DataCorePlugin.CurrentGame")?.ToString()
+						+ ":  " + pluginManager.GetPropertyValue("DataCorePlugin.GameData.CarModel")?.ToString()
+						+ "@" + pluginManager.GetPropertyValue("DataCorePlugin.GameData.TrackName")?.ToString();  
 			}
 
 			IIRX += (xf - IIRX) / View.Model.FilterX;
 			IIRY += (yf - IIRY) / View.Model.FilterY;
-			View.x[i] = IIRX;
+			View.x[i] = IIRX;									// why can DataUpdate() set View values??
 			View.y[i] = IIRY;
 			if (View.start[work] == i)
 			{
@@ -117,14 +117,14 @@ namespace blekenbleu.OxyScope
 								   + $"{ymin[work]:#0.000} <= Y <= "
 								   + $"{ymax[work]:#0.000}; work = {work}; which = {View.Model.which};  Xrange = {View.Model.Xrange:0.00}";
 
-                if (0 < View.Model.Refresh || (xmax[work] - xmin[work]) > View.Model.Xrange)
+				if (0 < View.Model.Refresh || (xmax[work] - xmin[work]) > View.Model.Xrange)
 				{
-                    View.Dispatcher.Invoke(() => View.Replot(work));
-					work = 1 - work;			// switch buffers
+					View.Dispatcher.Invoke(() => View.Replot(work));
+					work = (ushort)(1 - work);					// switch buffers
 				}
 				i = View.start[work];
 			}
-        }										// DataUpdate()
+		}														// DataUpdate()
 
 		/// <summary>
 		/// Called at plugin manager stop, close/dispose anything needed here !
@@ -166,7 +166,7 @@ namespace blekenbleu.OxyScope
 			string where = "DataCorePlugin.GameData.",					// defaults
 					x = "AccelerationHeave", y = "GlobalAccelerationG";
 
-            ymin = new double[] {0, 0}; ymax = new double[] {0, 0};
+			ymin = new double[] {0, 0}; ymax = new double[] {0, 0};
 			xmin = new double[] {0, 0}; xmax = new double[] {0, 0};
 			SimHub.Logging.Current.Info("Starting " + LeftMenuTitle);
 
@@ -175,9 +175,9 @@ namespace blekenbleu.OxyScope
 			if (null == Settings)
 				Settings = new Settings() {
 					Xprop = where+x,
-                    Yprop = where+y,
+					Yprop = where+y,
 					FilterX = 1, FilterY = 1, Refresh = 1, LinFit = true
-                };
+				};
 			else {
 				if (0 == Settings.Xprop.Length)
 						Settings.Xprop = where+x;
@@ -185,9 +185,9 @@ namespace blekenbleu.OxyScope
 						Settings.Yprop = where+y;
 				if (1 > Settings.FilterX)
 					Settings.FilterX = 1;
-                if (1 > Settings.FilterY)
-                    Settings.FilterY = 1;
-            }
+				if (1 > Settings.FilterY)
+					Settings.FilterY = 1;
+			}
 
 			this.AttachDelegate("Xprop", () => View.Model.Xprop);
 			this.AttachDelegate("Xrange", () => View.Model.Xrange);

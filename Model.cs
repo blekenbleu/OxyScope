@@ -25,9 +25,9 @@ namespace blekenbleu.OxyScope
 		readonly PropertyChangedEventArgs Yevent = new PropertyChangedEventArgs(nameof(Yprop));
 
 		internal OxyScope Plugin;
-		public double m, B, R2;     // for linear least-squares fit
-		internal int which = 0;     // which samples to plot
-        private string _title = "launch a game or Replay to collect XY property samples";
+		public double m, B, R2;	 // for linear least-squares fit
+		internal ushort which = 0;	 // which samples to plot
+		private string _title = "launch a game or Replay to collect XY property samples";
 		public string Title { get => _title;
 			set
 			{
@@ -121,8 +121,8 @@ namespace blekenbleu.OxyScope
 			}
 		}
 
-		private uint _ref = 0;
-		public uint Refresh
+		private ushort _ref = 0;
+		public ushort Refresh
 		{	get => _ref;
 			set
 			{

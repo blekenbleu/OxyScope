@@ -7,7 +7,7 @@ namespace blekenbleu.OxyScope
 {
 	public partial class Control
 	{
-		PlotModel ScatterPlot(int which, string title)
+		PlotModel ScatterPlot(ushort which, string title)
 		{
 			PlotModel model = new PlotModel { Title = Model.Title };
 
@@ -35,13 +35,13 @@ namespace blekenbleu.OxyScope
 			return model;
 		}
 
-		private ScatterSeries Scatter(int which, string title)
+		private ScatterSeries Scatter(ushort which, string title)
 		{
 			int size = 2;	// plot dot size
-			int end = (start[which] <= ln2) ? start[which] + ln2 : length;
+			ushort end = (start[which] <= ln2) ? (ushort)(start[which] + ln2) : length;
 
 			var scatterSeries = new ScatterSeries { MarkerType = MarkerType.Circle };
-			for (int i = start[which]; i < end; i++)
+			for (ushort i = start[which]; i < end; i++)
 				scatterSeries.Points.Add(new ScatterPoint(x[i], y[i], size));
 			scatterSeries.MarkerFill = OxyColors.Red;
 			if (null != title)
