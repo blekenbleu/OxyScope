@@ -10,16 +10,13 @@ namespace blekenbleu.OxyScope
 		public event PropertyChangedEventHandler PropertyChanged;
 		public void OnPropertyChanged(PropertyChangedEventArgs myevent) => PropertyChanged?.Invoke(this, myevent);
 
-//		readonly PropertyChangedEventArgs APevent = new PropertyChangedEventArgs(nameof(AutoPlot));
 		readonly PropertyChangedEventArgs Cevent = new PropertyChangedEventArgs(nameof(Current));
 		readonly PropertyChangedEventArgs FXevent = new PropertyChangedEventArgs(nameof(FilterX));
 		readonly PropertyChangedEventArgs FYevent = new PropertyChangedEventArgs(nameof(FilterY));
-//		readonly PropertyChangedEventArgs Levent = new PropertyChangedEventArgs(nameof(LinFit));
 		readonly PropertyChangedEventArgs PVevent = new PropertyChangedEventArgs(nameof(PVis));
 		readonly PropertyChangedEventArgs TBevent = new PropertyChangedEventArgs(nameof(Refresh));
 		readonly PropertyChangedEventArgs TIevent = new PropertyChangedEventArgs(nameof(Title));
 		readonly PropertyChangedEventArgs Xevent = new PropertyChangedEventArgs(nameof(Xprop));
-//		readonly PropertyChangedEventArgs XRevent = new PropertyChangedEventArgs(nameof(Xrange));
 		readonly PropertyChangedEventArgs XYevent = new PropertyChangedEventArgs(nameof(XYprop));
 		readonly PropertyChangedEventArgs XY2event = new PropertyChangedEventArgs(nameof(XYprop2));
 		readonly PropertyChangedEventArgs Yevent = new PropertyChangedEventArgs(nameof(Yprop));
@@ -55,7 +52,7 @@ namespace blekenbleu.OxyScope
 		}
 
 		private string _current = "waiting for property values...";
-		public string Current
+		public string Current		// OxyScope sets CurrentGame Car@Track
 		{	get => _current;
 			set
 			{

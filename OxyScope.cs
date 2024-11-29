@@ -115,7 +115,7 @@ namespace blekenbleu.OxyScope
 				View.Model.Current = $"{xmin[work]:#0.000} <= X <= "
 								   + $"{xmax[work]:#0.000};  "
 								   + $"{ymin[work]:#0.000} <= Y <= "
-								   + $"{ymax[work]:#0.000}; work = {work}; which = {View.Model.which};  Xrange = {View.Model.Xrange:0.00}";
+								   + $"{ymax[work]:#0.000}";
 
 				if (0 < View.Model.Refresh || (xmax[work] - xmin[work]) > View.Model.Xrange)
 				{
@@ -189,9 +189,6 @@ namespace blekenbleu.OxyScope
 					Settings.FilterY = 1;
 			}
 
-			this.AttachDelegate("Xprop", () => View.Model.Xprop);
-			this.AttachDelegate("Xrange", () => View.Model.Xrange);
-			this.AttachDelegate("Yprop", () => View.Model.Yprop);
 			this.AttachDelegate("IIRX", () => IIRX);
 			this.AttachDelegate("IIRY", () => IIRY);
 		}

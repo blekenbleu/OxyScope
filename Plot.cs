@@ -57,6 +57,7 @@ namespace blekenbleu.OxyScope
 				else {								// https://blekenbleu.github.io/static/ImageProcessing/MonotoneCubic.htm
 					Count = 0;						// how many times ConstrainedCubic() invoked?
 					x1 = 1.0 / (xmax - xmin);
+					bool converge = true;
 					// Non-linear least-squares fitting the points (x,y) to an arbitrary function y : x -> f(p0, p1, p2, p3, x),
 					// returning its best fitting parameter p0, p1, p2 and p3, based on tolerance
 					// https://en.wikipedia.org/wiki/Nelder%E2%80%93Mead_method#Termination
@@ -67,9 +68,9 @@ namespace blekenbleu.OxyScope
 							1000);                                              // max iterations
 					}
 					// https://numerics.mathdotnet.com/api/MathNet.Numerics.Optimization/MaximumIterationsException.htm
-					catch (Exception) { }
+					catch (Exception) { converge = false; }
 
-					if (Monotonic(Ft.Item2, Ft.Item3, Ft.Item4) || true)
+					if (converge && (Monotonic(Ft.Item2, Ft.Item3, Ft.Item4) || true))
 					{
 						Model.XYprop2 = $"  constrained cubic:  {Ft.Item1:#0.0000} + {Ft.Item2:#0.000000}*x "
 									  + $"+ {Ft.Item3:#0.000000}*x**2 + {Ft.Item4:#0.000000}*x**3;  Count = {Count / 180}"
