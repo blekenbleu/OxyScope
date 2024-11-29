@@ -56,7 +56,10 @@ XY plot of *positive* property values
 - update button: **3 second refresh** vs **Hold max X range**
 - cubic fit added
 #### 26 Nov:&nbsp; force monotonic cubic slope at Xmin or Xmax
+- forcing endpoint slopes sometimes results in very poor fit
 - update button: **3 second refresh** vs **Hold max X range** vs **Hold max R-squared**
+#### 28 Nov:&nbsp; Fit.Curve() to iteratively match [constrained cubic function](https://blekenbleu.github.io/static/ImageProcessing/MonotoneCubic.htm)
+- debug using simple cubic function
 
 <hr>
 <b><i>Property folder changes from default WPF project for SimHub plugins</i></b>

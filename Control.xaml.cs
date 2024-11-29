@@ -12,9 +12,10 @@ namespace blekenbleu.OxyScope
 		public OxyScope Plugin { get; }
 		public Model Model;
 		public ushort length, ln2;
-		public ushort[] start;				// circular buffer
-		public double[] x, y;			// plot samples
-		static double xmax, ymax, xmin;		// somewhat arbitrary axis limits
+		public ushort[] start;						// circular buffer
+		public double[] x, y;						// plot samples
+		static double xmax, ymax, xmin, ymin, m, inflection;	// somewhat arbitrary axis limits
+		static readonly double[] slope = new double[] { 0, 0, 0 };
 
 		public Control()
 		{
