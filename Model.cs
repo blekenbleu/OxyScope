@@ -10,23 +10,24 @@ namespace blekenbleu.OxyScope
 		public event PropertyChangedEventHandler PropertyChanged;
 		public void OnPropertyChanged(PropertyChangedEventArgs myevent) => PropertyChanged?.Invoke(this, myevent);
 
-		readonly PropertyChangedEventArgs APevent = new PropertyChangedEventArgs(nameof(AutoPlot));
+//		readonly PropertyChangedEventArgs APevent = new PropertyChangedEventArgs(nameof(AutoPlot));
 		readonly PropertyChangedEventArgs Cevent = new PropertyChangedEventArgs(nameof(Current));
 		readonly PropertyChangedEventArgs FXevent = new PropertyChangedEventArgs(nameof(FilterX));
 		readonly PropertyChangedEventArgs FYevent = new PropertyChangedEventArgs(nameof(FilterY));
-		readonly PropertyChangedEventArgs Levent = new PropertyChangedEventArgs(nameof(LinFit));
+//		readonly PropertyChangedEventArgs Levent = new PropertyChangedEventArgs(nameof(LinFit));
 		readonly PropertyChangedEventArgs PVevent = new PropertyChangedEventArgs(nameof(PVis));
 		readonly PropertyChangedEventArgs TBevent = new PropertyChangedEventArgs(nameof(Refresh));
 		readonly PropertyChangedEventArgs TIevent = new PropertyChangedEventArgs(nameof(Title));
 		readonly PropertyChangedEventArgs Xevent = new PropertyChangedEventArgs(nameof(Xprop));
-		readonly PropertyChangedEventArgs XRevent = new PropertyChangedEventArgs(nameof(Xrange));
+//		readonly PropertyChangedEventArgs XRevent = new PropertyChangedEventArgs(nameof(Xrange));
 		readonly PropertyChangedEventArgs XYevent = new PropertyChangedEventArgs(nameof(XYprop));
 		readonly PropertyChangedEventArgs XY2event = new PropertyChangedEventArgs(nameof(XYprop2));
 		readonly PropertyChangedEventArgs Yevent = new PropertyChangedEventArgs(nameof(Yprop));
 
 		internal OxyScope Plugin;
-		public double m, B, R2;	 // for linear least-squares fit
 		internal ushort which = 0;	 // which samples to plot
+		internal double R2, Xrange;
+		internal bool LinFit, AutoPlot;
 		private string _title = "launch a game or Replay to collect XY property samples";
 		public string Title { get => _title;
 			set
@@ -66,7 +67,6 @@ namespace blekenbleu.OxyScope
 			}
 		}
 
-
 		private string _xprop;
 		public string Xprop
 		{	get => _xprop;
@@ -75,7 +75,7 @@ namespace blekenbleu.OxyScope
 				if (_xprop != value)
 				{
 					_xprop = value;
-					R2 = Plugin.xmax[which] = Plugin.xmin[which] = Xrange = 0;	
+					R2 = Xrange = 0;	
 					PropertyChanged?.Invoke(this, Xevent);
 				}
 			}
@@ -89,7 +89,7 @@ namespace blekenbleu.OxyScope
 				if (_yprop != value)
 				{
 					_yprop = value;
-					R2 = Plugin.xmax[which] = Plugin.xmin[which] = Xrange = 0;	
+					R2 = Xrange = 0;	
 					PropertyChanged?.Invoke(this, Yevent);
 				}
 			}
@@ -130,7 +130,7 @@ namespace blekenbleu.OxyScope
 				{
 					_ref = value;
 					PropertyChanged?.Invoke(this, TBevent);
-					R2 = Plugin.xmin[which] = Plugin.xmax[which] = Xrange = 0;
+					R2 = Xrange = 0;
 				}
 			}
 		}
@@ -157,50 +157,6 @@ namespace blekenbleu.OxyScope
 				{
 					_filty = value;
 					PropertyChanged?.Invoke(this, FYevent);
-				}
-			}
-		}
-
-		private double _xrange = 0;
-		public double Xrange
-		{	get => _xrange;
-			set
-			{
-				if (_xrange != value)
-				{
-					_xrange = value;
-					PropertyChanged?.Invoke(this, XRevent);
-				}
-			}
-		}
-
-		private bool _linfit = true;
-		public bool LinFit
-		{	get => _linfit;
-			set
-			{
-				if (_linfit != value)
-				{
-					_linfit = value;
-					PropertyChanged?.Invoke(this, Levent);
-				}
-			}
-		}
-
-		private bool _aplot = true;
-		public bool AutoPlot
-		{	get => _aplot;
-			set
-			{
-				if (_aplot != value)
-				{
-					_aplot = value;
-					PropertyChanged?.Invoke(this, APevent);
-					if (_aplot && Visibility.Visible == _unseen)
-					{
-						PVis = Visibility.Hidden;
-						Plugin.View.Plot();
-					}
 				}
 			}
 		}

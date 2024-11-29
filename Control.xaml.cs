@@ -14,7 +14,8 @@ namespace blekenbleu.OxyScope
 		public ushort length, ln2;
 		public ushort[] start;						// circular buffer
 		public double[] x, y;						// plot samples
-		static double xmax, ymax, xmin, ymin, m, inflection;	// somewhat arbitrary axis limits
+		static double xmax, ymax, xmin, ymin,		// axis limits
+				 m, B, inflection;
 		static readonly double[] slope = new double[] { 0, 0, 0 };
 
 		public Control()
@@ -79,6 +80,11 @@ namespace blekenbleu.OxyScope
 		private void APclick(object sender, RoutedEventArgs e)		  // AutoPlot
 		{
 			Model.AutoPlot = !Model.AutoPlot;
+			if (Model.AutoPlot && Visibility.Visible == Model.PVis)
+			{
+				Model.PVis = Visibility.Hidden;
+				Plot();
+			}
 			ButtonUpdate();
 		}
 

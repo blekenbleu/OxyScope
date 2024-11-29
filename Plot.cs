@@ -19,9 +19,8 @@ namespace blekenbleu.OxyScope
 			ymin = Plugin.ymin[Model.which];
 			ymax = 1.3 * (Plugin.ymax[Model.which] - ymin) + ymin;	// legend space
 			xmax = Plugin.xmax[Model.which];
-			xmin = Plugin.xmin[Model.which];
 
-			PlotModel model = ScatterPlot(Model.which, "60 Hz samples");
+			PlotModel model = ScatterPlot("60 Hz samples");
 
 			lfs = "";
 			if (Model.LinFit)
@@ -31,20 +30,20 @@ namespace blekenbleu.OxyScope
 						 ys = SubArray(y, start[Model.which], ln2);
 				(double, double)p = Fit.Line(xs, ys);
 
-				Model.B = p.Item1;
-				Model.m = m = p.Item2;
-				double r2 = GoodnessOfFit.RSquared(xs.Select(x => Model.B + Model.m * x), ys);
+				B = p.Item1;
+				m = p.Item2;
+				double r2 = GoodnessOfFit.RSquared(xs.Select(x => B + m * x), ys);
 				Model.Current += $";   R-squared = {r2:0.00}";
 				if (2 == Model.Refresh && r2 < Model.R2)
 					return;
 
 				Model.R2 = r2;	
-				model.Series.Add(LineDraw(xmin, Model.m, Model.B, "line fit"));
-				lfs = $";   line:  {Model.B:#0.0000} + {Model.m:#0.00000}*x;   R-squared = {r2:0.00}";
+				model.Series.Add(LineDraw(xmin, m, B, "line fit"));
+				lfs = $";   line:  {B:#0.0000} + {m:#0.00000}*x;   R-squared = {r2:0.00}";
 
 				// cubic fit https://posts5865.rssing.com/chan-58562618/latest.php
 				c = Fit.Polynomial(xs, ys, 3, MathNet.Numerics.LinearRegression.DirectRegressionMethod.QR);
-				// cubic slopes signs should match Model.m at xmin, xmax
+				// cubic slopes signs should match m at xmin, xmax
 				//c = TweakCubic(c);
 
 				if (Monotonic(c[1], c[2], c[3]))
@@ -63,7 +62,7 @@ namespace blekenbleu.OxyScope
 					// https://en.wikipedia.org/wiki/Nelder%E2%80%93Mead_method#Termination
 					try
 					{
-						Ft = Fit.Curve(xs, ys, CurveFunc, Model.B, Model.m, 0, 0,
+						Ft = Fit.Curve(xs, ys, CurveFunc, B, m, 0, 0,
 						 	0.00001,                                           // tolerance <==== decent match to unforced cubic
 							1000);                                              // max iterations
 					}
@@ -86,7 +85,7 @@ namespace blekenbleu.OxyScope
 				{
 					c = Fit.LinearCombination(xs, ys, x => x);
 					model.Series.Add(LineDraw(xmin, c[0], 0, "Fit thru origin"));
-					Model.XYprop += $";  origin slope = {c[0]:#0.0000}";
+					lfs += $";  origin slope = {c[0]:#0.0000}";
 				}
 
 			} else Model.XYprop2 = "";
@@ -97,7 +96,6 @@ namespace blekenbleu.OxyScope
 						 + $"{Plugin.ymax[Model.which]:#0.000}" + lfs;
 
 			plot.Model = model;											// OxyPlot
-			Plugin.xmax[Model.which] = Plugin.xmin[Model.which] = 0;	// free which buffer for reuse
 		}
 
 		LineSeries LineDraw(double start, double m, double B, string title)
