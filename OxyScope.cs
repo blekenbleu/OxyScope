@@ -117,18 +117,14 @@ namespace blekenbleu.OxyScope
 								   + $"{ymin[work]:#0.000} <= Y <= "
 								   + $"{ymax[work]:#0.000}; work = {work}; which = {View.Model.which};  Xrange = {View.Model.Xrange:0.00}";
 
-				int n = 1 - work;
                 if (0 < View.Model.Refresh || (xmax[work] - xmin[work]) > View.Model.Xrange)
 				{
                     View.Dispatcher.Invoke(() => View.Replot(work));
-					// Replot typically frees buffers
-					if((xmax[work] - xmin[work]) > (xmax[n] - xmin[n]))
-						work = n;			// refill the buffer with smaller range
+					work = 1 - work;			// switch buffers
 				}
 				i = View.start[work];
 			}
-
-        }
+        }										// DataUpdate()
 
 		/// <summary>
 		/// Called at plugin manager stop, close/dispose anything needed here !
@@ -149,7 +145,7 @@ namespace blekenbleu.OxyScope
 		}
 
 		/// <summary>
-		/// Returns the settings control, return null if no settings control is required
+		/// Returns UI control instance or null if not required
 		/// </summary>
 		/// <param name="pluginManager"></param>
 		/// <returns></returns>
@@ -168,10 +164,10 @@ namespace blekenbleu.OxyScope
 		{
 			work = 0;
 			string where = "DataCorePlugin.GameData.",					// defaults
-				x = "AccelerationHeave", y = "GlobalAccelerationG";
+					x = "AccelerationHeave", y = "GlobalAccelerationG";
 
-            ymin = new double[] {-90, -90}; ymax = new double[] {90, 90};
-			xmin = new double[] {-90, -90}; xmax = new double[] {90, 90};
+            ymin = new double[] {0, 0}; ymax = new double[] {0, 0};
+			xmin = new double[] {0, 0}; xmax = new double[] {0, 0};
 			SimHub.Logging.Current.Info("Starting " + LeftMenuTitle);
 
 			// Load settings
@@ -194,6 +190,7 @@ namespace blekenbleu.OxyScope
             }
 
 			this.AttachDelegate("Xprop", () => View.Model.Xprop);
+			this.AttachDelegate("Xrange", () => View.Model.Xrange);
 			this.AttachDelegate("Yprop", () => View.Model.Yprop);
 			this.AttachDelegate("IIRX", () => IIRX);
 			this.AttachDelegate("IIRY", () => IIRY);
