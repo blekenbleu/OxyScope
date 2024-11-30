@@ -42,11 +42,11 @@ namespace blekenbleu.OxyScope
 
 				// cubic fit https://posts5865.rssing.com/chan-58562618/latest.php
 				c = Fit.Polynomial(xs, ys, 3, MathNet.Numerics.LinearRegression.DirectRegressionMethod.QR);
-				// cubic slopes signs should match m at xmin, xmax
-				//c = TweakCubic(c);
+                // cubic slopes signs should match m at xmin, xmax
+                //c = TweakCubic(c);
 
-				bool m0 = Monotonic(c[1], c[2], c[3]);
-			//	if (m0)
+                bool converge = true, m0 = Monotonic(c[1], c[2], c[3]);
+				if (m0)
 				{
 					// https://oxyplot.readthedocs.io/en/latest/models/series/FunctionSeries.html
 					model.Series.Add(new FunctionSeries(cubicfit, xmin, xmax,
@@ -54,11 +54,10 @@ namespace blekenbleu.OxyScope
 					Model.XYprop2 = $"cubic:  {c[0]:#0.0000}+{c[1]:#0.0000}*x+{c[2]:#0.0000}*x**2+{c[3]:#0.00000}*x**3 "
 								  + $"slopes:  {slope[0]:#0.0000}, {slope[1]:#0.0000}@{inflection:#0.00}, {slope[2]:#0.0000}";
 				}
-			//	else
-				if (!m0)
+				else
+			//	if (!m0)
 				{								// https://blekenbleu.github.io/static/ImageProcessing/MonotoneCubic.htm
 					Count = 0;					// how many times ConstrainedCubic() invoked?
-					bool converge = true;
 					// Non-linear least-squares fit arbitrary function y : x -> f(p0, p1, p2, p3, x) to points (x,y),
 					// returning best fitting parameter p0, p1, p2 and p3, based on tolerance
 					// https://en.wikipedia.org/wiki/Nelder%E2%80%93Mead_method#Termination
@@ -71,19 +70,25 @@ namespace blekenbleu.OxyScope
 					// https://numerics.mathdotnet.com/api/MathNet.Numerics.Optimization/MaximumIterationsException.htm
 					catch (Exception) { converge = false; }
 
-					if (converge && (Monotonic(Ft.Item2, Ft.Item3, Ft.Item4) || true))
+					if (converge)
 					{
-						Model.XYprop3 = $"constrained cubic:  {Ft.Item1:#0.0000} + {Ft.Item2:#0.000000}*x "
+						Model.XYprop2 = $"constrained cubic:  {Ft.Item1:#0.0000} + {Ft.Item2:#0.000000}*x "
 									  + $"+ {Ft.Item3:#0.000000}*x**2 + {Ft.Item4:#0.000000}*x**3;  Count = {Count / 180}"
 								  + $";  slopes:  {slope[0]:#0.00000}, {slope[1]:#0.00000}@{inflection:#0.00}, {slope[2]:#0.00000}";
 						model.Series.Add(new FunctionSeries(ccubicfit, xmin, xmax,
-										 (xmax - xmin) / 50, "constrained cubic fit"));		// x increments
-					}
-					else Model.XYprop3 = "cubic fits failed!";
-				}	else Model.XYprop3 = "";
+										 (xmax - xmin) / 50, "constrained cubic fit"));     // x increments
 
-				if (0 >= ymin && 0 <= ymax
-				 && 0 >= xmin && 0 <= xmax)
+						if (converge = Monotonic(Ft.Item2, Ft.Item3, Ft.Item4))
+							Model.XYprop3 = "";
+					}
+					if(!converge)
+					{
+						lfs += ";  ** Cubic fits failed! **";
+						converge = Model.AutoPlot = false;
+                    }
+				}
+
+				if (converge && 0 >= ymin && 0 <= ymax && 0 >= xmin && 0 <= xmax)
 				{
 					c = Fit.LinearCombination(xs, ys, x => x);
 					model.Series.Add(LineDraw(xmin, c[0], 0, "Fit thru origin"));

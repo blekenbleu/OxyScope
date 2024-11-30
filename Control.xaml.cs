@@ -102,7 +102,7 @@ namespace blekenbleu.OxyScope
 		void ButtonUpdate()
 		{
 			TH.Text = refresh[Model.Refresh];
-			LF.Text = "Fit Lines " + (Model.LinFit ? "enabled" : "disabled");
+			LF.Text = "Fit Curves " + (Model.LinFit ? "enabled" : "disabled");
 			TR.Text = (Model.AutoPlot ? "Auto" : "Manual") + " Replot";
 		}
 	}	// class
