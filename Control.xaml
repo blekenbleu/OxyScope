@@ -8,12 +8,13 @@
 			 mc:Ignorable="d"
 			 xmlns:oxy="http://oxyplot.org/wpf"
 			 d:DataContext="{d:DesignInstance Type=local:Model}"
-			 Height="740" Width="800">
+			 Height="750" Width="800">
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="50"/>
-			<RowDefinition Height="560"/>
-			<RowDefinition Height="80"/>
+			<RowDefinition Height="550"/>
+			<RowDefinition Height="25"/>
+			<RowDefinition Height="75"/>
 			<RowDefinition Height="50"/>
 		</Grid.RowDefinitions>
 		<Canvas Grid.Row="0" Grid.Column="0" VerticalAlignment="Top">
@@ -38,22 +39,27 @@
 		</Canvas>
 		<GroupBox Grid.Row="1" Grid.Column="0" Height="550" VerticalAlignment="Top">
 			<GroupBox.Header>
-				<TextBlock FontWeight="Bold"> Properties XY plot</TextBlock>
+				<TextBlock Height="20" FontWeight="Bold"> Properties XY plot</TextBlock>
 			</GroupBox.Header>
 			<oxy:PlotView Name="plot"/>
 		</GroupBox>
 		<Canvas Grid.Row="2" Grid.Column="0" VerticalAlignment="Top">
+
+			<TextBox Margin="0,0"   TextWrapping="Wrap" Height="25" Width="390"
+					 Name="Yprop" Text="{Binding Yprop, Mode=TwoWay}"/>
+			<TextBox Margin="390,0" Text="vs" Width="20" Height="25"/>
+			<TextBox Margin="410,0" TextWrapping="Wrap" Height="25" Width="390"
+					 Name="Xprop" Text="{Binding Xprop, Mode=TwoWay}"/>
+		</Canvas>
+		<Canvas Grid.Row="3" Grid.Column="0" VerticalAlignment="Top">
 			<TextBox Canvas.Left="0" Height="25" Width="800"
 					 Name="XYprop" Text="{Binding XYprop}"/>
 			<TextBox Margin="0,25" Canvas.Left="0" Height="25" Width="800"
 					 Name="XYprop2" Text="{Binding XYprop2}"/>
-			<TextBox Margin="0,53"   TextWrapping="Wrap" Height="25" Width="390"
-					 Name="Yprop" Text="{Binding Yprop, Mode=TwoWay}"/>
-			<TextBox Margin="390,53" Text="vs" Width="20" Height="25"/>
-			<TextBox Margin="410,53" TextWrapping="Wrap" Height="25" Width="390"
-					 Name="Xprop" Text="{Binding Xprop, Mode=TwoWay}"/>
+			<TextBox Margin="0,50" Canvas.Left="0" Height="25" Width="800"
+					 Name="XYprop3" Text="{Binding XYprop3}"/>
 		</Canvas>
-		<Canvas Grid.Row="3" Grid.Column="0" VerticalAlignment="Top">
+		<Canvas Grid.Row="4" Grid.Column="0" VerticalAlignment="Top">
 			<ui:TitledSlider Title="	 Y-axis filter" Width="400"
 				 Value="{Binding FilterY, Mode=TwoWay}" Margin="0,5"
 				 TickFrequency = "1" IsSnapToTickEnabled = "True"

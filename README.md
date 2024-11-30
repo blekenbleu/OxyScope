@@ -60,6 +60,7 @@ XY plot of *positive* property values
 - update button: **3 second refresh** vs **Hold max X range** vs **Hold max R-squared**
 #### 28 Nov:&nbsp; Fit.Curve() to iteratively match [constrained cubic function](https://blekenbleu.github.io/static/ImageProcessing/MonotoneCubic.htm)
 - debug using simple cubic function
+- *30 Nov*:&nbsp;  Montonic() debugged
 
 <hr>
 <b><i>Property folder changes from default WPF project for SimHub plugins</i></b>
