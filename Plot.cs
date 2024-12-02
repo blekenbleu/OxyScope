@@ -26,8 +26,8 @@ namespace blekenbleu.OxyScope
 			if (M.LinFit)
 			{
 				// https://numerics.mathdotnet.com/Regression
-				xs = SubArray(M.x, M.start[M.which], M.length);
-				ys = SubArray(M.y, M.start[M.which], M.length);
+				xs = SubArray(O.x, M.start[M.which], M.length);
+				ys = SubArray(O.y, M.start[M.which], M.length);
 				(double, double)p = Fit.Line(xs, ys);
 
 				B = p.Item1;
@@ -38,7 +38,7 @@ namespace blekenbleu.OxyScope
 				lfs = $";   line:  {B:#0.0000} + {m:#0.00000}*x;   R-squared = {r2:0.00}";
 
 				M.XYprop2 = Curve(xmin, xmax, "");
-
+			/*
 				if (2 == M.Refresh)
 				{
 					if (!converge)
@@ -68,15 +68,6 @@ namespace blekenbleu.OxyScope
 						scatterSeries.MarkerFill = OxyColors.BlueViolet;
 						model.Series.Add(scatterSeries);
 						M.XYprop3 = Curve(Xmin, Xmax, "expanded ");
-						/*
-							c = Fit.Polynomial(xs, ys, 3, MathNet.Numerics.LinearRegression.DirectRegressionMethod.QR);
-							Monotonic(c[1], c[2], c[3]);
-							model.Series.Add(new FunctionSeries(cubicfit, Xmin, Xmax,
-									(Xmax - Xmin) / 50, "expanded cubic fit"));
-							M.XYprop3 = $"expanded cubic:  {c[0]:#0.0000} + {c[1]:#0.000000}*x "
-										  + $"+ {c[2]:#0.000000}*x**2 + {c[3]:#0.000000}*x**3;  slopes:  {slope[0]:#0.00000}"
-										  + $", {slope[1]:#0.00000}@{inflection:#0.00}, {slope[2]:#0.00000}";
-						 */
 						M.Coef = new double[] { c[0], c[1], c[2], c[3], Xmin, Xmax };
 					}
 					else if ((!converge) && 0 >= M.ymin[M.which] && 0 <= M.ymax[M.which] && 0 >= xmin && 0 <= xmax)
@@ -86,7 +77,8 @@ namespace blekenbleu.OxyScope
 						lfs += $";  origin slope = {c[0]:#0.0000}";
 					}
 				}
-			} else M.XYprop2 = M.XYprop3 = "";
+			 */
+			}
 
 			M.XYprop = $"{xmin:#0.000} <= X <= {xmax:#0.000};  "
 					 + $"{M.ymin[M.which]:#0.000} <= Y <= {M.ymax[M.which]:#0.000}" + lfs;

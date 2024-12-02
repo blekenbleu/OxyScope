@@ -10,6 +10,7 @@ namespace blekenbleu.OxyScope
 	public partial class Control : UserControl
 	{
 		public Model M;
+		public OxyScope O;
 		static double Xmax, Ymax, Xmin, Ymin, xmin, xmax, ymax,	// axes limits
 						m, B, inflection;
 		static readonly double[] slope = new double[] { 0, 0, 0 };
@@ -18,17 +19,18 @@ namespace blekenbleu.OxyScope
 		{
 			DataContext = M = new Model();
 			InitializeComponent();
-			M.length = 360;				// 2 x 3 seconds of 60 Hz samples
-			M.x = new double[M.length];
-			M.y = new double[M.length];
-			M.length /= 2; 
-			M.start = new ushort[] { 0, M.length };
+			M.length = 901;				// 5 x 3 seconds of 60 Hz samples
 		}
 
 		public Control(OxyScope plugin) : this()
 		{
 			Settings S;
 
+			O = plugin;
+			O.x = new double[M.length];
+			O.y = new double[M.length];
+			M.length /= 5; 
+			M.start = new ushort[] { 0, M.length };
 			if (null != (S = plugin.Settings))
 			{
 				M.FilterX = S.FilterX;

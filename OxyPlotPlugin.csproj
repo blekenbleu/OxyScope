@@ -100,6 +100,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Accrue.cs" />
     <Compile Include="Curve.cs" />
     <Compile Include="LeastSquares.cs" />
     <Compile Include="Model.cs" />

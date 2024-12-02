@@ -23,10 +23,9 @@ namespace blekenbleu.OxyScope
 
 		internal ushort		length, which = 0;	 	// which samples to plot
 		internal ushort[]	start;					// split buffer
-		internal double		Range;
+		internal double		Range, Total;
 		internal double[]	Coef,
-							xmin, ymin, xmax, ymax, // View uses for axes scaling
-							x, y;					// plot samples
+							xmin, ymin, xmax, ymax; // View uses for axes scaling
 		internal bool LinFit, AutoPlot, Done = true;
 		private string _title = "launch a game or Replay to collect XY property samples";
 		public string Title { get => _title;
@@ -143,7 +142,7 @@ namespace blekenbleu.OxyScope
 				{
 					_ref = value;
 					PropertyChanged?.Invoke(this, TBevent);
-					Range = 0;
+					Total = Range = 0;
 					Coef = null;
 				}
 			}

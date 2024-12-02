@@ -44,6 +44,7 @@ namespace blekenbleu.OxyScope
 		/// <param name="pluginManager"></param>
 		/// <param name="data">Current game data, including current and previous data frame.</param>
 		double IIRX = 0, IIRY = 0;				// filtered property values
+		internal double[] x, y;                 // plot samples
 		private ushort i, work;					// arrays currently being sampled
 		bool oops = false;
 		public void DataUpdate(PluginManager pluginManager, ref GameData data)
@@ -80,35 +81,44 @@ namespace blekenbleu.OxyScope
 			if (CarId != data.NewData.CarId)
 			{
 				CarId = data.NewData.CarId;
-				IIRX = IIRY = 0;
-				VM.xmin[0] = VM.xmin[1] = VM.ymin[0] = VM.ymin[1] = VM.xmax[0] = VM.ymax[0] = VM.xmax[1] = VM.ymax[1] = 0;
-		   		VM.Title =
-						pluginManager.GetPropertyValue("DataCorePlugin.CurrentGame")?.ToString()
-						+ ":  " + pluginManager.GetPropertyValue("DataCorePlugin.GameData.CarModel")?.ToString()
-						+ "@" + pluginManager.GetPropertyValue("DataCorePlugin.GameData.TrackName")?.ToString();  
+				IIRX = IIRY = i = 0;
+				VM.xmin[0] = VM.xmin[1] = VM.ymin[0] = VM.ymin[1] = VM.xmax[0] = VM.ymax[0]
+						   = VM.xmax[1] = VM.ymax[1] = VM.Total = 0;
+		   		VM.Title = pluginManager.GetPropertyValue("DataCorePlugin.CurrentGame")?.ToString()
+						 + ":  " + pluginManager.GetPropertyValue("DataCorePlugin.GameData.CarModel")?.ToString()
+						 + "@" + pluginManager.GetPropertyValue("DataCorePlugin.GameData.TrackName")?.ToString();
+				VM.length = (ushort)(2 == VM.Refresh ? 0 : 180);
 			}
 
 			IIRX += (xf - IIRX) / VM.FilterX;
 			IIRY += (yf - IIRY) / VM.FilterY;
-			VM.x[i] = IIRX;									// why can DataUpdate() set View values??
-			VM.y[i] = IIRY;
+			x[i] = IIRX;									// why can DataUpdate() set View values??
+			y[i] = IIRY;
+
 			if (VM.start[work] == i)
 			{
-				VM.xmin[work] = VM.xmax[work] = VM.x[i];
-				VM.ymin[work] = VM.ymax[work] = VM.y[i];
+				VM.xmin[work] = VM.xmax[work] = x[i];
+				VM.ymin[work] = VM.ymax[work] = y[i];
 			}
 			else	// volume of sample values
 			{
-				if (VM.xmin[work] > VM.x[i])
-					VM.xmin[work] = VM.x[i];
-				else if (VM.xmax[work] < VM.x[i])
-					VM.xmax[work] = VM.x[i];
+				if (VM.xmin[work] > x[i])
+					VM.xmin[work] = x[i];
+				else if (VM.xmax[work] < x[i])
+					VM.xmax[work] = x[i];
 
-				if (VM.ymax[work] < VM.y[i])
-					VM.ymax[work] = VM.y[i];
-				else if (VM.ymin[work] > VM.y[i])
-					VM.ymin[work] = VM.y[i];
+				if (VM.ymax[work] < y[i])
+					VM.ymax[work] = y[i];
+				else if (VM.ymin[work] > y[i])
+					VM.ymin[work] = y[i];
 			}
+			if (2 == VM.Refresh)
+			{
+				if (1 < (double)pluginManager.GetPropertyValue("DataCorePlugin.GameData.SpeedKmh"))
+					Accrue();
+				return;
+			}
+
 			if ((++i - VM.start[work]) >= VM.length)	// filled?
 			{
 				VM.Current = $"{VM.xmin[work]:#0.000} <= X <= "
