@@ -23,9 +23,9 @@ namespace blekenbleu.OxyScope
 			{
 				Position = AxisPosition.Bottom,
 				Title = M.Xprop,
-				Minimum = Xmin,
-				Maximum = Xmax
-			});
+						Minimum = Xmin - 0.005 * (Xmax - Xmin),	// space for dot@Xmin
+						Maximum = Xmax + 0.005 * (Xmax - Xmin)
+            });
 
 			model.Series.Add(Scatter(title));
 			model.LegendPosition = LegendPosition.TopLeft;

@@ -66,15 +66,17 @@ XY plot of *positive* property values
 - interpolating beyond fitted data is doomed:  curves likely go non-monotonic
 	- preserve inflection point?
 - practically, no single 3 second sample set is likely to include highest and lowest values
-	- 3, instead of 2, data collection buckets?
-	- best pair may be non-adjacent
-    - refactor getting data into processors, or move buckets?
-- **best 2 of 3 buckets**
-	- first fill middle bucket
-	- ignore subsequent buckets with subset ranges
-	- replace middle by buckets with superset ranges
-	- pair buckets that combine for greater range
-		- may require copying first or third bucket to middle
+![](Doc/correlate.png)
+*illustrative example*:  `red dots are current samples`, *clustered around 0*  
+uniform distribution along X axis is preferred...  
+`bronze line is fit to current samples`  
+`larger purple dots are evenly space values for that fit`  
+`smaller purple dots are corresponding values for previous sample fit`  
+`red line is best fit among all 10 purple dots` (*resampling*)  
+	- multiple data collection sets?
+	- set 0:&nbsp; unconstrained collection, calculate X [variance](https://en.wikipedia.org/wiki/Variance)
+    - set 1:&nbsp; collect samples for X values *outside variance*, then recalculate variance
+	- ... set n:&nbsp; *und so weiter*
 
 <hr>
 <b><i>Property folder changes from default WPF project for SimHub plugins</i></b>

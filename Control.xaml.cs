@@ -60,7 +60,6 @@ namespace blekenbleu.OxyScope
 		internal void Replot(ushort choose)
 		{
 			M.which = choose;
-			M.Done = false;
 			xmin = M.xmin[M.which];
 			xmax = M.xmax[M.which];
 			M.Range = 0 < M.Refresh ? 0 : xmax - xmin;
@@ -77,7 +76,8 @@ namespace blekenbleu.OxyScope
 					Ymin = M.ymin[M.which];
 				if (Ymax < M.ymax[M.which])
 					Ymax = M.ymax[M.which];
-			}
+                M.Done = false;
+            }
 			else {
 				Xmax = xmax;
 				Xmin = xmin;
@@ -102,9 +102,10 @@ namespace blekenbleu.OxyScope
 			ButtonUpdate();
 		}
 
-		private void APclick(object sender, RoutedEventArgs e)		  // AutoPlot
+		private void APclick(object sender, RoutedEventArgs e)        // AutoPlot
 		{
 			M.AutoPlot = !M.AutoPlot;
+			M.Done = true;
 			if (M.AutoPlot && Visibility.Visible == M.PVis)
 			{
 				M.PVis = Visibility.Hidden;
