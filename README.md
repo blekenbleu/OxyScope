@@ -69,12 +69,12 @@ XY plot of *positive* property values
 	- 3, instead of 2, data collection buckets?
 	- best pair may be non-adjacent
     - refactor getting data into processors, or move buckets?
-#### best 2 of 3 buckets
-- first fill middle bucket
-- ignore subsequent buckets with subset ranges
-- replace center by buckets with superset ranges
-- pair buckets that combine for greater range
-	- that may require copying first or third bucket to middle
+- **best 2 of 3 buckets**
+	- first fill middle bucket
+	- ignore subsequent buckets with subset ranges
+	- replace middle by buckets with superset ranges
+	- pair buckets that combine for greater range
+		- may require copying first or third bucket to middle
 
 <hr>
 <b><i>Property folder changes from default WPF project for SimHub plugins</i></b>

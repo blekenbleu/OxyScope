@@ -45,7 +45,6 @@ namespace blekenbleu.OxyScope
 		/// <param name="data">Current game data, including current and previous data frame.</param>
 		double IIRX = 0, IIRY = 0;				// filtered property values
 		private ushort i, work;					// arrays currently being sampled
-		public double[] xmin, ymin, xmax, ymax; // View uses for axes scaling
 		bool oops = false;
 		public void DataUpdate(PluginManager pluginManager, ref GameData data)
 		{
@@ -82,7 +81,7 @@ namespace blekenbleu.OxyScope
 			{
 				CarId = data.NewData.CarId;
 				IIRX = IIRY = 0;
-				xmin[0] = xmin[1] = ymin[0] = ymin[1] = xmax[0] = ymax[0] = xmax[1] = ymax[1] = 0;
+				VM.xmin[0] = VM.xmin[1] = VM.ymin[0] = VM.ymin[1] = VM.xmax[0] = VM.ymax[0] = VM.xmax[1] = VM.ymax[1] = 0;
 		   		VM.Title =
 						pluginManager.GetPropertyValue("DataCorePlugin.CurrentGame")?.ToString()
 						+ ":  " + pluginManager.GetPropertyValue("DataCorePlugin.GameData.CarModel")?.ToString()
@@ -91,39 +90,39 @@ namespace blekenbleu.OxyScope
 
 			IIRX += (xf - IIRX) / VM.FilterX;
 			IIRY += (yf - IIRY) / VM.FilterY;
-			View.x[i] = IIRX;									// why can DataUpdate() set View values??
-			View.y[i] = IIRY;
-			if (View.start[work] == i)
+			VM.x[i] = IIRX;									// why can DataUpdate() set View values??
+			VM.y[i] = IIRY;
+			if (VM.start[work] == i)
 			{
-				xmin[work] = xmax[work] = View.x[i];
-				ymin[work] = ymax[work] = View.y[i];
+				VM.xmin[work] = VM.xmax[work] = VM.x[i];
+				VM.ymin[work] = VM.ymax[work] = VM.y[i];
 			}
 			else	// volume of sample values
 			{
-				if (xmin[work] > View.x[i])
-					xmin[work] = View.x[i];
-				else if (xmax[work] < View.x[i])
-					xmax[work] = View.x[i];
+				if (VM.xmin[work] > VM.x[i])
+					VM.xmin[work] = VM.x[i];
+				else if (VM.xmax[work] < VM.x[i])
+					VM.xmax[work] = VM.x[i];
 
-				if (ymax[work] < View.y[i])
-					ymax[work] = View.y[i];
-				else if (ymin[work] > View.y[i])
-					ymin[work] = View.y[i];
+				if (VM.ymax[work] < VM.y[i])
+					VM.ymax[work] = VM.y[i];
+				else if (VM.ymin[work] > VM.y[i])
+					VM.ymin[work] = VM.y[i];
 			}
-			if ((++i - View.start[work]) >= View.length >> 1)	// filled?
+			if ((++i - VM.start[work]) >= VM.length)	// filled?
 			{
-				VM.Current = $"{xmin[work]:#0.000} <= X <= "
-								   + $"{xmax[work]:#0.000};  "
-								   + $"{ymin[work]:#0.000} <= Y <= "
-								   + $"{ymax[work]:#0.000}";
+				VM.Current = $"{VM.xmin[work]:#0.000} <= X <= "
+								   + $"{VM.xmax[work]:#0.000};  "
+								   + $"{VM.ymin[work]:#0.000} <= Y <= "
+								   + $"{VM.ymax[work]:#0.000}";
 				// Refresh: 0 = max range, 1 = 3 second, 2 = cumulative range
 				if ( 1 == VM.Refresh || (VM.Done && 2 == VM.Refresh)
-				 || (0 == VM.Refresh && (xmax[work] - xmin[work]) > VM.Range))
+				 || (0 == VM.Refresh && (VM.xmax[work] - VM.xmin[work]) > VM.Range))
 				{
 					View.Dispatcher.Invoke(() => View.Replot(work));
 					work = (ushort)(1 - work);					// switch buffers
 				}
-				i = View.start[work];
+				i = VM.start[work];
 			}
 		}														// DataUpdate()
 
@@ -170,8 +169,6 @@ namespace blekenbleu.OxyScope
 			string where = "DataCorePlugin.GameData.",					// defaults
 					x = "AccelerationHeave", y = "GlobalAccelerationG";
 
-			ymin = new double[] {0, 0}; ymax = new double[] {0, 0};
-			xmin = new double[] {0, 0}; xmax = new double[] {0, 0};
 			SimHub.Logging.Current.Info("Starting " + LeftMenuTitle);
 
 			// Load settings

@@ -23,8 +23,8 @@ namespace blekenbleu.OxyScope
 			if (Model.LinFit)
 			{
 				// https://numerics.mathdotnet.com/Regression
-				double[] xs = SubArray(x, start[Model.which], ln2),
-						 ys = SubArray(y, start[Model.which], ln2);
+				double[] xs = SubArray(Model.x, Model.start[Model.which], Model.length),
+						 ys = SubArray(Model.y, Model.start[Model.which], Model.length);
 				(double, double)p = Fit.Line(xs, ys);
 
 				B = p.Item1;
@@ -68,7 +68,7 @@ namespace blekenbleu.OxyScope
 						c[0] = Ft.Item1; c[1] = Ft.Item2; c[2] = Ft.Item3; c[3] = Ft.Item4;
 						converge = Monotonic(c[1], c[2], c[3]);
 						Model.XYprop2 = $"constrained cubic:  {c[0]:#0.0000} + {c[1]:#0.000000}*x "
-									  + $"+ {c[2]:#0.000000}*x**2 + {c[3]:#0.000000}*x**3;  Count = {Count / 180}"
+									  + $"+ {c[2]:#0.000000}*x**2 + {c[3]:#0.000000}*x**3;  Count = {Count / Model.length}"
 									  + $";  slopes:  {slope[0]:#0.00000}, {slope[1]:#0.00000}@{inflection:#0.00}, {slope[2]:#0.00000}";
 						model.Series.Add(new FunctionSeries(cubicfit, xmin, xmax,
 										 (xmax - xmin) / 50, "constrained cubic fit"));     // x increments
@@ -115,12 +115,12 @@ namespace blekenbleu.OxyScope
 						model.Series.Add(new FunctionSeries(cubicfit, Xmin, Xmax,
 								(Xmax - Xmin) / 50, "expanded cubic fit"));
 						Model.XYprop3 = $"expanded cubic:  {c[0]:#0.0000} + {c[1]:#0.000000}*x "
-									  + $"+ {c[2]:#0.000000}*x**2 + {c[3]:#0.000000}*x**3;  Count = {Count / 180}"
-									  + $";  slopes:  {slope[0]:#0.00000}, {slope[1]:#0.00000}@{inflection:#0.00}, {slope[2]:#0.00000}";
+									  + $"+ {c[2]:#0.000000}*x**2 + {c[3]:#0.000000}*x**3;  slopes:  {slope[0]:#0.00000}"
+									  + $", {slope[1]:#0.00000}@{inflection:#0.00}, {slope[2]:#0.00000}";
 						Model.Coef = new double[] { c[0], c[1], c[2], c[3], Xmin, Xmax };
 					}
 				}
-                else if (converge && 0 >= Plugin.ymin[Model.which] && 0 <= Plugin.ymax[Model.which] && 0 >= xmin && 0 <= xmax)
+                else if (converge && 0 >= Model.ymin[Model.which] && 0 <= Model.ymax[Model.which] && 0 >= xmin && 0 <= xmax)
 				{
 					c = Fit.LinearCombination(xs, ys, x => x);
 					model.Series.Add(LineDraw(c[0], 0, "Fit thru origin"));
@@ -131,8 +131,8 @@ namespace blekenbleu.OxyScope
 
 			Model.XYprop = $"{xmin:#0.000} <= X <= "
 						 + $"{xmax:#0.000};  "
-						 + $"{Plugin.ymin[Model.which]:#0.000} <= Y <= "
-						 + $"{Plugin.ymax[Model.which]:#0.000}" + lfs;
+						 + $"{Model.ymin[Model.which]:#0.000} <= Y <= "
+						 + $"{Model.ymax[Model.which]:#0.000}" + lfs;
 
 			plot.Model = model;											// OxyPlot
 			Model.Done = true;

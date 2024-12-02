@@ -21,10 +21,12 @@ namespace blekenbleu.OxyScope
 		readonly PropertyChangedEventArgs XY3event = new PropertyChangedEventArgs(nameof(XYprop3));
 		readonly PropertyChangedEventArgs Yevent = new PropertyChangedEventArgs(nameof(Yprop));
 
-		internal OxyScope Plugin;
-		internal ushort which = 0;	 // which samples to plot
-		internal double Range;
-		internal double[] Coef;
+		internal ushort		length, which = 0;	 	// which samples to plot
+		internal ushort[]	start;					// split buffer
+		internal double		Range;
+		internal double[]	Coef,
+							xmin, ymin, xmax, ymax, // View uses for axes scaling
+							x, y;					// plot samples
 		internal bool LinFit, AutoPlot, Done = true;
 		private string _title = "launch a game or Replay to collect XY property samples";
 		public string Title { get => _title;

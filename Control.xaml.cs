@@ -9,11 +9,7 @@ namespace blekenbleu.OxyScope
 	/// </summary>
 	public partial class Control : UserControl
 	{
-		public OxyScope Plugin { get; }
 		public Model Model;
-		public ushort length, ln2;
-		public ushort[] start;									// split buffer
-		public double[] x, y;									// plot samples
 		static double Xmax, Ymax, Xmin, Ymin, xmin, xmax, ymax,	// axes limits
 						m, B, inflection;
 		static readonly double[] slope = new double[] { 0, 0, 0 };
@@ -22,25 +18,26 @@ namespace blekenbleu.OxyScope
 		{
 			DataContext = Model = new Model();
 			InitializeComponent();
-			length = 360;				// 2 x 3 seconds of 60 Hz samples
-			ln2 = (ushort)(length >> 1); 
-			start = new ushort[] { 0, ln2 };
-			x = new double[length];
-			y = new double[length];
+			Model.length = 360;				// 2 x 3 seconds of 60 Hz samples
+			Model.x = new double[Model.length];
+			Model.y = new double[Model.length];
+			Model.length /= 2; 
+			Model.start = new ushort[] { 0, Model.length };
 		}
 
 		public Control(OxyScope plugin) : this()
 		{
-			Model.Plugin = Plugin = plugin;
-			if (null != Plugin.Settings)
+			Settings S;
+
+			if (null != (S = plugin.Settings))
 			{
-				Model.FilterX = Plugin.Settings.FilterX;
-				Model.FilterY = Plugin.Settings.FilterY;
-				Model.Refresh = Plugin.Settings.Refresh;
-				Model.AutoPlot = Plugin.Settings.Plot;
-				Model.LinFit = Plugin.Settings.LinFit;
-				Model.Xprop = plugin.Settings.Xprop;
-				Model.Yprop = plugin.Settings.Yprop;
+				Model.FilterX = S.FilterX;
+				Model.FilterY = S.FilterY;
+				Model.Refresh = S.Refresh;
+				Model.AutoPlot = S.Plot;
+				Model.LinFit = S.LinFit;
+				Model.Xprop = S.Xprop;
+				Model.Yprop = S.Yprop;
 			} else {
 				Model.Refresh = 1;
 				Model.LinFit = Model.AutoPlot = true;
@@ -49,6 +46,8 @@ namespace blekenbleu.OxyScope
 			}
 
 			ButtonUpdate();
+			Model.ymin = new double[] {0, 0}; Model.ymax = new double[] {0, 0};
+			Model.xmin = new double[] {0, 0}; Model.xmax = new double[] {0, 0};
 			RandomPlot();
 		}
 
@@ -62,8 +61,8 @@ namespace blekenbleu.OxyScope
 		{
 			Model.which = choose;
 			Model.Done = false;
-			xmin = Plugin.xmin[Model.which];
-			xmax = Plugin.xmax[Model.which];
+			xmin = Model.xmin[Model.which];
+			xmax = Model.xmax[Model.which];
 			Model.Range = 0 < Model.Refresh ? 0 : xmax - xmin;
 			if (2 == Model.Refresh && null != Model.Coef)		// cumulative Range?
 			{
@@ -74,16 +73,16 @@ namespace blekenbleu.OxyScope
 					Xmin = xmin;
 				if (Xmax < xmax)
 					Xmax = xmax;
-				if (Ymin > Plugin.ymin[Model.which])
-					Ymin = Plugin.ymin[Model.which];
-				if (Ymax < Plugin.ymax[Model.which])
-					Ymax = Plugin.ymax[Model.which];
+				if (Ymin > Model.ymin[Model.which])
+					Ymin = Model.ymin[Model.which];
+				if (Ymax < Model.ymax[Model.which])
+					Ymax = Model.ymax[Model.which];
 			}
 			else {
 				Xmax = xmax;
 				Xmin = xmin;
-				Ymax = Plugin.ymax[Model.which];
-				Ymin = Plugin.ymin[Model.which];
+				Ymax = Model.ymax[Model.which];
+				Ymin = Model.ymin[Model.which];
 			}
 
 			if (Model.AutoPlot)
