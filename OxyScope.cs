@@ -52,19 +52,19 @@ namespace blekenbleu.OxyScope
 			if (!data.GameRunning || null == data.OldData || null == data.NewData)
 				return;
 
-			var xp = pluginManager.GetPropertyValue(View.Model.Xprop);
+			var xp = pluginManager.GetPropertyValue(VM.Xprop);
 
 			if (null == xp || !float.TryParse(xp.ToString(), out float xf))
 			{
-				View.Model.XYprop = "invalid X property:  " + View.Model.Xprop;
+				VM.XYprop = "invalid X property:  " + VM.Xprop;
 				oops = true;
 				return;
 			}
 
-			var yp = pluginManager.GetPropertyValue(View.Model.Yprop);
+			var yp = pluginManager.GetPropertyValue(VM.Yprop);
 			if (null == yp || !float.TryParse(yp.ToString(), out float yf))
 			{
-				View.Model.XYprop = "invalid Y property:  " + View.Model.Yprop;
+				VM.XYprop = "invalid Y property:  " + VM.Yprop;
 				oops = true;
 				return;
 			}
@@ -72,7 +72,7 @@ namespace blekenbleu.OxyScope
 			if (oops)
 			{
 				oops = false;
-				View.Model.XYprop = "continuing...";
+				VM.XYprop = "continuing...";
 			}
 
 			if (0 == data.NewData.CarId.Length)
@@ -83,14 +83,14 @@ namespace blekenbleu.OxyScope
 				CarId = data.NewData.CarId;
 				IIRX = IIRY = 0;
 				xmin[0] = xmin[1] = ymin[0] = ymin[1] = xmax[0] = ymax[0] = xmax[1] = ymax[1] = 0;
-		   		View.Model.Title =
+		   		VM.Title =
 						pluginManager.GetPropertyValue("DataCorePlugin.CurrentGame")?.ToString()
 						+ ":  " + pluginManager.GetPropertyValue("DataCorePlugin.GameData.CarModel")?.ToString()
 						+ "@" + pluginManager.GetPropertyValue("DataCorePlugin.GameData.TrackName")?.ToString();  
 			}
 
-			IIRX += (xf - IIRX) / View.Model.FilterX;
-			IIRY += (yf - IIRY) / View.Model.FilterY;
+			IIRX += (xf - IIRX) / VM.FilterX;
+			IIRY += (yf - IIRY) / VM.FilterY;
 			View.x[i] = IIRX;									// why can DataUpdate() set View values??
 			View.y[i] = IIRY;
 			if (View.start[work] == i)
@@ -112,12 +112,13 @@ namespace blekenbleu.OxyScope
 			}
 			if ((++i - View.start[work]) >= View.length >> 1)	// filled?
 			{
-				View.Model.Current = $"{xmin[work]:#0.000} <= X <= "
+				VM.Current = $"{xmin[work]:#0.000} <= X <= "
 								   + $"{xmax[work]:#0.000};  "
 								   + $"{ymin[work]:#0.000} <= Y <= "
 								   + $"{ymax[work]:#0.000}";
-
-				if (0 < View.Model.Refresh || (xmax[work] - xmin[work]) > View.Model.Xrange)
+				// Refresh: 0 = max range, 1 = 3 second, 2 = cumulative range
+				if ( 1 == VM.Refresh || (VM.Done && 2 == VM.Refresh)
+				 || (0 == VM.Refresh && (xmax[work] - xmin[work]) > VM.Range))
 				{
 					View.Dispatcher.Invoke(() => View.Replot(work));
 					work = (ushort)(1 - work);					// switch buffers
@@ -133,13 +134,13 @@ namespace blekenbleu.OxyScope
 		/// <param name="pluginManager"></param>
 		public void End(PluginManager pluginManager)
 		{
-			Settings.FilterX = View.Model.FilterX;
-			Settings.FilterY = View.Model.FilterY;
-			Settings.Xprop = View.Model.Xprop;
-			Settings.Yprop = View.Model.Yprop;
-			Settings.LinFit = View.Model.LinFit;
-			Settings.Refresh = View.Model.Refresh;
-			Settings.Plot = View.Model.AutoPlot;
+			Settings.FilterX = VM.FilterX;
+			Settings.FilterY = VM.FilterY;
+			Settings.Xprop = VM.Xprop;
+			Settings.Yprop = VM.Yprop;
+			Settings.LinFit = VM.LinFit;
+			Settings.Refresh = VM.Refresh;
+			Settings.Plot = VM.AutoPlot;
 			// Save settings
 			this.SaveCommonSettings("GeneralSettings", Settings);
 		}
@@ -149,10 +150,13 @@ namespace blekenbleu.OxyScope
 		/// </summary>
 		/// <param name="pluginManager"></param>
 		/// <returns></returns>
-		internal Control View;
+		Control View;
+		Model VM;
 		public System.Windows.Controls.Control GetWPFSettingsControl(PluginManager pluginManager)
 		{
-			return View = new Control(this);
+			View = new Control(this);
+			VM = View.Model;
+			return View;
 		}
 
 		/// <summary>

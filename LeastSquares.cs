@@ -16,7 +16,11 @@ namespace blekenbleu.OxyScope
 	{
 		// cubic functions for OxyPlot FunctionSeries()
 		readonly Func<double, double> cubicfit = (x) => c[0] + x * (c[1] + x * (c[2] +  x * c[3]));
-		readonly Func<double, double> ccubicfit = (x) => Ft.Item1 + x * (Ft.Item2 + x * (Ft.Item3 +  x * Ft.Item4));
+
+		double Cubic (double x, double[] c)
+		{
+			return  c[0] + x * (c[1] + x * (c[2] +  x * c[3]));
+		}
 
 		double[] SubArray(double[] din, ushort offset, ushort length)
 		{
@@ -56,7 +60,7 @@ namespace blekenbleu.OxyScope
 			 && (xmax < (inflection = - p2 / (3 *p3)) || xmin > inflection
 			 || 0 <= sx * CubicSlope(p1, p2, p3, inflection))) 
 				return p0 + x * (p1 + x * (p2 + x * p3));	// unconstrained
-			else return 2 * (0 > m ? ymax : ymin); 	// tell NelderMeadSimplex slope changes are bad
+			else return 2 * (0 > m ? ymax : Ymin); 	// tell NelderMeadSimplex slope changes are bad
 		}
 	}
 }

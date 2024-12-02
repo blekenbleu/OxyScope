@@ -12,10 +12,10 @@ namespace blekenbleu.OxyScope
 		public OxyScope Plugin { get; }
 		public Model Model;
 		public ushort length, ln2;
-		public ushort[] start;						// circular buffer
-		public double[] x, y;						// plot samples
-		static double xmax, ymax, xmin, ymin,		// axis limits
-				 m, B, inflection;
+		public ushort[] start;									// split buffer
+		public double[] x, y;									// plot samples
+		static double Xmax, Ymax, Xmin, Ymin, xmin, xmax, ymax,	// axes limits
+						m, B, inflection;
 		static readonly double[] slope = new double[] { 0, 0, 0 };
 
 		public Control()
@@ -42,6 +42,8 @@ namespace blekenbleu.OxyScope
 				Model.Xprop = plugin.Settings.Xprop;
 				Model.Yprop = plugin.Settings.Yprop;
 			} else {
+				Model.Refresh = 1;
+				Model.LinFit = Model.AutoPlot = true;
 				Model.Xprop = Model.Yprop = "random";
 				Model.FilterY = Model.FilterX = 1;
 			}
@@ -59,7 +61,31 @@ namespace blekenbleu.OxyScope
 		internal void Replot(ushort choose)
 		{
 			Model.which = choose;
-			Model.Xrange = 0 < Model.Refresh ? 0 : Plugin.xmax[Model.which] - Plugin.xmin[Model.which];
+			Model.Done = false;
+			xmin = Plugin.xmin[Model.which];
+			xmax = Plugin.xmax[Model.which];
+			Model.Range = 0 < Model.Refresh ? 0 : xmax - xmin;
+			if (2 == Model.Refresh && null != Model.Coef)		// cumulative Range?
+			{
+		 		if (Xmin < xmin && Xmax > xmax)
+					return;
+
+				if (Xmin > xmin)
+					Xmin = xmin;
+				if (Xmax < xmax)
+					Xmax = xmax;
+				if (Ymin > Plugin.ymin[Model.which])
+					Ymin = Plugin.ymin[Model.which];
+				if (Ymax < Plugin.ymax[Model.which])
+					Ymax = Plugin.ymax[Model.which];
+			}
+			else {
+				Xmax = xmax;
+				Xmin = xmin;
+				Ymax = Plugin.ymax[Model.which];
+				Ymin = Plugin.ymin[Model.which];
+			}
+
 			if (Model.AutoPlot)
 				Plot();
 			else Model.PVis = Visibility.Visible;
@@ -97,7 +123,7 @@ namespace blekenbleu.OxyScope
 		readonly string[] refresh = new string[]
 		{ 	"Hold max  X range",
 			"3 second refresh",
-			"Hold max R-squared"
+			"Cumulative X range"
 		};
 		void ButtonUpdate()
 		{

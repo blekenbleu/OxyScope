@@ -9,14 +9,13 @@ namespace blekenbleu.OxyScope
 	{
 		PlotModel ScatterPlot(string title)
 		{
-			xmin = Plugin.xmin[Model.which];
 			PlotModel model = new PlotModel { Title = Model.Title };
 
 			model.Axes.Add(new LinearAxis
 			{
 				Position = AxisPosition.Left,
 				Title = Model.Yprop,
-				Minimum = ymin,
+				Minimum = Ymin,
 				Maximum = ymax
 			});
 
@@ -24,8 +23,8 @@ namespace blekenbleu.OxyScope
 			{
 				Position = AxisPosition.Bottom,
 				Title = Model.Xprop,
-				Minimum = xmin,
-				Maximum = xmax
+				Minimum = Xmin,
+				Maximum = Xmax
 			});
 
 			model.Series.Add(Scatter(title));
@@ -39,7 +38,8 @@ namespace blekenbleu.OxyScope
 		private ScatterSeries Scatter(string title)
 		{
 			int size = 2;	// plot dot size
-			ushort end = (start[Model.which] <= ln2) ? (ushort)(start[Model.which] + ln2) : length;
+			ushort end = (start[Model.which] <= ln2)
+					   ? (ushort)(start[Model.which] + ln2) : length;
 
 			var scatterSeries = new ScatterSeries { MarkerType = MarkerType.Circle };
 			for (ushort i = start[Model.which]; i < end; i++)
@@ -54,18 +54,19 @@ namespace blekenbleu.OxyScope
 			// fill the plot with random data
 			Random rnd = new Random();
 			double xi;
-			ymin = Plugin.ymin[Model.which];
-			ymax = 100 + Plugin.ymin[Model.which];
-			xmin = Plugin.xmin[Model.which];
-			xmax = 100 + xmin;
+			Ymin = Plugin.ymin[Model.which];
+			ymax = 100 + Ymin;
+			Xmin = Plugin.xmin[Model.which];
+			Xmax = 100 + Xmin;
 			xi = 100.0 / ln2;
 			for (int i = 0; i < ln2; i++)	// fill the plot
 			{
-				y[i] = ymin + 100 * rnd.NextDouble();
-				x[i] = xmin;
-				xmin += xi;
+				y[i] = Ymin + 100 * rnd.NextDouble();
+				x[i] = Xmin;
+				Xmin += xi;
 			}
 
+			Xmin = Plugin.xmin[Model.which];
 			plot.Model = ScatterPlot("Random plot");
 		}
 	}

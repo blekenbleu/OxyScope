@@ -14,7 +14,6 @@ namespace blekenbleu.OxyScope
 		readonly PropertyChangedEventArgs FXevent = new PropertyChangedEventArgs(nameof(FilterX));
 		readonly PropertyChangedEventArgs FYevent = new PropertyChangedEventArgs(nameof(FilterY));
 		readonly PropertyChangedEventArgs PVevent = new PropertyChangedEventArgs(nameof(PVis));
-		readonly PropertyChangedEventArgs TBevent = new PropertyChangedEventArgs(nameof(Refresh));
 		readonly PropertyChangedEventArgs TIevent = new PropertyChangedEventArgs(nameof(Title));
 		readonly PropertyChangedEventArgs Xevent = new PropertyChangedEventArgs(nameof(Xprop));
 		readonly PropertyChangedEventArgs XYevent = new PropertyChangedEventArgs(nameof(XYprop));
@@ -24,8 +23,9 @@ namespace blekenbleu.OxyScope
 
 		internal OxyScope Plugin;
 		internal ushort which = 0;	 // which samples to plot
-		internal double R2, Xrange;
-		internal bool LinFit, AutoPlot;
+		internal double Range;
+		internal double[] Coef;
+		internal bool LinFit, AutoPlot, Done = true;
 		private string _title = "launch a game or Replay to collect XY property samples";
 		public string Title { get => _title;
 			set
@@ -33,7 +33,7 @@ namespace blekenbleu.OxyScope
 				if (_title != value)
 				{
 					_title = value;
-					R2 = Xrange = 0;
+					Range = 0;
 					PropertyChanged?.Invoke(this, TIevent);
 				}
 			}
@@ -73,7 +73,7 @@ namespace blekenbleu.OxyScope
 				if (_xprop != value)
 				{
 					_xprop = value;
-					R2 = Xrange = 0;	
+					Range = 0;	
 					PropertyChanged?.Invoke(this, Xevent);
 				}
 			}
@@ -87,7 +87,7 @@ namespace blekenbleu.OxyScope
 				if (_yprop != value)
 				{
 					_yprop = value;
-					R2 = Xrange = 0;	
+					Range = 0;	
 					PropertyChanged?.Invoke(this, Yevent);
 				}
 			}
@@ -132,8 +132,8 @@ namespace blekenbleu.OxyScope
 			}
 		}
 
-		private ushort _ref = 0;
-		public ushort Refresh
+//		private ushort _ref = 0;
+		public ushort Refresh; /* 0 == max Range; 1 == 3 second, 2 = cumulative Range
 		{	get => _ref;
 			set
 			{
@@ -141,10 +141,11 @@ namespace blekenbleu.OxyScope
 				{
 					_ref = value;
 					PropertyChanged?.Invoke(this, TBevent);
-					R2 = Xrange = 0;
+					Range = 0;
+					Coef = null;
 				}
 			}
-		}
+		} */
 
 		private double _filtx;
 		public double FilterX

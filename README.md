@@ -62,6 +62,20 @@ XY plot of *positive* property values
 - debug using simple cubic function
 - *30 Nov*:&nbsp;  Montonic() debugged
 
+### 2 Dec:&nbsp; More better data
+- interpolating beyond fitted data is doomed:  curves likely go non-monotonic
+	- preserve inflection point?
+- practically, no single 3 second sample set is likely to include highest and lowest values
+	- 3, instead of 2, data collection buckets?
+	- best pair may be non-adjacent
+    - refactor getting data into processors, or move buckets?
+#### best 2 of 3 buckets
+- first fill middle bucket
+- ignore subsequent buckets with subset ranges
+- replace center by buckets with superset ranges
+- pair buckets that combine for greater range
+	- that may require copying first or third bucket to middle
+
 <hr>
 <b><i>Property folder changes from default WPF project for SimHub plugins</i></b>
 <details><summary>click for differences</summary>
