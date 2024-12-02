@@ -154,7 +154,7 @@ namespace blekenbleu.OxyScope
 		public System.Windows.Controls.Control GetWPFSettingsControl(PluginManager pluginManager)
 		{
 			View = new Control(this);
-			VM = View.Model;
+			VM = View.M;
 			return View;
 		}
 

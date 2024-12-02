@@ -9,12 +9,12 @@ namespace blekenbleu.OxyScope
 	{
 		PlotModel ScatterPlot(string title)
 		{
-			PlotModel model = new PlotModel { Title = Model.Title };
+			PlotModel model = new PlotModel { Title = M.Title };
 
 			model.Axes.Add(new LinearAxis
 			{
 				Position = AxisPosition.Left,
-				Title = Model.Yprop,
+				Title = M.Yprop,
 				Minimum = Ymin,
 				Maximum = ymax
 			});
@@ -22,7 +22,7 @@ namespace blekenbleu.OxyScope
 			model.Axes.Add(new LinearAxis
 			{
 				Position = AxisPosition.Bottom,
-				Title = Model.Xprop,
+				Title = M.Xprop,
 				Minimum = Xmin,
 				Maximum = Xmax
 			});
@@ -38,11 +38,11 @@ namespace blekenbleu.OxyScope
 		private ScatterSeries Scatter(string title)
 		{
 			int size = 2;	// plot dot size
-			ushort end = (ushort)(Model.start[Model.which] + Model.length);
+			ushort end = (ushort)(M.start[M.which] + M.length);
 
 			var scatterSeries = new ScatterSeries { MarkerType = MarkerType.Circle };
-			for (ushort i = Model.start[Model.which]; i < end; i++)
-				scatterSeries.Points.Add(new ScatterPoint(Model.x[i], Model.y[i], size));
+			for (ushort i = M.start[M.which]; i < end; i++)
+				scatterSeries.Points.Add(new ScatterPoint(M.x[i], M.y[i], size));
 			scatterSeries.MarkerFill = OxyColors.Red;
 			scatterSeries.Title = title;
 			return scatterSeries;
@@ -53,19 +53,19 @@ namespace blekenbleu.OxyScope
 			// fill the plot with random data
 			Random rnd = new Random();
 			double xi;
-			Ymin = Model.ymin[Model.which];
+			Ymin = M.ymin[M.which];
 			ymax = 100 + Ymin;
-			Xmin = Model.xmin[Model.which];
+			Xmin = M.xmin[M.which];
 			Xmax = 100 + Xmin;
-			xi = 100.0 / Model.length;
-			for (int i = 0; i < Model.length; i++)	// fill the plot
+			xi = 100.0 / M.length;
+			for (int i = 0; i < M.length; i++)	// fill the plot
 			{
-				Model.y[i] = Ymin + 100 * rnd.NextDouble();
-				Model.x[i] = Xmin;
+				M.y[i] = Ymin + 100 * rnd.NextDouble();
+				M.x[i] = Xmin;
 				Xmin += xi;
 			}
 
-			Xmin = Model.xmin[Model.which];
+			Xmin = M.xmin[M.which];
 			plot.Model = ScatterPlot("Random plot");
 		}
 	}

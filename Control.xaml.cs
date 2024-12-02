@@ -9,20 +9,20 @@ namespace blekenbleu.OxyScope
 	/// </summary>
 	public partial class Control : UserControl
 	{
-		public Model Model;
+		public Model M;
 		static double Xmax, Ymax, Xmin, Ymin, xmin, xmax, ymax,	// axes limits
 						m, B, inflection;
 		static readonly double[] slope = new double[] { 0, 0, 0 };
 
 		public Control()
 		{
-			DataContext = Model = new Model();
+			DataContext = M = new Model();
 			InitializeComponent();
-			Model.length = 360;				// 2 x 3 seconds of 60 Hz samples
-			Model.x = new double[Model.length];
-			Model.y = new double[Model.length];
-			Model.length /= 2; 
-			Model.start = new ushort[] { 0, Model.length };
+			M.length = 360;				// 2 x 3 seconds of 60 Hz samples
+			M.x = new double[M.length];
+			M.y = new double[M.length];
+			M.length /= 2; 
+			M.start = new ushort[] { 0, M.length };
 		}
 
 		public Control(OxyScope plugin) : this()
@@ -31,23 +31,23 @@ namespace blekenbleu.OxyScope
 
 			if (null != (S = plugin.Settings))
 			{
-				Model.FilterX = S.FilterX;
-				Model.FilterY = S.FilterY;
-				Model.Refresh = S.Refresh;
-				Model.AutoPlot = S.Plot;
-				Model.LinFit = S.LinFit;
-				Model.Xprop = S.Xprop;
-				Model.Yprop = S.Yprop;
+				M.FilterX = S.FilterX;
+				M.FilterY = S.FilterY;
+				M.Refresh = S.Refresh;
+				M.AutoPlot = S.Plot;
+				M.LinFit = S.LinFit;
+				M.Xprop = S.Xprop;
+				M.Yprop = S.Yprop;
 			} else {
-				Model.Refresh = 1;
-				Model.LinFit = Model.AutoPlot = true;
-				Model.Xprop = Model.Yprop = "random";
-				Model.FilterY = Model.FilterX = 1;
+				M.Refresh = 1;
+				M.LinFit = M.AutoPlot = true;
+				M.Xprop = M.Yprop = "random";
+				M.FilterY = M.FilterX = 1;
 			}
 
 			ButtonUpdate();
-			Model.ymin = new double[] {0, 0}; Model.ymax = new double[] {0, 0};
-			Model.xmin = new double[] {0, 0}; Model.xmax = new double[] {0, 0};
+			M.ymin = new double[] {0, 0}; M.ymax = new double[] {0, 0};
+			M.xmin = new double[] {0, 0}; M.xmax = new double[] {0, 0};
 			RandomPlot();
 		}
 
@@ -59,12 +59,12 @@ namespace blekenbleu.OxyScope
 
 		internal void Replot(ushort choose)
 		{
-			Model.which = choose;
-			Model.Done = false;
-			xmin = Model.xmin[Model.which];
-			xmax = Model.xmax[Model.which];
-			Model.Range = 0 < Model.Refresh ? 0 : xmax - xmin;
-			if (2 == Model.Refresh && null != Model.Coef)		// cumulative Range?
+			M.which = choose;
+			M.Done = false;
+			xmin = M.xmin[M.which];
+			xmax = M.xmax[M.which];
+			M.Range = 0 < M.Refresh ? 0 : xmax - xmin;
+			if (2 == M.Refresh && null != M.Coef)		// cumulative Range?
 			{
 		 		if (Xmin < xmin && Xmax > xmax)
 					return;
@@ -73,41 +73,41 @@ namespace blekenbleu.OxyScope
 					Xmin = xmin;
 				if (Xmax < xmax)
 					Xmax = xmax;
-				if (Ymin > Model.ymin[Model.which])
-					Ymin = Model.ymin[Model.which];
-				if (Ymax < Model.ymax[Model.which])
-					Ymax = Model.ymax[Model.which];
+				if (Ymin > M.ymin[M.which])
+					Ymin = M.ymin[M.which];
+				if (Ymax < M.ymax[M.which])
+					Ymax = M.ymax[M.which];
 			}
 			else {
 				Xmax = xmax;
 				Xmin = xmin;
-				Ymax = Model.ymax[Model.which];
-				Ymin = Model.ymin[Model.which];
+				Ymax = M.ymax[M.which];
+				Ymin = M.ymin[M.which];
 			}
 
-			if (Model.AutoPlot)
+			if (M.AutoPlot)
 				Plot();
-			else Model.PVis = Visibility.Visible;
+			else M.PVis = Visibility.Visible;
 		}
 
 		private void PBclick(object sender, RoutedEventArgs e)			// Plot button
 		{
-			Model.PVis = Visibility.Hidden;
+			M.PVis = Visibility.Hidden;
 			Plot();
 		}
 
 		private void RBclick(object sender, RoutedEventArgs e)			// Refresh button
 		{
-			Model.Refresh = (ushort)((++Model.Refresh) % 3);
+			M.Refresh = (ushort)((++M.Refresh) % 3);
 			ButtonUpdate();
 		}
 
 		private void APclick(object sender, RoutedEventArgs e)		  // AutoPlot
 		{
-			Model.AutoPlot = !Model.AutoPlot;
-			if (Model.AutoPlot && Visibility.Visible == Model.PVis)
+			M.AutoPlot = !M.AutoPlot;
+			if (M.AutoPlot && Visibility.Visible == M.PVis)
 			{
-				Model.PVis = Visibility.Hidden;
+				M.PVis = Visibility.Hidden;
 				Plot();
 			}
 			ButtonUpdate();
@@ -115,7 +115,7 @@ namespace blekenbleu.OxyScope
 
 		private void LFclick(object sender, RoutedEventArgs e)			// Line Fit button
 		{
-			Model.LinFit = !Model.LinFit;
+			M.LinFit = !M.LinFit;
 			ButtonUpdate();	
 		}
 
@@ -126,9 +126,9 @@ namespace blekenbleu.OxyScope
 		};
 		void ButtonUpdate()
 		{
-			TH.Text = refresh[Model.Refresh];
-			LF.Text = "Fit Curves " + (Model.LinFit ? "enabled" : "disabled");
-			TR.Text = (Model.AutoPlot ? "Auto" : "Manual") + " Replot";
+			TH.Text = refresh[M.Refresh];
+			LF.Text = "Fit Curves " + (M.LinFit ? "enabled" : "disabled");
+			TR.Text = (M.AutoPlot ? "Auto" : "Manual") + " Replot";
 		}
 	}	// class
 }

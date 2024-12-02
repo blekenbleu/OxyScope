@@ -174,5 +174,5 @@ namespace blekenbleu.OxyScope
 				}
 			}
 		}
-	}	// class Model
+	}	// class M
 }
