@@ -62,7 +62,7 @@ XY plot of *positive* property values
 - debug using simple cubic function
 - *30 Nov*:&nbsp;  Montonic() debugged
 
-### 2 Dec:&nbsp; More better data
+### 2 Dec:&nbsp; More better data - **Accrual mode**
 - interpolating beyond fitted data is doomed:  curves likely go non-monotonic
 	- preserve inflection point?
 - practically, no single 3 second sample set is likely to include highest and lowest values
