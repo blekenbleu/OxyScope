@@ -19,7 +19,6 @@ namespace blekenbleu.OxyScope
 		{
 			DataContext = M = new Model();
 			InitializeComponent();
-			M.length = 901;				// 5 x 3 seconds of 60 Hz samples
 		}
 
 		public Control(OxyScope plugin) : this()
@@ -27,10 +26,6 @@ namespace blekenbleu.OxyScope
 			Settings S;
 
 			O = plugin;
-			O.x = new double[M.length];
-			O.y = new double[M.length];
-			M.length /= 5; 
-			M.start = new ushort[] { 0, M.length };
 			if (null != (S = plugin.Settings))
 			{
 				M.FilterX = S.FilterX;
@@ -46,6 +41,10 @@ namespace blekenbleu.OxyScope
 				M.Xprop = M.Yprop = "random";
 				M.FilterY = M.FilterX = 1;
 			}
+			O.x = new double[M.length = 901];
+			O.y = new double[M.length];
+			M.length /= 5; 
+			M.start = new ushort[] { 0, M.length };
 
 			ButtonUpdate();
 			M.ymin = new double[] {0, 0}; M.ymax = new double[] {0, 0};
