@@ -43,8 +43,8 @@ namespace blekenbleu.OxyScope
 		/// </summary>
 		/// <param name="pluginManager"></param>
 		/// <param name="data">Current game data, including current and previous data frame.</param>
-		double IIRX = 0, IIRY = 0;				// filtered property values
-		internal double[] x, y;                 // plot samples
+		double IIRX = 0, IIRY = 0;			// filtered property values
+		internal double[] x, y;				// plot samples
 		private ushort work, timeout;		// arrays currently being sampled
 		bool oops = false;
 		public void DataUpdate(PluginManager pluginManager, ref GameData data)
@@ -81,20 +81,23 @@ namespace blekenbleu.OxyScope
 			if (CarId != data.NewData.CarId)
 			{
 				CarId = data.NewData.CarId;
-				IIRX = IIRY = VM.Range = VM.I = timeout = VM.which = 0;
-				VM.Coef = null;
-                once = true;
-				VM.xmin[0] = VM.xmin[1] = VM.ymin[0] = VM.ymin[1] = VM.xmax[0] = VM.ymax[0]
-						   = VM.xmax[1] = VM.ymax[1] = VM.Total = 0;
+				// implicit Reset
 		   		VM.Title = pluginManager.GetPropertyValue("DataCorePlugin.CurrentGame")?.ToString()
 						 + ":  " + pluginManager.GetPropertyValue("DataCorePlugin.GameData.CarModel")?.ToString()
-						 + "@" + pluginManager.GetPropertyValue("DataCorePlugin.GameData.TrackName")?.ToString();
-				VM.length = (ushort)(2 == VM.Refresh ? 0 : 180);
+						 + "@"	 + pluginManager.GetPropertyValue("DataCorePlugin.GameData.TrackName")?.ToString();
+			}
+
+			if (VM.Restart)
+			{
+				VM.Restart = false;
+				IIRY = yf;
+				IIRX = xf;
+				VM.start[work] = VM.I;
 			}
 
 			IIRX += (xf - IIRX) / VM.FilterX;
 			IIRY += (yf - IIRY) / VM.FilterY;
-			x[VM.I] = IIRX;									// why can DataUpdate() set View values??
+			x[VM.I] = IIRX;
 			y[VM.I] = IIRY;
 
 			if (VM.start[work] == VM.I)
@@ -114,21 +117,19 @@ namespace blekenbleu.OxyScope
 				else if (VM.ymin[work] > y[VM.I])
 					VM.ymin[work] = y[VM.I];
 			}
+
 			if (2 == VM.Refresh)
 			{
 				if (1 < (double)pluginManager.GetPropertyValue("DataCorePlugin.GameData.SpeedKmh"))
 					Accrue();
-				return;
 			}
 
-			if ((++VM.I - VM.start[work]) >= VM.length)	// filled?
+			else if ((++VM.I - VM.start[work]) >= VM.length)	// filled?
 			{
-				VM.Current = $"{VM.xmin[work]:#0.000} <= X <= "
-								   + $"{VM.xmax[work]:#0.000};  "
-								   + $"{VM.ymin[work]:#0.000} <= Y <= "
-								   + $"{VM.ymax[work]:#0.000}";
+				VM.Current = $"{VM.xmin[work]:#0.000} <= X <= {VM.xmax[work]:#0.000};  "
+						   + $"{VM.ymin[work]:#0.000} <= Y <= {VM.ymax[work]:#0.000}";
 				// Refresh: 0 = max range, 1 = 3 second, 2 = cumulative range
-				if ( 1 == VM.Refresh || (VM.Done && 2 == VM.Refresh)
+				if ( 1 == VM.Refresh
 				 || (0 == VM.Refresh && (VM.xmax[work] - VM.xmin[work]) > VM.Range))
 				{
 					View.Dispatcher.Invoke(() => View.Replot(work));

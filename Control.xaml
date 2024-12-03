@@ -8,13 +8,13 @@
 			 mc:Ignorable="d"
 			 xmlns:oxy="http://oxyplot.org/wpf"
 			 d:DataContext="{d:DesignInstance Type=local:Model}"
-			 Height="750" Width="800">
+			 Height="725" Width="800">
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="50"/>
 			<RowDefinition Height="550"/>
 			<RowDefinition Height="25"/>
-			<RowDefinition Height="75"/>
+			<RowDefinition Height="50"/>
 			<RowDefinition Height="50"/>
 		</Grid.RowDefinitions>
 		<Canvas Grid.Row="0" Grid.Column="0" VerticalAlignment="Top">
@@ -56,8 +56,6 @@
 					 Name="XYprop" Text="{Binding XYprop}"/>
 			<TextBox Margin="0,25" Canvas.Left="0" Height="25" Width="800"
 					 Name="XYprop2" Text="{Binding XYprop2}"/>
-			<TextBox Margin="0,50" Canvas.Left="0" Height="25" Width="800"
-					 Name="XYprop3" Text="{Binding XYprop3}"/>
 		</Canvas>
 		<Canvas Grid.Row="4" Grid.Column="0" VerticalAlignment="Top">
 			<ui:TitledSlider Title="	 Y-axis filter" Width="400"

@@ -54,7 +54,7 @@ namespace blekenbleu.OxyScope
 		}
 
 		private void Hyperlink_RequestNavigate(object sender,
-									   System.Windows.Navigation.RequestNavigateEventArgs e)
+									System.Windows.Navigation.RequestNavigateEventArgs e)
 		{
 			System.Diagnostics.Process.Start(e.Uri.AbsoluteUri);
 		}
@@ -65,8 +65,13 @@ namespace blekenbleu.OxyScope
 			xmin = M.xmin[M.which];
 			xmax = M.xmax[M.which];
 			M.Range = 0 < M.Refresh ? 0 : xmax - xmin;
-			if (2 == M.Refresh && null != M.Coef)		// cumulative Range?
+			if (1 == M.Refresh || M.Reset)		// first time or 3 second
 			{
+				Xmax = xmax;
+				Xmin = xmin;
+				Ymax = M.ymax[M.which];
+				Ymin = M.ymin[M.which];
+			} else {
 		 		if (Xmin < xmin && Xmax > xmax)
 					return;
 
@@ -78,39 +83,29 @@ namespace blekenbleu.OxyScope
 					Ymin = M.ymin[M.which];
 				if (Ymax < M.ymax[M.which])
 					Ymax = M.ymax[M.which];
-                M.Done = false;
-            }
-			else {
-				Xmax = xmax;
-				Xmin = xmin;
-				Ymax = M.ymax[M.which];
-				Ymin = M.ymin[M.which];
 			}
-
+			M.Reset = false;
 			if (M.AutoPlot)
 				Plot();
 			else M.PVis = Visibility.Visible;
 		}
 
-		private void PBclick(object sender, RoutedEventArgs e)			// Plot button
+		private void PBclick(object sender, RoutedEventArgs e)		// Plot button
 		{
 			M.PVis = Visibility.Hidden;
 			Plot();
 		}
 
-		private void RBclick(object sender, RoutedEventArgs e)			// Refresh button
+		private void RBclick(object sender, RoutedEventArgs e)		// Refresh button
 		{
 			M.Refresh = (ushort)((++M.Refresh) % 3);
-            M.Range = M.I = M.which = 0;
-			M.Once = true;
-			M.Coef = null;
+			M.Reset = true;
 			ButtonUpdate();
 		}
 
-		private void APclick(object sender, RoutedEventArgs e)        // AutoPlot
+		private void APclick(object sender, RoutedEventArgs e)		// AutoPlot
 		{
 			M.AutoPlot = !M.AutoPlot;
-			M.Done = true;
 			if (M.AutoPlot && Visibility.Visible == M.PVis)
 			{
 				M.PVis = Visibility.Hidden;
@@ -119,7 +114,7 @@ namespace blekenbleu.OxyScope
 			ButtonUpdate();
 		}
 
-		private void LFclick(object sender, RoutedEventArgs e)			// Line Fit button
+		private void LFclick(object sender, RoutedEventArgs e)		// Line Fit button
 		{
 			M.LinFit = !M.LinFit;
 			ButtonUpdate();	
@@ -130,6 +125,7 @@ namespace blekenbleu.OxyScope
 			"3 second refresh",
 			"Cumulative X range"
 		};
+
 		void ButtonUpdate()
 		{
 			TH.Text = refresh[M.Refresh];

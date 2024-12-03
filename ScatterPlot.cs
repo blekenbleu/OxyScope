@@ -25,7 +25,7 @@ namespace blekenbleu.OxyScope
 				Title = M.Xprop,
 						Minimum = Xmin - 0.005 * (Xmax - Xmin),	// space for dot@Xmin
 						Maximum = Xmax + 0.005 * (Xmax - Xmin)
-            });
+			});
 
 			model.Series.Add(Scatter(title));
 			model.LegendPosition = LegendPosition.TopLeft;
@@ -53,10 +53,10 @@ namespace blekenbleu.OxyScope
 			// fill the plot with random data
 			Random rnd = new Random();
 			double xi;
+			Xmin = M.xmin[M.which];	 // RandomPlot()
+			Xmax = 100 + Xmin;
 			Ymin = M.ymin[M.which];
 			ymax = 100 + Ymin;
-			Xmin = M.xmin[M.which];
-			Xmax = 100 + Xmin;
 			xi = 100.0 / M.length;
 			for (int i = 0; i < M.length; i++)	// fill the plot
 			{

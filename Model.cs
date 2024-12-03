@@ -18,7 +18,6 @@ namespace blekenbleu.OxyScope
 		readonly PropertyChangedEventArgs Xevent = new PropertyChangedEventArgs(nameof(Xprop));
 		readonly PropertyChangedEventArgs XYevent = new PropertyChangedEventArgs(nameof(XYprop));
 		readonly PropertyChangedEventArgs XY2event = new PropertyChangedEventArgs(nameof(XYprop2));
-		readonly PropertyChangedEventArgs XY3event = new PropertyChangedEventArgs(nameof(XYprop3));
 		readonly PropertyChangedEventArgs Yevent = new PropertyChangedEventArgs(nameof(Yprop));
 
 		internal ushort		I, length, Refresh = 0, which = 0;
@@ -26,7 +25,7 @@ namespace blekenbleu.OxyScope
 		internal double		Range, Total;
 		internal double[]	Coef,
 							xmin, ymin, xmax, ymax; // View uses for axes scaling
-		internal bool LinFit, AutoPlot, Done = true, Once = true;
+		internal bool LinFit, AutoPlot, Once = true, Restart = true;
 		private string _title = "launch a game or Replay to collect XY property samples";
 		public string Title { get => _title;
 			set
@@ -53,6 +52,21 @@ namespace blekenbleu.OxyScope
 			} 
 		}
 
+		private bool _reset = true;
+		public bool Reset
+		{   get => _reset;
+			set
+			{
+				if (_reset = value)
+				{
+                   	Total = Range = I = which = 0;	
+					Restart = Once = true;
+					Coef = null;
+					length = (ushort)(2 == Refresh ? 0 : 180);
+				}
+			}
+		}
+
 		private string _current = "waiting for property values...";
 		public string Current		// OxyScope sets CurrentGame Car@Track
 		{	get => _current;
@@ -74,10 +88,8 @@ namespace blekenbleu.OxyScope
 				if (_xprop != value)
 				{
 					_xprop = value;
-                    Range = I = which = 0;	
 					PropertyChanged?.Invoke(this, Xevent);
-					Once = true;
-					Coef = null;
+					Reset = true;
 				}
 			}
 		}
@@ -90,10 +102,8 @@ namespace blekenbleu.OxyScope
 				if (_yprop != value)
 				{
 					_yprop = value;
-					Range = I = which = 0;	
+					Reset = true;
 					PropertyChanged?.Invoke(this, Yevent);
-					Once = true;
-					Coef = null;
 				}
 			}
 		}
@@ -120,19 +130,6 @@ namespace blekenbleu.OxyScope
 				{
 					_xyprop2 = value;
 					PropertyChanged?.Invoke(this, XY2event);
-				}
-			}
-		}
-
-		private string _xyprop3 = "";
-		public string XYprop3
-		{	get => _xyprop3;
-			set
-			{
-				if (_xyprop3 != value)
-				{
-					_xyprop3 = value;
-					PropertyChanged?.Invoke(this, XY3event);
 				}
 			}
 		}
