@@ -21,12 +21,12 @@ namespace blekenbleu.OxyScope
 		readonly PropertyChangedEventArgs XY3event = new PropertyChangedEventArgs(nameof(XYprop3));
 		readonly PropertyChangedEventArgs Yevent = new PropertyChangedEventArgs(nameof(Yprop));
 
-		internal ushort		length, which = 0;	 	// which samples to plot
+		internal ushort		I, length, Refresh = 0, which = 0;
 		internal ushort[]	start;					// split buffer
 		internal double		Range, Total;
 		internal double[]	Coef,
 							xmin, ymin, xmax, ymax; // View uses for axes scaling
-		internal bool LinFit, AutoPlot, Done = true;
+		internal bool LinFit, AutoPlot, Done = true, Once = true;
 		private string _title = "launch a game or Replay to collect XY property samples";
 		public string Title { get => _title;
 			set
@@ -74,8 +74,10 @@ namespace blekenbleu.OxyScope
 				if (_xprop != value)
 				{
 					_xprop = value;
-					Range = 0;	
+                    Range = I = which = 0;	
 					PropertyChanged?.Invoke(this, Xevent);
+					Once = true;
+					Coef = null;
 				}
 			}
 		}
@@ -88,8 +90,10 @@ namespace blekenbleu.OxyScope
 				if (_yprop != value)
 				{
 					_yprop = value;
-					Range = 0;	
+					Range = I = which = 0;	
 					PropertyChanged?.Invoke(this, Yevent);
+					Once = true;
+					Coef = null;
 				}
 			}
 		}
@@ -132,21 +136,6 @@ namespace blekenbleu.OxyScope
 				}
 			}
 		}
-
-//		private ushort _ref = 0;
-		public ushort Refresh; /* 0 == max Range; 1 == 3 second, 2 = cumulative Range
-		{	get => _ref;
-			set
-			{
-				if (_ref != value)
-				{
-					_ref = value;
-					PropertyChanged?.Invoke(this, TBevent);
-					Total = Range = 0;
-					Coef = null;
-				}
-			}
-		} */
 
 		private double _filtx;
 		public double FilterX

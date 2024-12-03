@@ -101,6 +101,9 @@ namespace blekenbleu.OxyScope
 		private void RBclick(object sender, RoutedEventArgs e)			// Refresh button
 		{
 			M.Refresh = (ushort)((++M.Refresh) % 3);
+            M.Range = M.I = M.which = 0;
+			M.Once = true;
+			M.Coef = null;
 			ButtonUpdate();
 		}
 

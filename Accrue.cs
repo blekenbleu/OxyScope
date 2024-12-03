@@ -9,18 +9,18 @@ namespace blekenbleu.OxyScope
 
 		void Accrue()
 		{
-			if ((0 == i % 30 || (i > VM.length && 180 < ++timeout))  && once)
+			if (once && (0 == VM.I % 30 || 180 < ++timeout))
 			{
 				timeout = 0;
 				once = false;
-				if (0 == i)
+				if (0 == VM.I)
 				{
 					StdDev = 0;
-					Avg = x[i] * 0.999;
+					Avg = x[VM.I] * 0.999;
 				} else {
 					double variance = 0;
 
-					Avg = VM.Total / (VM.length = i);
+					Avg = VM.Total / (VM.length = VM.I);
 
 					for(int j = 0; j < VM.length; j++)
 					{
@@ -28,16 +28,16 @@ namespace blekenbleu.OxyScope
 						variance += diff * diff; 
 					}
 					StdDev = Math.Sqrt(variance / VM.length);
-					VM.Current = $"length = {VM.length};  StdDev = {StdDev}";
+					VM.Current = $"length = {VM.length};  StdDev = {StdDev:0.0000}";
 					View.Dispatcher.Invoke(() => View.Replot(work));
 				}
 			}
-			if(x[i] > Avg + 2 * StdDev || x[i] < Avg - 2 * StdDev)
+			if(x[VM.I] > Avg + 2 * StdDev || x[VM.I] < Avg - 2 * StdDev)
 			{
-				if (i > x.Length - 1)
+				if (VM.I > x.Length - 1)
 					return;
 				once = true;	// might stick at modulo 60 for awhile
-				VM.Total += x[i++];
+				VM.Total += x[VM.I++];
 			}
 		}
 	}

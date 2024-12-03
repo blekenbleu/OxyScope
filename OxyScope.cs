@@ -45,7 +45,7 @@ namespace blekenbleu.OxyScope
 		/// <param name="data">Current game data, including current and previous data frame.</param>
 		double IIRX = 0, IIRY = 0;				// filtered property values
 		internal double[] x, y;                 // plot samples
-		private ushort i, work, timeout;		// arrays currently being sampled
+		private ushort work, timeout;		// arrays currently being sampled
 		bool oops = false;
 		public void DataUpdate(PluginManager pluginManager, ref GameData data)
 		{
@@ -81,8 +81,9 @@ namespace blekenbleu.OxyScope
 			if (CarId != data.NewData.CarId)
 			{
 				CarId = data.NewData.CarId;
-				IIRX = IIRY = i = timeout = 0;
-				once = true;
+				IIRX = IIRY = VM.Range = VM.I = timeout = VM.which = 0;
+				VM.Coef = null;
+                once = true;
 				VM.xmin[0] = VM.xmin[1] = VM.ymin[0] = VM.ymin[1] = VM.xmax[0] = VM.ymax[0]
 						   = VM.xmax[1] = VM.ymax[1] = VM.Total = 0;
 		   		VM.Title = pluginManager.GetPropertyValue("DataCorePlugin.CurrentGame")?.ToString()
@@ -93,25 +94,25 @@ namespace blekenbleu.OxyScope
 
 			IIRX += (xf - IIRX) / VM.FilterX;
 			IIRY += (yf - IIRY) / VM.FilterY;
-			x[i] = IIRX;									// why can DataUpdate() set View values??
-			y[i] = IIRY;
+			x[VM.I] = IIRX;									// why can DataUpdate() set View values??
+			y[VM.I] = IIRY;
 
-			if (VM.start[work] == i)
+			if (VM.start[work] == VM.I)
 			{
-				VM.xmin[work] = VM.xmax[work] = x[i];
-				VM.ymin[work] = VM.ymax[work] = y[i];
+				VM.xmin[work] = VM.xmax[work] = x[VM.I];
+				VM.ymin[work] = VM.ymax[work] = y[VM.I];
 			}
 			else	// volume of sample values
 			{
-				if (VM.xmin[work] > x[i])
-					VM.xmin[work] = x[i];
-				else if (VM.xmax[work] < x[i])
-					VM.xmax[work] = x[i];
+				if (VM.xmin[work] > x[VM.I])
+					VM.xmin[work] = x[VM.I];
+				else if (VM.xmax[work] < x[VM.I])
+					VM.xmax[work] = x[VM.I];
 
-				if (VM.ymax[work] < y[i])
-					VM.ymax[work] = y[i];
-				else if (VM.ymin[work] > y[i])
-					VM.ymin[work] = y[i];
+				if (VM.ymax[work] < y[VM.I])
+					VM.ymax[work] = y[VM.I];
+				else if (VM.ymin[work] > y[VM.I])
+					VM.ymin[work] = y[VM.I];
 			}
 			if (2 == VM.Refresh)
 			{
@@ -120,7 +121,7 @@ namespace blekenbleu.OxyScope
 				return;
 			}
 
-			if ((++i - VM.start[work]) >= VM.length)	// filled?
+			if ((++VM.I - VM.start[work]) >= VM.length)	// filled?
 			{
 				VM.Current = $"{VM.xmin[work]:#0.000} <= X <= "
 								   + $"{VM.xmax[work]:#0.000};  "
@@ -133,7 +134,7 @@ namespace blekenbleu.OxyScope
 					View.Dispatcher.Invoke(() => View.Replot(work));
 					work = (ushort)(1 - work);					// switch buffers
 				}
-				i = VM.start[work];
+				VM.I = VM.start[work];
 			}
 		}														// DataUpdate()
 
