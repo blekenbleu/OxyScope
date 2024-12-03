@@ -76,7 +76,8 @@ uniform distribution along X axis is preferred...
 	- multiple data collection sets?
 	- set 0:&nbsp; unconstrained collection, calculate X [variance](https://en.wikipedia.org/wiki/Variance)
     - set 1:&nbsp; collect samples for X values *outside variance*, then recalculate variance
-	- ... set n:&nbsp; *und so weiter*
+	- ... set n:&nbsp; *und so weiter*  
+- *3 Dec*:&nbsp; also update when more than e.g. 3 seconds between fixed-count collections
 
 <hr>
 <b><i>Property folder changes from default WPF project for SimHub plugins</i></b>

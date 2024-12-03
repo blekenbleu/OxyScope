@@ -1,7 +1,6 @@
 using MathNet.Numerics;
 using OxyPlot;
 using OxyPlot.Series;
-using System;
 using System.Linq;
 
 namespace blekenbleu.OxyScope

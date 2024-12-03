@@ -45,7 +45,7 @@ namespace blekenbleu.OxyScope
 		/// <param name="data">Current game data, including current and previous data frame.</param>
 		double IIRX = 0, IIRY = 0;				// filtered property values
 		internal double[] x, y;                 // plot samples
-		private ushort i, work;					// arrays currently being sampled
+		private ushort i, work, timeout;		// arrays currently being sampled
 		bool oops = false;
 		public void DataUpdate(PluginManager pluginManager, ref GameData data)
 		{
@@ -81,7 +81,8 @@ namespace blekenbleu.OxyScope
 			if (CarId != data.NewData.CarId)
 			{
 				CarId = data.NewData.CarId;
-				IIRX = IIRY = i = 0;
+				IIRX = IIRY = i = timeout = 0;
+				once = true;
 				VM.xmin[0] = VM.xmin[1] = VM.ymin[0] = VM.ymin[1] = VM.xmax[0] = VM.ymax[0]
 						   = VM.xmax[1] = VM.ymax[1] = VM.Total = 0;
 		   		VM.Title = pluginManager.GetPropertyValue("DataCorePlugin.CurrentGame")?.ToString()

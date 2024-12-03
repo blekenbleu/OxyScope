@@ -9,8 +9,9 @@ namespace blekenbleu.OxyScope
 
 		void Accrue()
 		{
-			if (0 == i % 50 && once)
+			if ((0 == i % 30 || (i > VM.length && 180 < ++timeout))  && once)
 			{
+				timeout = 0;
 				once = false;
 				if (0 == i)
 				{
