@@ -8,11 +8,12 @@
 			 mc:Ignorable="d"
 			 xmlns:oxy="http://oxyplot.org/wpf"
 			 d:DataContext="{d:DesignInstance Type=local:Model}"
-			 Height="725" Width="800">
+			 Height="750" Width="800">
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="50"/>
 			<RowDefinition Height="550"/>
+			<RowDefinition Height="25"/>
 			<RowDefinition Height="25"/>
 			<RowDefinition Height="50"/>
 			<RowDefinition Height="50"/>
@@ -52,12 +53,20 @@
 					 Name="Xprop" Text="{Binding Xprop, Mode=TwoWay}"/>
 		</Canvas>
 		<Canvas Grid.Row="3" Grid.Column="0" VerticalAlignment="Top">
+
+			<TextBox Margin="0,0"   TextWrapping="Wrap" Height="25" Width="390"
+					 Name="Xprop1" Text="{Binding Yprop, Mode=TwoWay}"/>
+
+			<TextBox Margin="410,0" TextWrapping="Wrap" Height="25" Width="390"
+					 Name="Xprop2" Text="{Binding Xprop, Mode=TwoWay}"/>
+		</Canvas>
+		<Canvas Grid.Row="4" Grid.Column="0" VerticalAlignment="Top">
 			<TextBox Canvas.Left="0" Height="25" Width="800"
 					 Name="XYprop" Text="{Binding XYprop}"/>
 			<TextBox Margin="0,25" Canvas.Left="0" Height="25" Width="800"
 					 Name="XYprop2" Text="{Binding XYprop2}"/>
 		</Canvas>
-		<Canvas Grid.Row="4" Grid.Column="0" VerticalAlignment="Top">
+		<Canvas Grid.Row="5" Grid.Column="0" VerticalAlignment="Top">
 			<ui:TitledSlider Title="	 Y-axis filter" Width="400"
 				 Value="{Binding FilterY, Mode=TwoWay}" Margin="0,5"
 				 TickFrequency = "1" IsSnapToTickEnabled = "True"

@@ -16,6 +16,8 @@ namespace blekenbleu.OxyScope
 		readonly PropertyChangedEventArgs PVevent = new PropertyChangedEventArgs(nameof(PVis));
 		readonly PropertyChangedEventArgs TIevent = new PropertyChangedEventArgs(nameof(Title));
 		readonly PropertyChangedEventArgs Xevent = new PropertyChangedEventArgs(nameof(Xprop));
+		readonly PropertyChangedEventArgs Xevent1 = new PropertyChangedEventArgs(nameof(Xprop1));
+		readonly PropertyChangedEventArgs Xevent2 = new PropertyChangedEventArgs(nameof(Xprop2));
 		readonly PropertyChangedEventArgs XYevent = new PropertyChangedEventArgs(nameof(XYprop));
 		readonly PropertyChangedEventArgs XY2event = new PropertyChangedEventArgs(nameof(XYprop2));
 		readonly PropertyChangedEventArgs Yevent = new PropertyChangedEventArgs(nameof(Yprop));
@@ -89,6 +91,34 @@ namespace blekenbleu.OxyScope
 				{
 					_xprop = value;
 					PropertyChanged?.Invoke(this, Xevent);
+					Reset = true;
+				}
+			}
+		}
+
+		private string _xprop1;
+		public string Xprop1
+		{	get => _xprop1;
+			set
+			{
+				if (_xprop1 != value)
+				{
+					_xprop1 = value;
+					PropertyChanged?.Invoke(this, Xevent1);
+					Reset = true;
+				}
+			}
+		}
+
+		private string _xprop2;
+		public string Xprop2
+		{	get => _xprop2;
+			set
+			{
+				if (_xprop2 != value)
+				{
+					_xprop2 = value;
+					PropertyChanged?.Invoke(this, Xevent2);
 					Reset = true;
 				}
 			}
