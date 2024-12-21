@@ -62,8 +62,8 @@ XY plot of *positive* property values
 - debug using simple cubic function
 - *30 Nov*:&nbsp;  Montonic() debugged
 
-### 2 Dec:&nbsp; More better data - **Accrual mode**
-- interpolating beyond fitted data is doomed:  curves likely go non-monotonic
+### More better data - **Accrual mode**
+- *2 Dec*:&nbsp; interpolating beyond fitted data is doomed:  curves likely go non-monotonic
 	- preserve inflection point?
 - practically, no single 3 second sample set is likely to include highest and lowest values
 ![](Doc/correlate.png)
@@ -77,8 +77,10 @@ uniform distribution along X axis is preferred...
 	- set 0:&nbsp; unconstrained collection, calculate X [variance](https://en.wikipedia.org/wiki/Variance)
     - set 1:&nbsp; collect samples for X values *outside variance*, then recalculate variance
 	- ... set n:&nbsp; *und so weiter*  
-- *3 Dec*:&nbsp; also update when more than e.g. 3 seconds between fixed-count collections
-
+- *3 Dec*:&nbsp; also update when more than e.g. 3 seconds between fixed-count collections  
+### Handle up to 3 independent (X-axis) variables for a single Y variable  
+- *21 Dec*:&nbsp; e.g. for multiple regression of `heave`, `roll`, `pitch` to `tire load` or `suspension deflection`  
+	- [example of 2 sets in one OxyPlot](https://swharden.com/csdv/plotting-free/oxyplot/)
 <hr>
 <b><i>Property folder changes from default WPF project for SimHub plugins</i></b>
 <details><summary>click for differences</summary>
