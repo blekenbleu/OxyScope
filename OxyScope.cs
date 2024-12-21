@@ -43,9 +43,10 @@ namespace blekenbleu.OxyScope
 		/// </summary>
 		/// <param name="pluginManager"></param>
 		/// <param name="data">Current game data, including current and previous data frame.</param>
-		double IIRX = 0, IIRY = 0;			// filtered property values
-		internal double[] x, y;				// plot samples
-		private ushort work, timeout;		// arrays currently being sampled
+		double IIRX = 0, IIRX1 = 0, IIRX2 = 0, IIRY = 0;	// filtered property values
+		internal double[] x, y;								// plot samples
+		private ushort work, timeout;						// arrays currently being sampled
+		float xf1 = 0, xf2 = 0;
 		bool oops = false;
 		public void DataUpdate(PluginManager pluginManager, ref GameData data)
 		{
@@ -59,6 +60,27 @@ namespace blekenbleu.OxyScope
 				VM.XYprop = "invalid X property:  " + VM.Xprop;
 				oops = true;
 				return;
+			}
+
+			if (0 < VM.Xprop1.Length)
+			{
+				var xp1 = pluginManager.GetPropertyValue(VM.Xprop1);
+				if (null == xp || !float.TryParse(xp.ToString(), out xf1))
+				{
+					VM.XYprop = "invalid X1 property:  " + VM.Xprop1;
+					oops = true;
+					return;
+				}	
+			}
+			if (0 < VM.Xprop2.Length)
+			{
+				var xp2 = pluginManager.GetPropertyValue(VM.Xprop2);
+				if (null == xp || !float.TryParse(xp.ToString(), out xf2))
+				{
+					VM.XYprop = "invalid X2 property:  " + VM.Xprop2;
+					oops = true;
+					return;
+				}	
 			}
 
 			var yp = pluginManager.GetPropertyValue(VM.Yprop);
@@ -92,10 +114,14 @@ namespace blekenbleu.OxyScope
 				VM.Restart = false;
 				IIRY = yf;
 				IIRX = xf;
+				IIRX1 = xf1;
+				IIRX2 = xf2;
 				VM.start[work] = VM.I;
 			}
 
 			IIRX += (xf - IIRX) / VM.FilterX;
+			IIRX1 += (xf1 - IIRX1) / VM.FilterX;
+			IIRX2 += (xf2 - IIRX2) / VM.FilterX;
 			IIRY += (yf - IIRY) / VM.FilterY;
 			x[VM.I] = IIRX;
 			y[VM.I] = IIRY;
@@ -149,6 +175,8 @@ namespace blekenbleu.OxyScope
 			Settings.FilterX = VM.FilterX;
 			Settings.FilterY = VM.FilterY;
 			Settings.Xprop = VM.Xprop;
+			Settings.Xprop1 = VM.Xprop1;
+			Settings.Xprop2 = VM.Xprop2;
 			Settings.Yprop = VM.Yprop;
 			Settings.LinFit = VM.LinFit;
 			Settings.Refresh = VM.Refresh;
@@ -189,12 +217,17 @@ namespace blekenbleu.OxyScope
 			if (null == Settings)
 				Settings = new Settings() {
 					Xprop = where+x,
+					Xprop1 = "", Xprop2 = "",
 					Yprop = where+y,
 					FilterX = 1, FilterY = 1, Refresh = 1, LinFit = true
 				};
 			else {
 				if (0 == Settings.Xprop.Length)
 						Settings.Xprop = where+x;
+				if (null == Settings.Xprop1)
+					Settings.Xprop1 = "";
+				if (null == Settings.Xprop2)
+					Settings.Xprop2 = "";
 				if (0 == Settings.Yprop.Length)
 						Settings.Yprop = where+y;
 				if (1 > Settings.FilterX)
@@ -204,6 +237,8 @@ namespace blekenbleu.OxyScope
 			}
 
 			this.AttachDelegate("IIRX", () => IIRX);
+			this.AttachDelegate("IIRX1", () => IIRX1);
+			this.AttachDelegate("IIRX2", () => IIRX2);
 			this.AttachDelegate("IIRY", () => IIRY);
 		}
 	}

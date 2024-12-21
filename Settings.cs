@@ -9,6 +9,7 @@
 		public ushort Refresh = 0;
 		public bool LinFit = true, Plot = true;
 		public string Xprop = "DataCorePlugin.GameData.AccelerationHeave",
+					  Xprop1 = "", Xprop2 = "",
 					  Yprop = "DataCorePlugin.GameData.GlobalAccelerationG";
 	}
 }

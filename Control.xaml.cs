@@ -34,6 +34,8 @@ namespace blekenbleu.OxyScope
 				M.AutoPlot = S.Plot;
 				M.LinFit = S.LinFit;
 				M.Xprop = S.Xprop;
+				M.Xprop1 = S.Xprop1;
+				M.Xprop2 = S.Xprop2;
 				M.Yprop = S.Yprop;
 			} else {
 				M.Refresh = 1;
