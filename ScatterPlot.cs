@@ -53,7 +53,7 @@ namespace blekenbleu.OxyScope
 			// fill the plot with random data
 			Random rnd = new Random();
 			double xi;
-			Xmin = M.xmin[M.which];	 // RandomPlot()
+			Xmin = M.xmin[0,M.which];	 // RandomPlot()
 			Xmax = 100 + Xmin;
 			Ymin = M.ymin[M.which];
 			ymax = 100 + Ymin;
@@ -65,7 +65,7 @@ namespace blekenbleu.OxyScope
 				Xmin += xi;
 			}
 
-			Xmin = M.xmin[M.which];
+			Xmin = M.xmin[0,M.which];
 			plot.Model = ScatterPlot("Random plot");
 		}
 	}

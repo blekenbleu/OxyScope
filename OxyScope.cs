@@ -13,7 +13,6 @@ namespace blekenbleu.OxyScope
 	{
 		public Settings Settings;
 		string CarId = "";
-		internal ushort Xcount = 0;
 		public static string PluginVersion = FileVersionInfo.GetVersionInfo(
 			Assembly.GetExecutingAssembly().Location).FileVersion.ToString();
 
@@ -63,29 +62,30 @@ namespace blekenbleu.OxyScope
 				oops = true;
 				return;
 			}
-			Xcount = 1;
 
 			if (0 < VM.Xprop1.Length)
 			{
 				var xp1 = pluginManager.GetPropertyValue(VM.Xprop1);
-				if (null == xp || !float.TryParse(xp.ToString(), out xf1))
+				if (null == xp1 || !float.TryParse(xp1.ToString(), out xf1))
 				{
 					VM.XYprop = "invalid X1 property:  " + VM.Xprop1;
 					oops = true;
+					VM.X1 = false;
 					return;
 				}
-				Xcount++;
+				VM.X1 = true;
 			}
 			if (0 < VM.Xprop2.Length)
 			{
 				var xp2 = pluginManager.GetPropertyValue(VM.Xprop2);
-				if (null == xp || !float.TryParse(xp.ToString(), out xf2))
+				if (null == xp2 || !float.TryParse(xp2.ToString(), out xf2))
 				{
 					VM.XYprop = "invalid X2 property:  " + VM.Xprop2;
 					oops = true;
+                    VM.X2 = false;
 					return;
 				}
-				Xcount++;
+				VM.X2 = true;
 			}
 
 			var yp = pluginManager.GetPropertyValue(VM.Yprop);
@@ -129,20 +129,41 @@ namespace blekenbleu.OxyScope
 			IIRX2 += (xf2 - IIRX2) / VM.FilterX;
 			IIRY += (yf - IIRY) / VM.FilterY;
 			x[0,VM.I] = IIRX;
+			if (VM.X1)
+				x[1,VM.I] = IIRX1;
+			if (VM.X2)
+				x[2,VM.I] = IIRX2;
 			y[VM.I] = IIRY;
 
 			if (VM.start[work] == VM.I)
 			{
-				VM.xmin[work] = VM.xmax[work] = x[0,VM.I];
+				VM.xmin[0,work] = VM.xmax[0,work] = x[0,VM.I];
+				if (VM.X1)
+					VM.xmin[1,work] = VM.xmax[1,work] = x[1,VM.I];
+				if (VM.X2)
+					VM.xmin[2,work] = VM.xmax[2,work] = x[2,VM.I];
 				VM.ymin[work] = VM.ymax[work] = y[VM.I];
 			}
 			else	// volume of sample values
 			{
-				if (VM.xmin[work] > x[0,VM.I])
-					VM.xmin[work] = x[0,VM.I];
-				else if (VM.xmax[work] < x[0,VM.I])
-					VM.xmax[work] = x[0,VM.I];
-
+				if (VM.xmin[0,work] > x[0,VM.I])
+					VM.xmin[0,work] = x[0,VM.I];
+				else if (VM.xmax[0,work] < x[0,VM.I])
+					VM.xmax[0,work] = x[0,VM.I];
+				if (VM.X1)
+				{
+					if (VM.xmin[1,work] > x[1,VM.I])
+						VM.xmin[1,work] = x[1,VM.I];
+					else if (VM.xmax[1,work] < x[1,VM.I])
+						VM.xmax[1,work] = x[1,VM.I];
+				}
+				if (VM.X2)
+				{
+					if (VM.xmin[2,work] > x[2,VM.I])
+						VM.xmin[2,work] = x[2,VM.I];
+					else if (VM.xmax[2,work] < x[2,VM.I])
+						VM.xmax[2,work] = x[2,VM.I];
+				}
 				if (VM.ymax[work] < y[VM.I])
 					VM.ymax[work] = y[VM.I];
 				else if (VM.ymin[work] > y[VM.I])
@@ -157,11 +178,11 @@ namespace blekenbleu.OxyScope
 
 			else if ((++VM.I - VM.start[work]) >= VM.length)	// filled?
 			{
-				VM.Current = $"{VM.xmin[work]:#0.000} <= X <= {VM.xmax[work]:#0.000};  "
+				VM.Current = $"{VM.xmin[0,work]:#0.000} <= X <= {VM.xmax[0,work]:#0.000};  "
 						   + $"{VM.ymin[work]:#0.000} <= Y <= {VM.ymax[work]:#0.000}";
 				// Refresh: 0 = max range, 1 = 3 second, 2 = cumulative range
 				if ( 1 == VM.Refresh
-				 || (0 == VM.Refresh && (VM.xmax[work] - VM.xmin[work]) > VM.Range))
+				 || (0 == VM.Refresh && (VM.xmax[0,work] - VM.xmin[0,work]) > VM.Range))
 				{
 					View.Dispatcher.Invoke(() => View.Replot(work));
 					work = (ushort)(1 - work);					// switch buffers

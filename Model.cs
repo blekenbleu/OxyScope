@@ -25,9 +25,9 @@ namespace blekenbleu.OxyScope
 		internal ushort		I, length, Refresh = 0, which = 0;
 		internal ushort[]	start;					// split buffer
 		internal double		Range, Total;
-		internal double[]	Coef,
-							xmin, ymin, xmax, ymax; // View uses for axes scaling
-		internal bool LinFit, AutoPlot, Once = true, Restart = true;
+		internal double[]	Coef, ymin, ymax; // View uses for axes scaling
+		internal double[,]	xmin, xmax;
+		internal bool LinFit, AutoPlot, Once = true, Restart = true, X1 = false, X2 = false;
 		private string _title = "launch a game or Replay to collect XY property samples";
 		public string Title { get => _title;
 			set

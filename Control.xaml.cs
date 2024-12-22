@@ -50,7 +50,8 @@ namespace blekenbleu.OxyScope
 
 			ButtonUpdate();
 			M.ymin = new double[] {0, 0}; M.ymax = new double[] {0, 0};
-			M.xmin = new double[] {0, 0}; M.xmax = new double[] {0, 0};
+			M.xmin = new double[,] { { 0, 0 }, { 0, 0 }, { 0, 0 } };
+			M.xmax = new double[,] {{0, 0}, {0, 0}, {0, 0}};
 			RandomPlot();
 		}
 
@@ -63,8 +64,8 @@ namespace blekenbleu.OxyScope
 		internal void Replot(ushort choose)
 		{
 			M.which = choose;
-			xmin = M.xmin[M.which];
-			xmax = M.xmax[M.which];
+			xmin = M.xmin[0,M.which];
+			xmax = M.xmax[0,M.which];
 			M.Range = 0 < M.Refresh ? 0 : xmax - xmin;
 			if (1 == M.Refresh || M.Reset)		// first time or 3 second
 			{
