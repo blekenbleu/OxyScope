@@ -15,9 +15,9 @@ namespace blekenbleu.OxyScope
 		bool converge = true;
 		double[] xs, ys;
 
-		double[] GetRow(double[,] twoD, ushort row)
+		double[] GetRow(double[,] twoD, ushort row, ushort start, ushort length)
 		{
-			return Enumerable.Range(0, twoD.GetLength(1)).Select(x => twoD[row, x]).ToArray();	
+			return Enumerable.Range(start, length).Select(x => twoD[row, x]).ToArray();	
 		}
 
 		internal void Plot()
@@ -28,7 +28,7 @@ namespace blekenbleu.OxyScope
 			if (M.LinFit)
 			{
 				// https://numerics.mathdotnet.com/Regression
-				xs = SubArray(GetRow(O.x,0), M.start[M.which], M.length);
+				xs = GetRow(O.x, 0, M.start[M.which], M.length);
 				ys = SubArray(O.y, M.start[M.which], M.length);
 				(double, double)p = Fit.Line(xs, ys);
 				B = p.Item1;
