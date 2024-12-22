@@ -13,6 +13,7 @@ namespace blekenbleu.OxyScope
 	{
 		public Settings Settings;
 		string CarId = "";
+		internal ushort Xcount = 0;
 		public static string PluginVersion = FileVersionInfo.GetVersionInfo(
 			Assembly.GetExecutingAssembly().Location).FileVersion.ToString();
 
@@ -44,7 +45,8 @@ namespace blekenbleu.OxyScope
 		/// <param name="pluginManager"></param>
 		/// <param name="data">Current game data, including current and previous data frame.</param>
 		double IIRX = 0, IIRX1 = 0, IIRX2 = 0, IIRY = 0;	// filtered property values
-		internal double[] x, y;								// plot samples
+		internal double[,] x;								// plot samples
+		internal double[] y;								// plot samples
 		private ushort work, timeout;						// arrays currently being sampled
 		float xf1 = 0, xf2 = 0;
 		bool oops = false;
@@ -61,6 +63,7 @@ namespace blekenbleu.OxyScope
 				oops = true;
 				return;
 			}
+			Xcount = 1;
 
 			if (0 < VM.Xprop1.Length)
 			{
@@ -70,7 +73,8 @@ namespace blekenbleu.OxyScope
 					VM.XYprop = "invalid X1 property:  " + VM.Xprop1;
 					oops = true;
 					return;
-				}	
+				}
+				Xcount++;
 			}
 			if (0 < VM.Xprop2.Length)
 			{
@@ -80,7 +84,8 @@ namespace blekenbleu.OxyScope
 					VM.XYprop = "invalid X2 property:  " + VM.Xprop2;
 					oops = true;
 					return;
-				}	
+				}
+				Xcount++;
 			}
 
 			var yp = pluginManager.GetPropertyValue(VM.Yprop);
@@ -123,20 +128,20 @@ namespace blekenbleu.OxyScope
 			IIRX1 += (xf1 - IIRX1) / VM.FilterX;
 			IIRX2 += (xf2 - IIRX2) / VM.FilterX;
 			IIRY += (yf - IIRY) / VM.FilterY;
-			x[VM.I] = IIRX;
+			x[0,VM.I] = IIRX;
 			y[VM.I] = IIRY;
 
 			if (VM.start[work] == VM.I)
 			{
-				VM.xmin[work] = VM.xmax[work] = x[VM.I];
+				VM.xmin[work] = VM.xmax[work] = x[0,VM.I];
 				VM.ymin[work] = VM.ymax[work] = y[VM.I];
 			}
 			else	// volume of sample values
 			{
-				if (VM.xmin[work] > x[VM.I])
-					VM.xmin[work] = x[VM.I];
-				else if (VM.xmax[work] < x[VM.I])
-					VM.xmax[work] = x[VM.I];
+				if (VM.xmin[work] > x[0,VM.I])
+					VM.xmin[work] = x[0,VM.I];
+				else if (VM.xmax[work] < x[0,VM.I])
+					VM.xmax[work] = x[0,VM.I];
 
 				if (VM.ymax[work] < y[VM.I])
 					VM.ymax[work] = y[VM.I];
@@ -208,7 +213,7 @@ namespace blekenbleu.OxyScope
 		{
 			work = 0;
 			string where = "DataCorePlugin.GameData.",					// defaults
-					x = "AccelerationHeave", y = "GlobalAccelerationG";
+					sx = "AccelerationHeave", sy = "GlobalAccelerationG";
 
 			SimHub.Logging.Current.Info("Starting " + LeftMenuTitle);
 
@@ -216,9 +221,9 @@ namespace blekenbleu.OxyScope
 			Settings = this.ReadCommonSettings<Settings>("GeneralSettings", () => new Settings());
 			if (null == Settings)
 				Settings = new Settings() {
-					Xprop = where+x,
+					Xprop = where+sx,
 					Xprop1 = "", Xprop2 = "",
-					Yprop = where+y,
+					Yprop = where+sy,
 					FilterX = 1, FilterY = 1, Refresh = 1, LinFit = true
 				};
 			else {

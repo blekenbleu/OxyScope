@@ -43,7 +43,7 @@ namespace blekenbleu.OxyScope
 				M.Xprop = M.Yprop = "random";
 				M.FilterY = M.FilterX = 1;
 			}
-			O.x = new double[M.length = 901];
+			O.x = new double[3, M.length = 901];
 			O.y = new double[M.length];
 			M.length /= 5; 
 			M.start = new ushort[] { 0, M.length };

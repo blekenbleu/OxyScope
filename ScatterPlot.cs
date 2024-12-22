@@ -42,7 +42,7 @@ namespace blekenbleu.OxyScope
 
 			var scatterSeries = new ScatterSeries { MarkerType = MarkerType.Circle };
 			for (ushort i = M.start[M.which]; i < end; i++)
-				scatterSeries.Points.Add(new ScatterPoint(O.x[i], O.y[i], size));
+				scatterSeries.Points.Add(new ScatterPoint(O.x[0,i], O.y[i], size));
 			scatterSeries.MarkerFill = OxyColors.Red;
 			scatterSeries.Title = title;
 			return scatterSeries;
@@ -61,7 +61,7 @@ namespace blekenbleu.OxyScope
 			for (int i = 0; i < M.length; i++)	// fill the plot
 			{
 				O.y[i] = Ymin + 100 * rnd.NextDouble();
-				O.x[i] = Xmin;
+				O.x[0,i] = Xmin;
 				Xmin += xi;
 			}
 

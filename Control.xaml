@@ -55,10 +55,10 @@
 		<Canvas Grid.Row="3" Grid.Column="0" VerticalAlignment="Top">
 
 			<TextBox Margin="0,0"   TextWrapping="Wrap" Height="25" Width="390"
-					 Name="Xprop1" Text="{Binding Yprop, Mode=TwoWay}"/>
+					 Name="Xprop1" Text="{Binding Xprop1, Mode=TwoWay}"/>
 
 			<TextBox Margin="410,0" TextWrapping="Wrap" Height="25" Width="390"
-					 Name="Xprop2" Text="{Binding Xprop, Mode=TwoWay}"/>
+					 Name="Xprop2" Text="{Binding Xprop2, Mode=TwoWay}"/>
 		</Canvas>
 		<Canvas Grid.Row="4" Grid.Column="0" VerticalAlignment="Top">
 			<TextBox Canvas.Left="0" Height="25" Width="800"
