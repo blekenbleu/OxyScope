@@ -22,7 +22,7 @@ namespace blekenbleu.OxyScope
 			model.Axes.Add(new LinearAxis
 			{
 				Position = AxisPosition.Bottom,
-				Title = M.Xprop,
+				Title = M.Xprop0,
 						Minimum = Xmin - 0.005 * (Xmax - Xmin),	// space for dot@Xmin
 						Maximum = Xmax + 0.005 * (Xmax - Xmin)
 			});

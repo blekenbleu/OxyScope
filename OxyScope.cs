@@ -32,60 +32,63 @@ namespace blekenbleu.OxyScope
 		/// </summary>
 		public string LeftMenuTitle => "OxyScope " + PluginVersion;
 
-		/// <summary>
-		/// Called one time per game data update, contains all normalized game data,
-		/// raw data are intentionally "hidden" under a generic object type
-		/// (A plugin SHOULD NOT USE IT)
-		///
-		/// This method is on the critical path; execute as fast as possible,
-		/// avoid throwing any error
-		///
-		/// </summary>
-		/// <param name="pluginManager"></param>
-		/// <param name="data">Current game data, including current and previous data frame.</param>
-		double IIRX = 0, IIRX1 = 0, IIRX2 = 0, IIRY = 0;	// filtered property values
-		internal double[,] x;								// plot samples
-		internal double[] y;								// plot samples
-		private ushort work, timeout;						// arrays currently being sampled
-		float xf1 = 0, xf2 = 0;
+        /// <summary>
+        /// Called one time per game data update, contains all normalized game data,
+        /// raw data are intentionally "hidden" under a generic object type
+        /// (A plugin SHOULD NOT USE IT)
+        ///
+        /// This method is on the critical path; execute as fast as possible,
+        /// avoid throwing any error
+        ///
+        /// </summary>
+        /// <param name="pluginManager"></param>
+        /// <param name="data">Current game data, including current and previous data frame.</param>
+        readonly double[] IIRX = { 0, 0, 0 };		// filtered property values
+		double IIRY = 0;							// filtered dependent property
+		internal double[,] x;						// plot samples
+		internal double[] y;						// plot samples
+		private ushort work, timeout;               // arrays currently being sampled
+        readonly float[] xf = { 0, 0, 0 };
 		bool oops = false;
 		public void DataUpdate(PluginManager pluginManager, ref GameData data)
 		{
 			if (!data.GameRunning || null == data.OldData || null == data.NewData)
 				return;
 
-			var xp = pluginManager.GetPropertyValue(VM.Xprop);
+			var xp = pluginManager.GetPropertyValue(VM.Xprop0);
 
-			if (null == xp || !float.TryParse(xp.ToString(), out float xf))
+			if (null == xp || !float.TryParse(xp.ToString(), out xf[0]))
 			{
-				VM.XYprop = "invalid X property:  " + VM.Xprop;
+				VM.XYprop = "invalid X property:  " + VM.Xprop0;
+					VM.aX[0] = false;
 				oops = true;
 				return;
 			}
+			VM.aX[0] = true;
 
 			if (0 < VM.Xprop1.Length)
 			{
 				var xp1 = pluginManager.GetPropertyValue(VM.Xprop1);
-				if (null == xp1 || !float.TryParse(xp1.ToString(), out xf1))
+				if (null == xp1 || !float.TryParse(xp1.ToString(), out xf[1]))
 				{
-					VM.XYprop = "invalid X1 property:  " + VM.Xprop1;
+					VM.XYprop = "invalid aX[1] property:  " + VM.Xprop1;
 					oops = true;
-					VM.X1 = false;
+					VM.aX[1] = false;
 					return;
 				}
-				VM.X1 = true;
+				VM.aX[1] = true;
 			}
 			if (0 < VM.Xprop2.Length)
 			{
 				var xp2 = pluginManager.GetPropertyValue(VM.Xprop2);
-				if (null == xp2 || !float.TryParse(xp2.ToString(), out xf2))
+				if (null == xp2 || !float.TryParse(xp2.ToString(), out xf[2]))
 				{
-					VM.XYprop = "invalid X2 property:  " + VM.Xprop2;
+					VM.XYprop = "invalid aX[2] property:  " + VM.Xprop2;
 					oops = true;
-                    VM.X2 = false;
+					VM.aX[2] = false;
 					return;
 				}
-				VM.X2 = true;
+				VM.aX[2] = true;
 			}
 
 			var yp = pluginManager.GetPropertyValue(VM.Yprop);
@@ -118,64 +121,35 @@ namespace blekenbleu.OxyScope
 			{
 				VM.Restart = false;
 				IIRY = yf;
-				IIRX = xf;
-				IIRX1 = xf1;
-				IIRX2 = xf2;
+				for (int i = 0; i < 3; i++)
+					IIRX[i] = xf[i];
 				VM.start[work] = VM.I;
 			}
 
-			IIRX += (xf - IIRX) / VM.FilterX;
-			IIRX1 += (xf1 - IIRX1) / VM.FilterX;
-			IIRX2 += (xf2 - IIRX2) / VM.FilterX;
+			for (int i = 0; i < 3; i++)
+				if (VM.aX[i])
+				{
+					IIRX[i] += (xf[i] - IIRX[i]) / VM.FilterX;
+					x[i,VM.I] = IIRX[i];
+					if (VM.start[work] == VM.I)
+						VM.xmin[i,work] = VM.xmax[i,work] = x[i,VM.I];
+					else if (VM.xmin[i,work] > x[i,VM.I])	// volume of sample values
+						VM.xmin[i,work] = x[i,VM.I];
+					else if (VM.xmax[i,work] < x[i,VM.I])
+                    	VM.xmax[i,work] = x[i,VM.I];
+				}
 			IIRY += (yf - IIRY) / VM.FilterY;
-			x[0,VM.I] = IIRX;
-			if (VM.X1)
-				x[1,VM.I] = IIRX1;
-			if (VM.X2)
-				x[2,VM.I] = IIRX2;
 			y[VM.I] = IIRY;
-
 			if (VM.start[work] == VM.I)
-			{
-				VM.xmin[0,work] = VM.xmax[0,work] = x[0,VM.I];
-				if (VM.X1)
-					VM.xmin[1,work] = VM.xmax[1,work] = x[1,VM.I];
-				if (VM.X2)
-					VM.xmin[2,work] = VM.xmax[2,work] = x[2,VM.I];
 				VM.ymin[work] = VM.ymax[work] = y[VM.I];
-			}
-			else	// volume of sample values
-			{
-				if (VM.xmin[0,work] > x[0,VM.I])
-					VM.xmin[0,work] = x[0,VM.I];
-				else if (VM.xmax[0,work] < x[0,VM.I])
-					VM.xmax[0,work] = x[0,VM.I];
-				if (VM.X1)
-				{
-					if (VM.xmin[1,work] > x[1,VM.I])
-						VM.xmin[1,work] = x[1,VM.I];
-					else if (VM.xmax[1,work] < x[1,VM.I])
-						VM.xmax[1,work] = x[1,VM.I];
-				}
-				if (VM.X2)
-				{
-					if (VM.xmin[2,work] > x[2,VM.I])
-						VM.xmin[2,work] = x[2,VM.I];
-					else if (VM.xmax[2,work] < x[2,VM.I])
-						VM.xmax[2,work] = x[2,VM.I];
-				}
-				if (VM.ymax[work] < y[VM.I])
-					VM.ymax[work] = y[VM.I];
-				else if (VM.ymin[work] > y[VM.I])
-					VM.ymin[work] = y[VM.I];
-			}
+			else if (VM.ymax[work] < y[VM.I])	// volume of sample values
+				VM.ymax[work] = y[VM.I];
+			else if (VM.ymin[work] > y[VM.I])
+				VM.ymin[work] = y[VM.I];
 
-			if (2 == VM.Refresh)
-			{
-				if (1 < (double)pluginManager.GetPropertyValue("DataCorePlugin.GameData.SpeedKmh"))
-					Accrue();
-			}
-
+			if (2 == VM.Refresh
+			 && 1 < (double)pluginManager.GetPropertyValue("DataCorePlugin.GameData.SpeedKmh"))
+				Accrue();
 			else if ((++VM.I - VM.start[work]) >= VM.length)	// filled?
 			{
 				VM.Current = $"{VM.xmin[0,work]:#0.000} <= X <= {VM.xmax[0,work]:#0.000};  "
@@ -200,7 +174,7 @@ namespace blekenbleu.OxyScope
 		{
 			Settings.FilterX = VM.FilterX;
 			Settings.FilterY = VM.FilterY;
-			Settings.Xprop = VM.Xprop;
+			Settings.Xprop = VM.Xprop0;
 			Settings.Xprop1 = VM.Xprop1;
 			Settings.Xprop2 = VM.Xprop2;
 			Settings.Yprop = VM.Yprop;
@@ -262,9 +236,9 @@ namespace blekenbleu.OxyScope
 					Settings.FilterY = 1;
 			}
 
-			this.AttachDelegate("IIRX", () => IIRX);
-			this.AttachDelegate("IIRX1", () => IIRX1);
-			this.AttachDelegate("IIRX2", () => IIRX2);
+			this.AttachDelegate("IIRX0", () => IIRX[0]);
+			this.AttachDelegate("IIRX1", () => IIRX[1]);
+			this.AttachDelegate("IIRX2", () => IIRX[2]);
 			this.AttachDelegate("IIRY", () => IIRY);
 		}
 	}

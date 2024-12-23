@@ -15,7 +15,7 @@ namespace blekenbleu.OxyScope
 		readonly PropertyChangedEventArgs FYevent = new PropertyChangedEventArgs(nameof(FilterY));
 		readonly PropertyChangedEventArgs PVevent = new PropertyChangedEventArgs(nameof(PVis));
 		readonly PropertyChangedEventArgs TIevent = new PropertyChangedEventArgs(nameof(Title));
-		readonly PropertyChangedEventArgs Xevent = new PropertyChangedEventArgs(nameof(Xprop));
+		readonly PropertyChangedEventArgs Xevent0 = new PropertyChangedEventArgs(nameof(Xprop0));
 		readonly PropertyChangedEventArgs Xevent1 = new PropertyChangedEventArgs(nameof(Xprop1));
 		readonly PropertyChangedEventArgs Xevent2 = new PropertyChangedEventArgs(nameof(Xprop2));
 		readonly PropertyChangedEventArgs XYevent = new PropertyChangedEventArgs(nameof(XYprop));
@@ -27,7 +27,8 @@ namespace blekenbleu.OxyScope
 		internal double		Range, Total;
 		internal double[]	Coef, ymin, ymax; // View uses for axes scaling
 		internal double[,]	xmin, xmax;
-		internal bool LinFit, AutoPlot, Once = true, Restart = true, X1 = false, X2 = false;
+		internal bool LinFit, AutoPlot, Once = true, Restart = true;
+		internal bool[] aX = { false, false, false };
 		private string _title = "launch a game or Replay to collect XY property samples";
 		public string Title { get => _title;
 			set
@@ -61,14 +62,47 @@ namespace blekenbleu.OxyScope
 			{
 				if (_reset = value)
 				{
-                   	Total = Range = I = which = 0;	
+				   	Total = Range = I = which = 0;	
 					Restart = Once = true;
 					Coef = null;
 					length = (ushort)(2 == Refresh ? 0 : 180);
 				}
 			}
 		}
+/* pseudo-array
+		internal string Xprop(uint i)
+		{
+			switch (i)
+			{
+				case 0:
+					return _xprop0;
+				case 1:
+					return _xprop1;
+				case 2:
+					return _xprop2;
+				default:
+					return "";
+			}
+		}
 
+		internal void Xprop(uint i, string st)
+		{
+			switch (i)
+			{
+				case 0:
+					Xprop0 = st;
+					break;
+				case 1:
+					Xprop1 = st;
+					break;
+				case 2:
+					Xprop2 = st;
+					break;
+				default:
+					break;
+			}
+		}
+ */
 		private string _current = "waiting for property values...";
 		public string Current		// OxyScope sets CurrentGame Car@Track
 		{	get => _current;
@@ -82,15 +116,15 @@ namespace blekenbleu.OxyScope
 			}
 		}
 
-		private string _xprop;
-		public string Xprop
-		{	get => _xprop;
+		private string _xprop0;
+		public string Xprop0
+		{	get => _xprop0;
 			set
 			{
-				if (_xprop != value)
+				if (_xprop0 != value)
 				{
-					_xprop = value;
-					PropertyChanged?.Invoke(this, Xevent);
+					_xprop0 = value;
+					PropertyChanged?.Invoke(this, Xevent0);
 					Reset = true;
 				}
 			}

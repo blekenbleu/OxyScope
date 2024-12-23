@@ -33,14 +33,14 @@ namespace blekenbleu.OxyScope
 				M.Refresh = S.Refresh;
 				M.AutoPlot = S.Plot;
 				M.LinFit = S.LinFit;
-				M.Xprop = S.Xprop;
+				M.Xprop0 = S.Xprop;
 				M.Xprop1 = S.Xprop1;
 				M.Xprop2 = S.Xprop2;
 				M.Yprop = S.Yprop;
 			} else {
 				M.Refresh = 1;
 				M.LinFit = M.AutoPlot = true;
-				M.Xprop = M.Yprop = "random";
+				M.Xprop0 = M.Yprop = "random";
 				M.FilterY = M.FilterX = 1;
 			}
 			O.x = new double[3, M.length = 901];
