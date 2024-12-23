@@ -29,7 +29,7 @@ namespace blekenbleu.OxyScope
 			{
 				// https://numerics.mathdotnet.com/Regression
 				xs = GetRow(O.x, 0, M.start[M.which], M.length);
-				ys = SubArray(O.y, M.start[M.which], M.length);
+				ys = GetRow(O.x, 3, M.start[M.which], M.length);
 				(double, double)p = Fit.Line(xs, ys);
 				B = p.Item1;
 				m = p.Item2;
@@ -42,7 +42,7 @@ namespace blekenbleu.OxyScope
 			else lfs = "";
 
 			M.XYprop = $"{xmin:#0.000} <= X <= {xmax:#0.000};  "
-					 + $"{M.ymin[M.which]:#0.000} <= Y <= {M.ymax[M.which]:#0.000}" + lfs;
+					 + $"{M.min[3,M.which]:#0.000} <= Y <= {M.max[3,M.which]:#0.000}" + lfs;
 
 			plot.Model = model;											// OxyPlot
 		}

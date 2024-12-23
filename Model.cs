@@ -25,10 +25,10 @@ namespace blekenbleu.OxyScope
 		internal ushort		I, length, Refresh = 0, which = 0;
 		internal ushort[]	start;					// split buffer
 		internal double		Range, Total;
-		internal double[]	Coef, ymin, ymax; // View uses for axes scaling
-		internal double[,]	xmin, xmax;
+		internal double[]	Coef; // View uses for axes scaling
+		internal double[,]	min, max;
 		internal bool LinFit, AutoPlot, Once = true, Restart = true;
-		internal bool[] aX = { false, false, false };
+		internal bool[] a = { true, false, false, true };	// which axes have properties assigned
 		private string _title = "launch a game or Replay to collect XY property samples";
 		public string Title { get => _title;
 			set

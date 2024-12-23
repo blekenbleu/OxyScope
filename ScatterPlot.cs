@@ -42,7 +42,7 @@ namespace blekenbleu.OxyScope
 
 			var scatterSeries = new ScatterSeries { MarkerType = MarkerType.Circle };
 			for (ushort i = M.start[M.which]; i < end; i++)
-				scatterSeries.Points.Add(new ScatterPoint(O.x[0,i], O.y[i], size));
+				scatterSeries.Points.Add(new ScatterPoint(O.x[0,i], O.x[3,i], size));
 			scatterSeries.MarkerFill = OxyColors.Red;
 			scatterSeries.Title = title;
 			return scatterSeries;
@@ -53,19 +53,19 @@ namespace blekenbleu.OxyScope
 			// fill the plot with random data
 			Random rnd = new Random();
 			double xi;
-			Xmin = M.xmin[0,M.which];	 // RandomPlot()
+			Xmin = M.min[0,M.which];	 // RandomPlot()
 			Xmax = 100 + Xmin;
-			Ymin = M.ymin[M.which];
+			Ymin = M.min[3,M.which];
 			ymax = 100 + Ymin;
 			xi = 100.0 / M.length;
 			for (int i = 0; i < M.length; i++)	// fill the plot
 			{
-				O.y[i] = Ymin + 100 * rnd.NextDouble();
+				O.x[3,i] = Ymin + 100 * rnd.NextDouble();
 				O.x[0,i] = Xmin;
 				Xmin += xi;
 			}
 
-			Xmin = M.xmin[0,M.which];
+			Xmin = M.min[0,M.which];
 			plot.Model = ScatterPlot("Random plot");
 		}
 	}

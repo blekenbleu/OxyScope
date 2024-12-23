@@ -43,12 +43,10 @@ namespace blekenbleu.OxyScope
         /// </summary>
         /// <param name="pluginManager"></param>
         /// <param name="data">Current game data, including current and previous data frame.</param>
-        readonly double[] IIRX = { 0, 0, 0 };		// filtered property values
-		double IIRY = 0;							// filtered dependent property
+        readonly double[] IIR = { 0, 0, 0, 0 };		// filtered property values
 		internal double[,] x;						// plot samples
-		internal double[] y;						// plot samples
 		private ushort work, timeout;               // arrays currently being sampled
-        readonly float[] xf = { 0, 0, 0 };
+        readonly float[] f = { 0, 0, 0, 0 };
 		bool oops = false;
 		public void DataUpdate(PluginManager pluginManager, ref GameData data)
 		{
@@ -57,42 +55,42 @@ namespace blekenbleu.OxyScope
 
 			var xp = pluginManager.GetPropertyValue(VM.Xprop0);
 
-			if (null == xp || !float.TryParse(xp.ToString(), out xf[0]))
+			if (null == xp || !float.TryParse(xp.ToString(), out f[0]))
 			{
 				VM.XYprop = "invalid X property:  " + VM.Xprop0;
-					VM.aX[0] = false;
+					VM.a[0] = false;
 				oops = true;
 				return;
 			}
-			VM.aX[0] = true;
+			VM.a[0]  = VM.a[3] = true;
 
 			if (0 < VM.Xprop1.Length)
 			{
 				var xp1 = pluginManager.GetPropertyValue(VM.Xprop1);
-				if (null == xp1 || !float.TryParse(xp1.ToString(), out xf[1]))
+				if (null == xp1 || !float.TryParse(xp1.ToString(), out f[1]))
 				{
 					VM.XYprop = "invalid aX[1] property:  " + VM.Xprop1;
 					oops = true;
-					VM.aX[1] = false;
+					VM.a[1] = false;
 					return;
 				}
-				VM.aX[1] = true;
+				VM.a[1] = true;
 			}
 			if (0 < VM.Xprop2.Length)
 			{
 				var xp2 = pluginManager.GetPropertyValue(VM.Xprop2);
-				if (null == xp2 || !float.TryParse(xp2.ToString(), out xf[2]))
+				if (null == xp2 || !float.TryParse(xp2.ToString(), out f[2]))
 				{
 					VM.XYprop = "invalid aX[2] property:  " + VM.Xprop2;
 					oops = true;
-					VM.aX[2] = false;
+					VM.a[2] = false;
 					return;
 				}
-				VM.aX[2] = true;
+				VM.a[2] = true;
 			}
 
 			var yp = pluginManager.GetPropertyValue(VM.Yprop);
-			if (null == yp || !float.TryParse(yp.ToString(), out float yf))
+			if (null == yp || !float.TryParse(yp.ToString(), out f[3]))
 			{
 				VM.XYprop = "invalid Y property:  " + VM.Yprop;
 				oops = true;
@@ -120,43 +118,34 @@ namespace blekenbleu.OxyScope
 			if (VM.Restart)
 			{
 				VM.Restart = false;
-				IIRY = yf;
-				for (int i = 0; i < 3; i++)
-					IIRX[i] = xf[i];
+				for (int i = 0; i < 4; i++)
+					IIR[i] = f[i];
 				VM.start[work] = VM.I;
 			}
 
-			for (int i = 0; i < 3; i++)
-				if (VM.aX[i])
+			for (int i = 0; i < 4; i++)
+				if (VM.a[i])
 				{
-					IIRX[i] += (xf[i] - IIRX[i]) / VM.FilterX;
-					x[i,VM.I] = IIRX[i];
+					IIR[i] += (f[i] - IIR[i]) / VM.FilterX;
+					x[i,VM.I] = IIR[i];
 					if (VM.start[work] == VM.I)
-						VM.xmin[i,work] = VM.xmax[i,work] = x[i,VM.I];
-					else if (VM.xmin[i,work] > x[i,VM.I])	// volume of sample values
-						VM.xmin[i,work] = x[i,VM.I];
-					else if (VM.xmax[i,work] < x[i,VM.I])
-                    	VM.xmax[i,work] = x[i,VM.I];
+						VM.min[i,work] = VM.max[i,work] = x[i,VM.I];
+					else if (VM.min[i,work] > x[i,VM.I])	// volume of sample values
+						VM.min[i,work] = x[i,VM.I];
+					else if (VM.max[i,work] < x[i,VM.I])
+                    	VM.max[i,work] = x[i,VM.I];
 				}
-			IIRY += (yf - IIRY) / VM.FilterY;
-			y[VM.I] = IIRY;
-			if (VM.start[work] == VM.I)
-				VM.ymin[work] = VM.ymax[work] = y[VM.I];
-			else if (VM.ymax[work] < y[VM.I])	// volume of sample values
-				VM.ymax[work] = y[VM.I];
-			else if (VM.ymin[work] > y[VM.I])
-				VM.ymin[work] = y[VM.I];
 
 			if (2 == VM.Refresh
 			 && 1 < (double)pluginManager.GetPropertyValue("DataCorePlugin.GameData.SpeedKmh"))
 				Accrue();
 			else if ((++VM.I - VM.start[work]) >= VM.length)	// filled?
 			{
-				VM.Current = $"{VM.xmin[0,work]:#0.000} <= X <= {VM.xmax[0,work]:#0.000};  "
-						   + $"{VM.ymin[work]:#0.000} <= Y <= {VM.ymax[work]:#0.000}";
+				VM.Current = $"{VM.min[0,work]:#0.000} <= X <= {VM.max[0,work]:#0.000};  "
+						   + $"{VM.min[3,work]:#0.000} <= Y <= {VM.max[3,work]:#0.000}";
 				// Refresh: 0 = max range, 1 = 3 second, 2 = cumulative range
 				if ( 1 == VM.Refresh
-				 || (0 == VM.Refresh && (VM.xmax[0,work] - VM.xmin[0,work]) > VM.Range))
+				 || (0 == VM.Refresh && (VM.max[0,work] - VM.min[0,work]) > VM.Range))
 				{
 					View.Dispatcher.Invoke(() => View.Replot(work));
 					work = (ushort)(1 - work);					// switch buffers
@@ -223,23 +212,23 @@ namespace blekenbleu.OxyScope
 				};
 			else {
 				if (0 == Settings.Xprop.Length)
-						Settings.Xprop = where+x;
+						Settings.Xprop = where+sx;
 				if (null == Settings.Xprop1)
 					Settings.Xprop1 = "";
 				if (null == Settings.Xprop2)
 					Settings.Xprop2 = "";
 				if (0 == Settings.Yprop.Length)
-						Settings.Yprop = where+y;
+						Settings.Yprop = where+sy;
 				if (1 > Settings.FilterX)
 					Settings.FilterX = 1;
 				if (1 > Settings.FilterY)
 					Settings.FilterY = 1;
 			}
 
-			this.AttachDelegate("IIRX0", () => IIRX[0]);
-			this.AttachDelegate("IIRX1", () => IIRX[1]);
-			this.AttachDelegate("IIRX2", () => IIRX[2]);
-			this.AttachDelegate("IIRY", () => IIRY);
+			this.AttachDelegate("IIRX0", () => IIR[0]);
+			this.AttachDelegate("IIRX1", () => IIR[1]);
+			this.AttachDelegate("IIRX2", () => IIR[2]);
+			this.AttachDelegate("IIRY", () => IIR[3]);
 		}
 	}
 }

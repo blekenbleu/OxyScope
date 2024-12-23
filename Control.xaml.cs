@@ -43,15 +43,13 @@ namespace blekenbleu.OxyScope
 				M.Xprop0 = M.Yprop = "random";
 				M.FilterY = M.FilterX = 1;
 			}
-			O.x = new double[3, M.length = 901];
-			O.y = new double[M.length];
+			O.x = new double[4, M.length = 901];
 			M.length /= 5; 
 			M.start = new ushort[] { 0, M.length };
 
 			ButtonUpdate();
-			M.ymin = new double[] {0, 0}; M.ymax = new double[] {0, 0};
-			M.xmin = new double[,] { { 0, 0 }, { 0, 0 }, { 0, 0 } };
-			M.xmax = new double[,] {{0, 0}, {0, 0}, {0, 0}};
+			M.min = new double[,] { { 0, 0 }, { 0, 0 }, { 0, 0 }, {0, 0} };
+			M.max = new double[,] {{0, 0}, {0, 0}, {0, 0}, {0, 0} };
 			RandomPlot();
 		}
 
@@ -64,15 +62,15 @@ namespace blekenbleu.OxyScope
 		internal void Replot(ushort choose)
 		{
 			M.which = choose;
-			xmin = M.xmin[0,M.which];
-			xmax = M.xmax[0,M.which];
+			xmin = M.min[0,M.which];
+			xmax = M.max[0,M.which];
 			M.Range = 0 < M.Refresh ? 0 : xmax - xmin;
 			if (1 == M.Refresh || M.Reset)		// first time or 3 second
 			{
 				Xmax = xmax;
 				Xmin = xmin;
-				Ymax = M.ymax[M.which];
-				Ymin = M.ymin[M.which];
+				Ymax = M.max[3,M.which];
+				Ymin = M.min[3,M.which];
 			} else {
 		 		if (Xmin < xmin && Xmax > xmax)
 					return;
@@ -81,10 +79,10 @@ namespace blekenbleu.OxyScope
 					Xmin = xmin;
 				if (Xmax < xmax)
 					Xmax = xmax;
-				if (Ymin > M.ymin[M.which])
-					Ymin = M.ymin[M.which];
-				if (Ymax < M.ymax[M.which])
-					Ymax = M.ymax[M.which];
+				if (Ymin > M.min[3,M.which])
+					Ymin = M.min[3,M.which];
+				if (Ymax < M.max[3,M.which])
+					Ymax = M.max[3,M.which];
 			}
 			M.Reset = false;
 			if (M.AutoPlot)
