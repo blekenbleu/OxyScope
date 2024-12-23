@@ -7,7 +7,7 @@ namespace blekenbleu.OxyScope
 {
 	public partial class Control
 	{
-		PlotModel ScatterPlot(string title)
+		PlotModel ScatterPlot(string title, uint Xprop)
 		{
 			PlotModel model = new PlotModel { Title = M.Title };
 
@@ -27,7 +27,7 @@ namespace blekenbleu.OxyScope
 						Maximum = Xmax + 0.005 * (Xmax - Xmin)
 			});
 
-			model.Series.Add(Scatter(title));
+			model.Series.Add(Scatter(title, Xprop));
 			model.LegendPosition = LegendPosition.TopLeft;
 			model.LegendFontSize = 12;
 			model.LegendBorder = OxyColors.Black;
@@ -35,15 +35,16 @@ namespace blekenbleu.OxyScope
 			return model;
 		}
 
-		private ScatterSeries Scatter(string title)
+		private ScatterSeries Scatter(string title, uint Xprop)	// 3 possible
 		{
 			int size = 2;	// plot dot size
 			ushort end = (ushort)(M.start[M.which] + M.length);
+            OxyColor[] color = { OxyColors.Red, OxyColors.Green, OxyColors.Cyan };
 
 			var scatterSeries = new ScatterSeries { MarkerType = MarkerType.Circle };
 			for (ushort i = M.start[M.which]; i < end; i++)
-				scatterSeries.Points.Add(new ScatterPoint(O.x[0,i], O.x[3,i], size));
-			scatterSeries.MarkerFill = OxyColors.Red;
+				scatterSeries.Points.Add(new ScatterPoint(O.x[Xprop,i], O.x[3,i], size));
+			scatterSeries.MarkerFill = color[Xprop];
 			scatterSeries.Title = title;
 			return scatterSeries;
 		}
@@ -66,7 +67,7 @@ namespace blekenbleu.OxyScope
 			}
 
 			Xmin = M.min[0,M.which];
-			plot.Model = ScatterPlot("Random plot");
+			plot.Model = ScatterPlot("Random plot", 0);
 		}
 	}
 }

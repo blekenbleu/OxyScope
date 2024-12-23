@@ -50,15 +50,15 @@
 					 Name="Yprop" Text="{Binding Yprop, Mode=TwoWay}"/>
 			<TextBox Margin="390,0" Text="vs" Width="20" Height="25"/>
 			<TextBox Margin="410,0" TextWrapping="Wrap" Height="25" Width="390"
-					 Name="Xprop" Text="{Binding Xprop, Mode=TwoWay}"/>
+					 Name="Xprop" Text="{Binding Xprop0, Mode=TwoWay}" Foreground="Red" />
 		</Canvas>
 		<Canvas Grid.Row="3" Grid.Column="0" VerticalAlignment="Top">
 
 			<TextBox Margin="0,0"   TextWrapping="Wrap" Height="25" Width="390"
-					 Name="Xprop1" Text="{Binding Xprop1, Mode=TwoWay}"/>
+					 Name="Xprop1" Text="{Binding Xprop1, Mode=TwoWay}" Foreground="Green"/>
 
 			<TextBox Margin="410,0" TextWrapping="Wrap" Height="25" Width="390"
-					 Name="Xprop2" Text="{Binding Xprop2, Mode=TwoWay}"/>
+					 Name="Xprop2" Text="{Binding Xprop2, Mode=TwoWay}" Foreground="Cyan"/>
 		</Canvas>
 		<Canvas Grid.Row="4" Grid.Column="0" VerticalAlignment="Top">
 			<TextBox Canvas.Left="0" Height="25" Width="800"

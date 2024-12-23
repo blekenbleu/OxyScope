@@ -22,12 +22,12 @@ namespace blekenbleu.OxyScope
 		readonly PropertyChangedEventArgs XY2event = new PropertyChangedEventArgs(nameof(XYprop2));
 		readonly PropertyChangedEventArgs Yevent = new PropertyChangedEventArgs(nameof(Yprop));
 
-		internal ushort		I, length, Refresh = 0, which = 0;
+		internal ushort		I, length, Refresh = 0, which = 0, LinFit = 1;
 		internal ushort[]	start;					// split buffer
 		internal double		Range, Total;
 		internal double[]	Coef; // View uses for axes scaling
 		internal double[,]	min, max;
-		internal bool LinFit, AutoPlot, Once = true, Restart = true;
+		internal bool AutoPlot, Once = true, Restart = true;
 		internal bool[] a = { true, false, false, true };	// which axes have properties assigned
 		private string _title = "launch a game or Replay to collect XY property samples";
 		public string Title { get => _title;
@@ -65,7 +65,7 @@ namespace blekenbleu.OxyScope
 				   	Total = Range = I = which = 0;	
 					Restart = Once = true;
 					Coef = null;
-					length = (ushort)(2 == Refresh ? 0 : 180);
+					length = (ushort)(2 == Refresh ? 0 : 180);	// 0 for cumulative..
 				}
 			}
 		}

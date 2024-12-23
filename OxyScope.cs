@@ -48,6 +48,7 @@ namespace blekenbleu.OxyScope
 		private ushort work, timeout;               // arrays currently being sampled
         readonly float[] f = { 0, 0, 0, 0 };
 		bool oops = false;
+		int m = 0;									// current LinFit
 		public void DataUpdate(PluginManager pluginManager, ref GameData data)
 		{
 			if (!data.GameRunning || null == data.OldData || null == data.NewData)
@@ -121,6 +122,7 @@ namespace blekenbleu.OxyScope
 				for (int i = 0; i < 4; i++)
 					IIR[i] = f[i];
 				VM.start[work] = VM.I;
+				m = (0 == VM.LinFit) ? 0 : VM.LinFit - 1;
 			}
 
 			for (int i = 0; i < 4; i++)
@@ -141,11 +143,11 @@ namespace blekenbleu.OxyScope
 				Accrue();
 			else if ((++VM.I - VM.start[work]) >= VM.length)	// filled?
 			{
-				VM.Current = $"{VM.min[0,work]:#0.000} <= X <= {VM.max[0,work]:#0.000};  "
+				VM.Current = $"{VM.min[m,work]:#0.000} <= X <= {VM.max[m,work]:#0.000};  "
 						   + $"{VM.min[3,work]:#0.000} <= Y <= {VM.max[3,work]:#0.000}";
 				// Refresh: 0 = max range, 1 = 3 second, 2 = cumulative range
 				if ( 1 == VM.Refresh
-				 || (0 == VM.Refresh && (VM.max[0,work] - VM.min[0,work]) > VM.Range))
+				 || (0 == VM.Refresh && (VM.max[m,work] - VM.min[m,work]) > VM.Range))
 				{
 					View.Dispatcher.Invoke(() => View.Replot(work));
 					work = (ushort)(1 - work);					// switch buffers
@@ -208,7 +210,7 @@ namespace blekenbleu.OxyScope
 					Xprop = where+sx,
 					Xprop1 = "", Xprop2 = "",
 					Yprop = where+sy,
-					FilterX = 1, FilterY = 1, Refresh = 1, LinFit = true
+					FilterX = 1, FilterY = 1, Refresh = 1, LinFit = 1
 				};
 			else {
 				if (0 == Settings.Xprop.Length)

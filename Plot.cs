@@ -23,12 +23,16 @@ namespace blekenbleu.OxyScope
 		internal void Plot()
 		{
 			ymax = 1.2 * (Ymax - Ymin) + Ymin;		// legend space
-			model = ScatterPlot("60 Hz samples");
+			model = ScatterPlot("60 Hz Xprop0", 0);
+			if (M.a[1])
+				model.Series.Add(Scatter("Xprop1", 1));
+            if (M.a[2])
+                model.Series.Add(Scatter("Xprop2", 2));
 
-			if (M.LinFit)
+            if (0 < M.LinFit)
 			{
 				// https://numerics.mathdotnet.com/Regression
-				xs = GetRow(O.x, 0, M.start[M.which], M.length);
+				xs = GetRow(O.x, (ushort)(M.LinFit - 1), M.start[M.which], M.length);
 				ys = GetRow(O.x, 3, M.start[M.which], M.length);
 				(double, double)p = Fit.Line(xs, ys);
 				B = p.Item1;

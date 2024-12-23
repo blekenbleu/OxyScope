@@ -47,8 +47,8 @@ namespace blekenbleu.OxyScope
 							 + $";  slopes:  {slope[0]:#0.00000}, {slope[1]:#0.00000}@{inflection:#0.00}, {slope[2]:#0.00000}";
 					}
 				}
-				converge = M.AutoPlot = false;
-				return "	** Cubic fits failed! **";
+				converge = /* M.AutoPlot = */ false;
+				return "	** monotonic cubic fit failed! **";
 			}
 		}
 

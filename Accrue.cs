@@ -16,7 +16,7 @@ namespace blekenbleu.OxyScope
 				if (0 == VM.I)
 				{
 					StdDev = 0;
-					Avg = x[0,VM.I] * 0.999;
+					Avg = x[m,VM.I] * 0.999;
 				} else {
 					double variance = 0;
 
@@ -24,7 +24,7 @@ namespace blekenbleu.OxyScope
 
 					for(int j = 0; j < VM.length; j++)
 					{
-						double diff = x[0,j] - Avg;
+						double diff = x[m,j] - Avg;
 						variance += diff * diff; 
 					}
 					StdDev = Math.Sqrt(variance / VM.length);
@@ -32,12 +32,12 @@ namespace blekenbleu.OxyScope
 					View.Dispatcher.Invoke(() => View.Replot(work));
 				}
 			}
-			if(x[0,VM.I] > Avg + 2 * StdDev || x[0,VM.I] < Avg - 2 * StdDev)
+			if(x[m,VM.I] > Avg + 2 * StdDev || x[m,VM.I] < Avg - 2 * StdDev)
 			{
 				if (VM.I > x.Length - 1)
 					return;
 				once = true;	// might stick at modulo 60 for awhile
-				VM.Total += x[0,VM.I++];
+				VM.Total += x[m,VM.I++];
 			}
 		}
 	}

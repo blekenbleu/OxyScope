@@ -6,8 +6,8 @@
 	public class Settings
 	{
 		public double FilterX = 1, FilterY = 1;
-		public ushort Refresh = 0;
-		public bool LinFit = true, Plot = true;
+		public ushort Refresh = 0, LinFit = 0;
+		public bool Plot = true;
 		public string Xprop = "DataCorePlugin.GameData.AccelerationHeave",
 					  Xprop1 = "", Xprop2 = "",
 					  Yprop = "DataCorePlugin.GameData.GlobalAccelerationG";

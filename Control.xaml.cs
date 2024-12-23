@@ -1,4 +1,5 @@
-﻿using System.Windows;			// Visibility
+﻿using System.Drawing;
+using System.Windows;			// Visibility
 using System.Windows.Controls;
 
 namespace blekenbleu.OxyScope
@@ -38,8 +39,8 @@ namespace blekenbleu.OxyScope
 				M.Xprop2 = S.Xprop2;
 				M.Yprop = S.Yprop;
 			} else {
-				M.Refresh = 1;
-				M.LinFit = M.AutoPlot = true;
+				M.Refresh = M.LinFit = 1;
+				M.AutoPlot = true;
 				M.Xprop0 = M.Yprop = "random";
 				M.FilterY = M.FilterX = 1;
 			}
@@ -61,24 +62,42 @@ namespace blekenbleu.OxyScope
 
 		internal void Replot(ushort choose)
 		{
+			int m = (0 < M.LinFit) ? (M.LinFit - 1) : 0;
 			M.which = choose;
-			xmin = M.min[0,M.which];
-			xmax = M.max[0,M.which];
+			xmin = M.min[m,M.which];	// for curve fit
+			xmax = M.max[m,M.which];
 			M.Range = 0 < M.Refresh ? 0 : xmax - xmin;
+
+			double Nmax = M.max[0,M.which];    // plot range for up to 3 Xprops
+			double Nmin = M.min[0,M.which];
+			if (M.a[1])
+			{
+				if (Nmin > M.min[1,M.which])
+					Nmin = M.min[1,M.which];
+				if (Nmax < M.max[1,M.which])
+					Nmax = M.max[1,M.which];
+			}
+			if (M.a[2])
+			{
+				if (Nmin > M.min[2,M.which])
+					Nmin = M.min[2,M.which];
+				if (Nmax < M.max[2,M.which])
+					Nmax = M.max[2,M.which];
+			}
 			if (1 == M.Refresh || M.Reset)		// first time or 3 second
 			{
-				Xmax = xmax;
-				Xmin = xmin;
+				Xmax = Nmax;
+				Xmin = Nmin;
 				Ymax = M.max[3,M.which];
 				Ymin = M.min[3,M.which];
 			} else {
-		 		if (Xmin < xmin && Xmax > xmax)
+		 		if (0 == M.Refresh && Xmin < Nmin && Xmax > Nmax)
 					return;
 
-				if (Xmin > xmin)
-					Xmin = xmin;
-				if (Xmax < xmax)
-					Xmax = xmax;
+				if (Xmin > Nmin)
+					Xmin = Nmin;
+				if (Xmax < Nmax)
+					Xmax = Nmax;
 				if (Ymin > M.min[3,M.which])
 					Ymin = M.min[3,M.which];
 				if (Ymax < M.max[3,M.which])
@@ -116,7 +135,14 @@ namespace blekenbleu.OxyScope
 
 		private void LFclick(object sender, RoutedEventArgs e)		// Line Fit button
 		{
-			M.LinFit = !M.LinFit;
+			if (0 == M.LinFit)
+				M.LinFit++;
+			else if (3 == M.LinFit)
+				M.LinFit = 0;
+			else if (1 == M.LinFit)
+				M.LinFit = (ushort)(M.a[1] ? 2 : M.a[2] ? 3 : 0);
+			else M.LinFit = (ushort)(M.a[2] ? 3 : 0);
+			M.Reset = true;
 			ButtonUpdate();	
 		}
 
@@ -128,8 +154,16 @@ namespace blekenbleu.OxyScope
 
 		void ButtonUpdate()
 		{
+            System.Windows.Media.Brush[] color =
+			{ System.Windows.Media.Brushes.White,
+			  System.Windows.Media.Brushes.Red,
+			  System.Windows.Media.Brushes.Green,
+			  System.Windows.Media.Brushes.Cyan
+			};
 			TH.Text = refresh[M.Refresh];
-			LF.Text = "Fit Curves " + (M.LinFit ? "enabled" : "disabled");
+			LF.Foreground = color[M.LinFit];	// 0: white
+
+            LF.Text = "Fit Curves " + ((0 < M.LinFit) ? ("Xprop"+(M.LinFit - 1)) : "disabled");
 			TR.Text = (M.AutoPlot ? "Auto" : "Manual") + " Replot";
 		}
 	}	// class
