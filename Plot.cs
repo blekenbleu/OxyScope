@@ -23,6 +23,7 @@ namespace blekenbleu.OxyScope
 		internal void Plot()
 		{
 			ymax = 1.2 * (Ymax - Ymin) + Ymin;		// legend space
+			M.XYprop2 = "";
 			model = ScatterPlot("60 Hz Xprop0", 0);
 			if (M.a[1])
 				model.Series.Add(Scatter("Xprop1", 1));

@@ -119,6 +119,7 @@ namespace blekenbleu.OxyScope
 			if (VM.Restart)
 			{
 				VM.Restart = false;
+				once = true;				// restart Accrue()
 				for (int i = 0; i < 4; i++)
 					IIR[i] = f[i];
 				VM.start[work] = VM.I;
@@ -191,7 +192,7 @@ namespace blekenbleu.OxyScope
 		}
 
 		/// <summary>
-		/// Called once after plugin instance
+		/// Called one time after plugin instance
 		/// Plugins are reinstanced at game change
 		/// </summary>
 		/// <param name="pluginManager"></param>
