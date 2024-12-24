@@ -6,6 +6,17 @@ namespace blekenbleu.OxyScope
 {
 	public partial class Control
 	{
+		bool converge = true;
+
+		string poly(double left, double right, string es)
+		{
+			// https://oxyplot.readthedocs.io/en/latest/models/series/FunctionSeries.html
+			model.Series.Add(new FunctionSeries(cubicfit, left, right,
+							 (right - left) / 50, es + "cubic fit"));			  // x increments
+			return es + $"cubic:  {c[0]:#0.0000}+{c[1]:#0.0000}*x+{c[2]:#0.0000}*x**2+{c[3]:#0.00000}*x**3 "
+				 + $"slopes:  {slope[0]:#0.0000}, {slope[1]:#0.0000}@{inflection:#0.00}, {slope[2]:#0.0000}";
+		}
+
 		string Curve(double left, double right, string es)
 		{
 			// cubic fit https://posts5865.rssing.com/chan-58562618/latest.php
@@ -13,13 +24,7 @@ namespace blekenbleu.OxyScope
 
 			bool m0 = Monotonic(c[1], c[2], c[3]);
 			if (m0)
-			{
-				// https://oxyplot.readthedocs.io/en/latest/models/series/FunctionSeries.html
-				model.Series.Add(new FunctionSeries(cubicfit, left, right,
-								(right - left) / 50, es + "cubic fit"));			  // x increments
-				return es + $"cubic:  {c[0]:#0.0000}+{c[1]:#0.0000}*x+{c[2]:#0.0000}*x**2+{c[3]:#0.00000}*x**3 "
-					 + $"slopes:  {slope[0]:#0.0000}, {slope[1]:#0.0000}@{inflection:#0.00}, {slope[2]:#0.0000}";
-			}
+				return poly(left, right, es);
 			else
 			{							// https://blekenbleu.github.io/static/ImageProcessing/MonotoneCubic.htm
 				Count = 0;				// how many times ConstrainedCubic() invoked?
@@ -47,8 +52,7 @@ namespace blekenbleu.OxyScope
 							 + $";  slopes:  {slope[0]:#0.00000}, {slope[1]:#0.00000}@{inflection:#0.00}, {slope[2]:#0.00000}";
 					}
 				}
-				converge = /* M.AutoPlot = */ false;
-				return "	** monotonic cubic fit failed! **";
+				return "** non-monotonic! ** " + poly(left, right, es);
 			}
 		}
 

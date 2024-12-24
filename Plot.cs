@@ -12,7 +12,6 @@ namespace blekenbleu.OxyScope
 		static ushort Count;
 		static (double, double, double, double) Ft;
 		PlotModel model;
-		bool converge = true;
 		double[] xs, ys;
 
 		double[] GetRow(double[,] twoD, ushort row, ushort start, ushort length)
@@ -24,7 +23,7 @@ namespace blekenbleu.OxyScope
 		{
 			ymax = 1.2 * (Ymax - Ymin) + Ymin;		// legend space
 			M.XYprop2 = "";
-			model = ScatterPlot("60 Hz Xprop0", 0);
+			model = ScatterPlot("Xprop0", 0);
 			if (M.a[1])
 				model.Series.Add(Scatter("Xprop1", 1));
             if (M.a[2])
