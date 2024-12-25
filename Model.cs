@@ -25,7 +25,8 @@ namespace blekenbleu.OxyScope
 
 		internal ushort		I, length, Refresh = 0, which = 0, LinFit = 1;
 		internal ushort[]	start;					// split buffer
-		internal double		Range, Total;
+		internal double		Range;
+		internal double[] Total = { 0, 0, 0 };
 		internal double[]	Coef; // View uses for axes scaling
 		internal double[,]	min, max;
 		internal bool AutoPlot, Once = true, Restart = true;
@@ -37,7 +38,7 @@ namespace blekenbleu.OxyScope
 				if (_title != value)
 				{
 					_title = value;
-					Range = 0;
+					Reset = true;
 					PropertyChanged?.Invoke(this, TIevent);
 				}
 			}
@@ -76,7 +77,7 @@ namespace blekenbleu.OxyScope
 			{
 				if (_reset = value)
 				{
-				   	Total = Range = I = which = 0;	
+				   	Total[0] = Total[1] = Total[2] = Range = I = which = 0;	
 					Restart = Once = true;
 					Coef = null;
 					length = (ushort)(2 == Refresh ? 0 : 180);	// 0 for cumulative..

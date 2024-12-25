@@ -43,10 +43,10 @@ namespace blekenbleu.OxyScope
         /// </summary>
         /// <param name="pluginManager"></param>
         /// <param name="data">Current game data, including current and previous data frame.</param>
-        readonly double[] IIR = { 0, 0, 0, 0 };		// filtered property values
-		internal double[,] x;						// plot samples
+        readonly float[] f = { 0, 0, 0, 0 };		// float values from properties
+        readonly double[] IIR = { 0, 0, 0, 0 };		// filtered property values from f[]
+		internal double[,] x;						// plot samples from IIR[]
 		private ushort work, timeout;               // arrays currently being sampled
-        readonly float[] f = { 0, 0, 0, 0 };
 		bool oops = false;
 		int m = 0;									// current LinFit
 		public void DataUpdate(PluginManager pluginManager, ref GameData data)
@@ -124,6 +124,16 @@ namespace blekenbleu.OxyScope
 					IIR[i] = f[i];
 				VM.start[work] = VM.I;
 				m = (0 == VM.LinFit) ? 0 : VM.LinFit - 1;
+			} else {	// check for redundant samples
+			  	if (1 > (double)pluginManager.GetPropertyValue("DataCorePlugin.GameData.SpeedKmh"))
+					return; 	// Restart sample may have been before car moved
+
+				int i;
+				for (i = 0; i < 3; i++)
+					if(VM.a[i] && System.Math.Abs(f[i] - x[i,VM.I]) > 0.02 * (VM.max[i,work] - VM.min[i,work]))
+						break;
+				if (3 == i)		// differed from previous by < 2% ?
+					return;
 			}
 
 			for (int i = 0; i < 4; i++)
@@ -139,9 +149,11 @@ namespace blekenbleu.OxyScope
                     	VM.max[i,work] = x[i,VM.I];
 				}
 
-			if (2 == VM.Refresh
-			 && 1 < (double)pluginManager.GetPropertyValue("DataCorePlugin.GameData.SpeedKmh"))
-				Accrue();
+			if (2 == VM.Refresh)
+			{
+				if (VM.I < x.Length)
+					Accrue();
+			}
 			else if ((++VM.I - VM.start[work]) >= VM.length)	// filled?
 			{
 				VM.Current = $"{VM.min[m,work]:#0.000} <= X <= {VM.max[m,work]:#0.000};  "

@@ -78,9 +78,13 @@ uniform distribution along X axis is preferred...
     - set 1:&nbsp; collect samples for X values *outside variance*, then recalculate variance
 	- ... set n:&nbsp; *und so weiter*  
 - *3 Dec*:&nbsp; also update when more than e.g. 3 seconds between fixed-count collections  
-### Handle up to 3 independent (X-axis) variables for a single Y variable  
+### Handle up to 3 independent (X-axis) properties for a single Y property
 - *21 Dec*:&nbsp; e.g. for multiple regression of `heave`, `roll`, `pitch` to `tire load` or `suspension deflection`  
-- *25 Dec*:&nbsp; optionally generate text files formatted for [3D visualizations](https://blekenbleu.github.io/SimHub/MBAI.htm)
+- *25 Dec*:&nbsp; optionally generate text files formatted for [3D visualizations](https://blekenbleu.github.io/SimHub/MBAI.htm)  
+	- ignore similar consecutive samples or < 1 kph after first  
+	- Accrue samples for *all* Xprops outside their current 2 * StdDev  
+	- **To Do**:&nbsp; plot curves from min to max of *currently selected* Xprop  
+
 <hr>
 <b><i>Property folder changes from default WPF project for SimHub plugins</i></b>
 <details><summary>click for differences</summary>

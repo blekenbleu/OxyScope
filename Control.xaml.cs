@@ -44,7 +44,7 @@ namespace blekenbleu.OxyScope
 				M.Xprop0 = M.Yprop = "random";
 				M.FilterY = M.FilterX = 1;
 			}
-			O.x = new double[4, M.length = 901];
+			O.x = new double[4, M.length = 1201];
 			M.length /= 5; 
 			M.start = new ushort[] { 0, M.length };
 
@@ -109,13 +109,13 @@ namespace blekenbleu.OxyScope
 			else M.PVis = Visibility.Visible;
 		}
 
-		private void D3click(object sender, RoutedEventArgs e)		// Plot button
+		private void D3click(object sender, RoutedEventArgs e)		// 3D visualize button
 		{
 			D3();
 			M.D3vis = Visibility.Hidden;
 		}
 
-		private void PBclick(object sender, RoutedEventArgs e)		// Plot button
+		private void PBclick(object sender, RoutedEventArgs e)		// Plot button (for manual Refresh)
 		{
 			M.PVis = Visibility.Hidden;
 			Plot();
@@ -141,6 +141,7 @@ namespace blekenbleu.OxyScope
 
 		private void LFclick(object sender, RoutedEventArgs e)		// Line Fit button
 		{
+			// Accrue() now always maximizes StdDev for all Xprops
 			if (0 == M.LinFit)
 				M.LinFit++;
 			else if (3 == M.LinFit)
@@ -148,8 +149,8 @@ namespace blekenbleu.OxyScope
 			else if (1 == M.LinFit)
 				M.LinFit = (ushort)(M.a[1] ? 2 : M.a[2] ? 3 : 0);
 			else M.LinFit = (ushort)(M.a[2] ? 3 : 0);
-			M.Reset = true;
-			ButtonUpdate();	
+			ButtonUpdate();
+			Plot();
 		}
 
 		readonly string[] refresh = new string[]
