@@ -80,7 +80,7 @@ uniform distribution along X axis is preferred...
 - *3 Dec*:&nbsp; also update when more than e.g. 3 seconds between fixed-count collections  
 ### Handle up to 3 independent (X-axis) variables for a single Y variable  
 - *21 Dec*:&nbsp; e.g. for multiple regression of `heave`, `roll`, `pitch` to `tire load` or `suspension deflection`  
-	- [example of 2 sets in one OxyPlot](https://swharden.com/csdv/plotting-free/oxyplot/)
+- *25 Dec*:&nbsp; optionally generate text files formatted for [3D visualizations](https://blekenbleu.github.io/SimHub/MBAI.htm)
 <hr>
 <b><i>Property folder changes from default WPF project for SimHub plugins</i></b>
 <details><summary>click for differences</summary>
