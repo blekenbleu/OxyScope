@@ -1,6 +1,7 @@
 using MathNet.Numerics;
 using OxyPlot;
 using OxyPlot.Series;
+using System.Windows;           // Visibility
 using System.Linq;
 
 namespace blekenbleu.OxyScope
@@ -49,6 +50,8 @@ namespace blekenbleu.OxyScope
 					 + $"{M.min[3,M.which]:#0.000} <= Y <= {M.max[3,M.which]:#0.000}" + lfs;
 
 			plot.Model = model;											// OxyPlot
+			if (M.a[1] && M.a[2])
+				M.D3vis = Visibility.Visible;
 		}
 
 		LineSeries LineDraw(double m, double B, string title)

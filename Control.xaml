@@ -56,8 +56,9 @@
 
 			<TextBox Margin="0,0"   TextWrapping="Wrap" Height="25" Width="390"
 					 Name="Xprop1" Text="{Binding Xprop1, Mode=TwoWay}" Foreground="Green"/>
-
-			<TextBox Margin="410,0" TextWrapping="Wrap" Height="25" Width="390"
+			<Button Content="3D" Width="25" Height="25" Margin="390,0"
+                Click="D3click" Visibility="{Binding D3vis}" Background="Green" />  
+			<TextBox Margin="415,0" TextWrapping="Wrap" Height="25" Width="385"
 					 Name="Xprop2" Text="{Binding Xprop2, Mode=TwoWay}" Foreground="Cyan"/>
 		</Canvas>
 		<Canvas Grid.Row="4" Grid.Column="0" VerticalAlignment="Top">

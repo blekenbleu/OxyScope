@@ -14,6 +14,7 @@ namespace blekenbleu.OxyScope
 		readonly PropertyChangedEventArgs FXevent = new PropertyChangedEventArgs(nameof(FilterX));
 		readonly PropertyChangedEventArgs FYevent = new PropertyChangedEventArgs(nameof(FilterY));
 		readonly PropertyChangedEventArgs PVevent = new PropertyChangedEventArgs(nameof(PVis));
+		readonly PropertyChangedEventArgs D3event = new PropertyChangedEventArgs(nameof(D3vis));
 		readonly PropertyChangedEventArgs TIevent = new PropertyChangedEventArgs(nameof(Title));
 		readonly PropertyChangedEventArgs Xevent0 = new PropertyChangedEventArgs(nameof(Xprop0));
 		readonly PropertyChangedEventArgs Xevent1 = new PropertyChangedEventArgs(nameof(Xprop1));
@@ -51,6 +52,19 @@ namespace blekenbleu.OxyScope
 				{
 					_unseen = value;
 					PropertyChanged?.Invoke(this, PVevent);
+				}
+			} 
+		}
+
+		private Visibility _un3D = Visibility.Hidden;
+		public Visibility D3vis
+		{ 	get => _un3D;
+			set
+			{
+				if (_un3D != value)
+				{
+					_un3D = value;
+					PropertyChanged?.Invoke(this, D3event);
 				}
 			} 
 		}

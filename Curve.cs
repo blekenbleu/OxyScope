@@ -8,7 +8,7 @@ namespace blekenbleu.OxyScope
 	{
 		bool converge = true;
 
-		string poly(double left, double right, string es)
+		string Poly(double left, double right, string es)
 		{
 			// https://oxyplot.readthedocs.io/en/latest/models/series/FunctionSeries.html
 			model.Series.Add(new FunctionSeries(cubicfit, left, right,
@@ -24,7 +24,7 @@ namespace blekenbleu.OxyScope
 
 			bool m0 = Monotonic(c[1], c[2], c[3]);
 			if (m0)
-				return poly(left, right, es);
+				return Poly(left, right, es);
 			else
 			{							// https://blekenbleu.github.io/static/ImageProcessing/MonotoneCubic.htm
 				Count = 0;				// how many times ConstrainedCubic() invoked?
@@ -52,7 +52,7 @@ namespace blekenbleu.OxyScope
 							 + $";  slopes:  {slope[0]:#0.00000}, {slope[1]:#0.00000}@{inflection:#0.00}, {slope[2]:#0.00000}";
 					}
 				}
-				return "** non-monotonic! ** " + poly(left, right, es);
+				return "** non-monotonic! ** " + Poly(left, right, es);
 			}
 		}
 

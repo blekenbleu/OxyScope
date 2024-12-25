@@ -109,6 +109,14 @@ namespace blekenbleu.OxyScope
 			else M.PVis = Visibility.Visible;
 		}
 
+		private void D3click(object sender, RoutedEventArgs e)		// Plot button
+		{
+			D3();
+			M.D3vis = Visibility.Hidden;
+		}
+
+		void D3() {return;}
+
 		private void PBclick(object sender, RoutedEventArgs e)		// Plot button
 		{
 			M.PVis = Visibility.Hidden;
