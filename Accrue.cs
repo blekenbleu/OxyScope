@@ -40,9 +40,9 @@ namespace blekenbleu.OxyScope
 					}
 					VM.Current = $"length = {VM.length};  StdDev = {StdDev[0]:0.0000}";
 					if (VM.a[1])
-						VM.Current += ", {StdDev[1]:0.0000}";
+						VM.Current += $", {StdDev[1]:0.0000}";
 					if (VM.a[2])
-						VM.Current += ", {StdDev[2]:0.0000}";
+						VM.Current += $", {StdDev[2]:0.0000}";
 					View.Dispatcher.Invoke(() => View.Replot(work));
 				}
 			}

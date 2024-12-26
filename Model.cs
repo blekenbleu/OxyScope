@@ -84,40 +84,7 @@ namespace blekenbleu.OxyScope
 				}
 			}
 		}
-/* pseudo-array
-		internal string Xprop(uint i)
-		{
-			switch (i)
-			{
-				case 0:
-					return _xprop0;
-				case 1:
-					return _xprop1;
-				case 2:
-					return _xprop2;
-				default:
-					return "";
-			}
-		}
 
-		internal void Xprop(uint i, string st)
-		{
-			switch (i)
-			{
-				case 0:
-					Xprop0 = st;
-					break;
-				case 1:
-					Xprop1 = st;
-					break;
-				case 2:
-					Xprop2 = st;
-					break;
-				default:
-					break;
-			}
-		}
- */
 		private string _current = "waiting for property values...";
 		public string Current		// OxyScope sets CurrentGame Car@Track
 		{	get => _current;

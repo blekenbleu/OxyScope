@@ -10,11 +10,12 @@ namespace blekenbleu.OxyScope
 	/// </summary>
 	public partial class Control : UserControl
 	{
-		public Model M;
+		public static Model M;
 		public OxyScope O;
-		static double Xmax, Ymax, Xmin, Ymin, xmin, xmax, ymax,	// axes limits
+		static double Xmax, Ymax, Xmin, Ymin, ymax,	// axes limits
 						m, B, inflection;
 		static readonly double[] slope = new double[] { 0, 0, 0 };
+		static int p;								// current X property to plot
 
 		public Control()
 		{
@@ -49,8 +50,8 @@ namespace blekenbleu.OxyScope
 			M.start = new ushort[] { 0, M.length };
 
 			ButtonUpdate();
-			M.min = new double[,] { { 0, 0 }, { 0, 0 }, { 0, 0 }, {0, 0} };
-			M.max = new double[,] {{0, 0}, {0, 0}, {0, 0}, {0, 0} };
+			M.min = new double[,] { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } };
+			M.max = new double[,] { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } };
 			RandomPlot();
 		}
 
@@ -62,11 +63,9 @@ namespace blekenbleu.OxyScope
 
 		internal void Replot(ushort choose)
 		{
-			int m = (0 < M.LinFit) ? (M.LinFit - 1) : 0;
+			p = (0 < M.LinFit) ? (M.LinFit - 1) : 0;
 			M.which = choose;
-			xmin = M.min[m,M.which];	// for curve fit
-			xmax = M.max[m,M.which];
-			M.Range = 0 < M.Refresh ? 0 : xmax - xmin;
+			M.Range = 0 < M.Refresh ? 0 : M.max[p,M.which] - M.min[p,M.which];
 
 			double Nmax = M.max[0,M.which];    // plot range for up to 3 Xprops
 			double Nmin = M.min[0,M.which];
