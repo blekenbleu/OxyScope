@@ -4,18 +4,18 @@ namespace blekenbleu.OxyScope
 {
 	public partial class OxyScope
 	{
-        private readonly double[] StdDev = { 0, 0, 0 };
-        private readonly double[] Avg = { 0, 0, 0 };
-        bool once = true;
+		private readonly double[] StdDev = { 0, 0, 0 };
+		private readonly double[] Avg = { 0, 0, 0 };
+		bool restart = true;
 
 		void Accrue()
 		{
 			ushort p;
 
-			if (once && (0 == VM.I % 30 || 180 < ++timeout))
+			if (restart && (0 == VM.I % 30 || 180 < ++timeout))
 			{
 				timeout = 0;
-				once = false;
+				restart = false;
 				if (0 == VM.I)
 				{
 					for (p = 0; p < 3; p++)
@@ -23,7 +23,7 @@ namespace blekenbleu.OxyScope
 						Avg[p] = x[p,VM.I] * 0.999;
 						StdDev[p] = 0;
 					}
-				} else {
+				} else {					
 					for (p = 0; p < 3; p++) {
 						if (!VM.a[p])
 							continue;
@@ -38,6 +38,7 @@ namespace blekenbleu.OxyScope
 						}
 						StdDev[p] = Math.Sqrt(variance / VM.length);
 					}
+
 					VM.Current = $"length = {VM.length};  StdDev = {StdDev[0]:0.0000}";
 					if (VM.a[1])
 						VM.Current += $", {StdDev[1]:0.0000}";
@@ -47,17 +48,16 @@ namespace blekenbleu.OxyScope
 				}
 			}
 			for (p = 0; p < 3; p++)
-				if (VM.a[p] && (x[p,VM.I] > Avg[p] + 2 * StdDev[p] || x[p,VM.I] < Avg[p] - 2 * StdDev[p]))
+				if (VM.a[p] && Math.Abs(x[p,VM.I] - Avg[p]) > 2 * StdDev[p])
 					break;
-			if (3 > p)		
+			if (3 > p)
 			{
-				once = true;	// might stick at modulo 60 for awhile
-				VM.Total[0] += x[0,VM.I];
+				restart = true;	// might stick at modulo 30 for awhile
 				if (VM.a[1])
 					VM.Total[1] += x[1,VM.I];
 				if (VM.a[2])
 					VM.Total[2] += x[2,VM.I];
-				VM.I++;
+				VM.Total[0] += x[0,VM.I++];
 			}
 		}
 	}

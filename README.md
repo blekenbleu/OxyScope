@@ -1,5 +1,5 @@
 # OxyScope from SimHubPluginSdk
-XY plot of *positive* property values  
+XY scatter plots of SimHub property values  
 [UI control explanations](https://blekenbleu.github.io/SimHub/oxyhelp.htm)  
 - Create a new WPF project named `OxyPlotPlugin` in Visual Studio, then quit.  
 - delete (or move away) all but `OxyPlotPlugin.sln` and `OxyPlotPlugin.csproj`  

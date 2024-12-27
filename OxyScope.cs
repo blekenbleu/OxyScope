@@ -119,13 +119,14 @@ namespace blekenbleu.OxyScope
 			if (VM.Restart)
 			{
 				VM.Restart = false;
-				once = true;				// restart Accrue()
+				restart = true;				// restart Accrue()
 				for (int i = 0; i < 4; i++)
 					IIR[i] = f[i];
 				VM.start[work] = VM.I;
 				m = (0 == VM.LinFit) ? 0 : VM.LinFit - 1;
 			} else {	// check for redundant samples
-			  	if (1 > (double)pluginManager.GetPropertyValue("DataCorePlugin.GameData.SpeedKmh"))
+			  	if (1 > (double)pluginManager.GetPropertyValue("DataCorePlugin.GameData.SpeedKmh")
+				 || VM.I >= 1200)
 					return; 	// Restart sample may have been before car moved
 
 				int i;
