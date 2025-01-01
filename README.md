@@ -79,7 +79,9 @@ uniform distribution along X axis is preferred...
 	- ... set n:&nbsp; *und so weiter*  
 - *3 Dec*:&nbsp; also update when more than e.g. 3 seconds between fixed-count collections  
 ### Handle up to 3 independent (X-axis) properties for a single Y property
-- *21 Dec*:&nbsp; e.g. for multiple regression of `heave`, `roll`, `pitch` to `tire load` or `suspension deflection`  
+- *21 Dec*:&nbsp; e.g. for [multiple regression](https://numerics.mathdotnet.com/Regression#Multiple-Regression)
+	 of `heave`, `roll`, `pitch` to `tire load` or `suspension deflection`  
+	- PDF:&nbsp; [**Curve Fitting: Linear Regression**](http://kb.en-mat.com/Curve%20Fitting_%20Linear%20Regression.pdf)  
 - *25 Dec*:&nbsp; optionally generate text files formatted for [3D visualizations](https://blekenbleu.github.io/SimHub/MBAI.htm)  
 	- ignore similar consecutive samples or < 1 kph after first  
 	- Accrue samples for *all* Xprops outside their current 2 * StdDev  
