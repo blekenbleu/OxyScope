@@ -1,6 +1,14 @@
 # OxyScope from SimHubPluginSdk
 XY scatter plots of SimHub property values  
 [UI control explanations](https://blekenbleu.github.io/SimHub/oxyhelp.htm)  
+Optionally generate data for [**3D plots**](https://blekenbleu.github.io/SimHub/MBAI.htm):  
+![](https://blekenbleu.github.io/SimHub/load.png)  
+
+### Installation (just like most SimHub plugins)
+- unzip `OxyPlotPlugin.dll` from [OxyScope.zip](https://github.com/blekenbleu/OxyScope/releases)
+- [copy that `.dll`](https://www.youtube.com/watch?v=5Qx4obgouco) to the same folder as `SimHubWPF.exe`  
+
+## How it was hacked
 - Create a new WPF project named `OxyPlotPlugin` in Visual Studio, then quit.  
 - delete (or move away) all but `OxyPlotPlugin.sln` and `OxyPlotPlugin.csproj`  
 - copy all but .sln and .csproj from SimHubPluginSdk
@@ -40,6 +48,7 @@ XY scatter plots of SimHub property values
 ### Many plot properties can change between plots
 - `new ScatterSeries` each time...
 
+## Iterative refinements
 #### 10 Nov:&nbsp; better prompts and feedback
 - better icon, simpler xaml, version number
 - both X and Y autorange based on max property sample values
