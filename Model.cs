@@ -9,6 +9,12 @@ namespace blekenbleu.OxyScope
 	{
 		public event PropertyChangedEventHandler PropertyChanged;
 		public void OnPropertyChanged(PropertyChangedEventArgs myevent) => PropertyChanged?.Invoke(this, myevent);
+        static Settings S;
+
+		public Model(OxyScope os)
+		{
+			S = os.Settings;
+		}
 
 		readonly PropertyChangedEventArgs Cevent = new PropertyChangedEventArgs(nameof(Current));
 		readonly PropertyChangedEventArgs FXevent = new PropertyChangedEventArgs(nameof(FilterX));
@@ -16,22 +22,25 @@ namespace blekenbleu.OxyScope
 		readonly PropertyChangedEventArgs PVevent = new PropertyChangedEventArgs(nameof(PVis));
 		readonly PropertyChangedEventArgs D3event = new PropertyChangedEventArgs(nameof(D3vis));
 		readonly PropertyChangedEventArgs TIevent = new PropertyChangedEventArgs(nameof(Title));
-		readonly PropertyChangedEventArgs Xevent0 = new PropertyChangedEventArgs(nameof(Xprop0));
-		readonly PropertyChangedEventArgs Xevent1 = new PropertyChangedEventArgs(nameof(Xprop1));
-		readonly PropertyChangedEventArgs Xevent2 = new PropertyChangedEventArgs(nameof(Xprop2));
-		readonly PropertyChangedEventArgs XYevent = new PropertyChangedEventArgs(nameof(XYprop));
+		readonly PropertyChangedEventArgs Y0event = new PropertyChangedEventArgs(nameof(Y0prop));
+		readonly PropertyChangedEventArgs Y1event = new PropertyChangedEventArgs(nameof(Y1prop));
+		readonly PropertyChangedEventArgs Y2event = new PropertyChangedEventArgs(nameof(Y2prop));
+		readonly PropertyChangedEventArgs XY1event = new PropertyChangedEventArgs(nameof(XYprop1));
 		readonly PropertyChangedEventArgs XY2event = new PropertyChangedEventArgs(nameof(XYprop2));
-		readonly PropertyChangedEventArgs Yevent = new PropertyChangedEventArgs(nameof(Yprop));
+		readonly PropertyChangedEventArgs Xevent = new PropertyChangedEventArgs(nameof(Xprop));
 
-		internal ushort		I, length, Refresh = 0, which = 0, LinFit = 1;
+		internal ushort		I, length, which = 0,
+							Refresh = (ushort)((null == S) ? 1 : S.Refresh),
+							LinFit  = (ushort)((null == S) ? 1 : S.LinFit);
 		internal ushort[]	start;					// split buffer
 		internal double		Range;
-		internal double[] Total = { 0, 0, 0 };
+		internal double[]	Total = { 0, 0, 0 };
 		internal double[]	Coef; // View uses for axes scaling
 		internal double[,]	min, max;
-		internal bool AutoPlot, Once = true, Restart = true;
-		internal bool[] a = { true, false, false, true };	// which axes have properties assigned
-		private string _title = "launch a game or Replay to collect XY property samples";
+		internal bool		AutoPlot = (null == S) || S.Plot, Once = true, Restart = true;
+		internal bool[]		axis = { true, false, false, true };	// which axes have properties assigned
+
+		private string _title = "launch game or Replay to collect and plot property samples";
 		public string Title { get => _title;
 			set
 			{
@@ -98,71 +107,67 @@ namespace blekenbleu.OxyScope
 			}
 		}
 
-		private string _xprop0;
-		public string Xprop0
-		{	get => _xprop0;
+		public string Y0prop
+		{	get => (null == S) ? "random" : S.Y0prop;
 			set
 			{
-				if (_xprop0 != value)
+				if (S.Y0prop != value)
 				{
-					_xprop0 = value;
-					PropertyChanged?.Invoke(this, Xevent0);
+					S.Y0prop = value;
+					PropertyChanged?.Invoke(this, Y0event);
 					Reset = true;
 				}
 			}
 		}
 
-		private string _xprop1;
-		public string Xprop1
-		{	get => _xprop1;
+		public string Y1prop
+		{	get => S.Y1prop;
 			set
 			{
-				if (_xprop1 != value)
+				if (S.Y1prop != value)
 				{
-					_xprop1 = value;
-					PropertyChanged?.Invoke(this, Xevent1);
+					S.Y1prop = value;
+					PropertyChanged?.Invoke(this, Y1event);
 					Reset = true;
 				}
 			}
 		}
 
-		private string _xprop2;
-		public string Xprop2
-		{	get => _xprop2;
+		public string Y2prop
+		{	get => S.Y2prop;
 			set
 			{
-				if (_xprop2 != value)
+				if (S.Y2prop != value)
 				{
-					_xprop2 = value;
-					PropertyChanged?.Invoke(this, Xevent2);
+					S.Y2prop = value;
+					PropertyChanged?.Invoke(this, Y2event);
 					Reset = true;
 				}
 			}
 		}
 
-		private string _yprop;
-		public string Yprop
-		{	get => _yprop;
+		public string Xprop
+		{	get => (null == S) ? "random" : S.Xprop;
 			set
 			{
-				if (_yprop != value)
+				if (S.Xprop != value)
 				{
-					_yprop = value;
+					S.Xprop = value;
 					Reset = true;
-					PropertyChanged?.Invoke(this, Yevent);
+					PropertyChanged?.Invoke(this, Xevent);
 				}
 			}
 		}
 
-		private string _xyprop = "Random data";
-		public string XYprop
-		{	get => _xyprop;
+		private string _xyprop1 = "Random data";
+		public string XYprop1
+		{	get => _xyprop1;
 			set
 			{
-				if (_xyprop != value)
+				if (_xyprop1 != value)
 				{
-					_xyprop = value;
-					PropertyChanged?.Invoke(this, XYevent);
+					_xyprop1 = value;
+					PropertyChanged?.Invoke(this, XY1event);
 				}
 			}
 		}
@@ -180,30 +185,28 @@ namespace blekenbleu.OxyScope
 			}
 		}
 
-		private double _filtx;
 		public double FilterX
-		{	get => _filtx;
+		{	get => (null == S) ? 1 : S.FilterX;
 			set
 			{
-				if (_filtx != value)
+				if (S.FilterX != value)
 				{
-					_filtx = value;
+					S.FilterX = value;
 					PropertyChanged?.Invoke(this, FXevent);
 				}
 			}
 		}
 
-		private double _filty;
 		public double FilterY
-		{	get => _filty;
+		{	get => (null == S) ? 1 : S.FilterY;
 			set
 			{
-				if (_filty != value)
+				if (S.FilterY != value)
 				{
-					_filty = value;
+					S.FilterY = value;
 					PropertyChanged?.Invoke(this, FYevent);
 				}
 			}
 		}
-	}	// class M
+	}	// class Model
 }
