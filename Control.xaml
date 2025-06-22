@@ -44,29 +44,31 @@
 			</GroupBox.Header>
 			<oxy:PlotView Name="plot"/>
 		</GroupBox>
+
 		<Canvas Grid.Row="2" Grid.Column="0" VerticalAlignment="Top">
-
-			<TextBox Margin="0,0"   TextWrapping="Wrap" Height="25" Width="390"
-					 Name="Yprop" Text="{Binding Yprop, Mode=TwoWay}"/>
-			<TextBox Margin="390,0" Text="vs" Width="20" Height="25"/>
-			<TextBox Margin="410,0" TextWrapping="Wrap" Height="25" Width="390"
-					 Name="Xprop" Text="{Binding Xprop0, Mode=TwoWay}" Foreground="Red" />
-		</Canvas>
-		<Canvas Grid.Row="3" Grid.Column="0" VerticalAlignment="Top">
-
 			<TextBox Margin="0,0"   TextWrapping="Wrap" Height="25" Width="385"
-					 Name="Xprop1" Text="{Binding Xprop1, Mode=TwoWay}" Foreground="Green"/>
+					 Text="{Binding Y1prop, Mode=TwoWay}" Foreground="Green"/>
 			<Button Content="3D" Width="30" Height="25" Margin="385,0"
                 Click="D3click" Visibility="{Binding D3vis}" Background="Green" />  
 			<TextBox Margin="415,0" TextWrapping="Wrap" Height="25" Width="385"
-					 Name="Xprop2" Text="{Binding Xprop2, Mode=TwoWay}" Foreground="Cyan"/>
+					 Text="{Binding Y2prop, Mode=TwoWay}" Foreground="Cyan"/>
 		</Canvas>
+		<Canvas Grid.Row="3" Grid.Column="0" VerticalAlignment="Top">
+
+			<TextBox Margin="0,0"   TextWrapping="Wrap" Height="25" Width="390"
+					 Text="{Binding Y0prop, Mode=TwoWay}" Foreground="Red"/>
+			<TextBox Margin="390,0" Text="vs" Width="20" Height="25"/>
+			<TextBox Margin="410,0" TextWrapping="Wrap" Height="25" Width="390"
+					 Text="{Binding Xprop, Mode=TwoWay}"/>
+		</Canvas>
+
 		<Canvas Grid.Row="4" Grid.Column="0" VerticalAlignment="Top">
 			<TextBox Canvas.Left="0" Height="25" Width="800"
-					 Name="XYprop" Text="{Binding XYprop}"/>
+					 Name="XYprop1" Text="{Binding XYprop1}"/>
 			<TextBox Margin="0,25" Canvas.Left="0" Height="25" Width="800"
 					 Name="XYprop2" Text="{Binding XYprop2}"/>
 		</Canvas>
+
 		<Canvas Grid.Row="5" Grid.Column="0" VerticalAlignment="Top">
 			<ui:TitledSlider Title="	 Y-axis filter" Width="400"
 				 Value="{Binding FilterY, Mode=TwoWay}" Margin="0,5"

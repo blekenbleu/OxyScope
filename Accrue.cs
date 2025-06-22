@@ -25,7 +25,7 @@ namespace blekenbleu.OxyScope
 					}
 				} else {					
 					for (p = 0; p < 3; p++) {
-						if (!VM.a[p])
+						if (!VM.axis[p])
 							continue;
 
 						Avg[p] = VM.Total[p] / (VM.length = VM.I);
@@ -40,22 +40,22 @@ namespace blekenbleu.OxyScope
 					}
 
 					VM.Current = $"length = {VM.length};  StdDev = {StdDev[0]:0.0000}";
-					if (VM.a[1])
+					if (VM.axis[1])
 						VM.Current += $", {StdDev[1]:0.0000}";
-					if (VM.a[2])
+					if (VM.axis[2])
 						VM.Current += $", {StdDev[2]:0.0000}";
 					View.Dispatcher.Invoke(() => View.Replot(work));
 				}
 			}
 			for (p = 0; p < 3; p++)
-				if (VM.a[p] && Math.Abs(x[p,VM.I] - Avg[p]) > 2 * StdDev[p])
+				if (VM.axis[p] && Math.Abs(x[p,VM.I] - Avg[p]) > 2 * StdDev[p])
 					break;
 			if (3 > p)
 			{
 				restart = true;	// might stick at modulo 30 for awhile
-				if (VM.a[1])
+				if (VM.axis[1])
 					VM.Total[1] += x[1,VM.I];
-				if (VM.a[2])
+				if (VM.axis[2])
 					VM.Total[2] += x[2,VM.I];
 				VM.Total[0] += x[0,VM.I++];
 			}

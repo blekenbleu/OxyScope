@@ -24,18 +24,17 @@ namespace blekenbleu.OxyScope
 		{
 			p = (0 < M.LinFit) ? (M.LinFit - 1) : 0;
 			ymax = 1.2 * (Ymax - Ymin) + Ymin;		// legend space
-			M.XYprop2 = "";
-			model = ScatterPlot("Xprop0", 0);
-			if (M.a[1])
-				model.Series.Add(Scatter("Xprop1", 1));
-            if (M.a[2])
-                model.Series.Add(Scatter("Xprop2", 2));
+			model = ScatterPlot(Last(M.Y0prop.Split('.')), 0);
+			if (M.axis[1])
+				model.Series.Add(Scatter(Last(M.Y1prop.Split('.')), 1));
+            if (M.axis[2])
+                model.Series.Add(Scatter(Last(M.Y2prop.Split('.')), 2));
 
             if (0 < M.LinFit)
 			{
 				// https://numerics.mathdotnet.com/Regression
-				xs = GetRow(O.x, (ushort)(M.LinFit - 1), M.start[M.which], M.length);
-				ys = GetRow(O.x, 3, M.start[M.which], M.length);
+				ys = GetRow(O.x, (ushort)(M.LinFit - 1), M.start[M.which], M.length);
+				xs = GetRow(O.x, 3, M.start[M.which], M.length);
 				(double, double)fl = Fit.Line(xs, ys);
 				B = fl.Item1;
 				m = fl.Item2;
@@ -47,11 +46,11 @@ namespace blekenbleu.OxyScope
 			}
 			else lfs = "";
 
-			M.XYprop = $"{M.min[p,M.which]:#0.000} <= X <= {M.max[p,M.which]:#0.000};  "
-					 + $"{M.min[3,M.which]:#0.000} <= Y <= {M.max[3,M.which]:#0.000}" + lfs;
+			M.XYprop1 = $"{M.min[p,M.which]:#0.000} <= Y <= {M.max[p,M.which]:#0.000};  "
+					 + $"{M.min[3,M.which]:#0.000} <= X <= {M.max[3,M.which]:#0.000}" + lfs;
 
 			plot.Model = model;											// OxyPlot
-			if (M.a[1] && M.a[2])
+			if (M.axis[1] && M.axis[2])
 				M.D3vis = Visibility.Visible;
 		}
 

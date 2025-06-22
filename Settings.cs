@@ -8,8 +8,8 @@
 		public double FilterX = 1, FilterY = 1;
 		public ushort Refresh = 0, LinFit = 0;
 		public bool Plot = true;
-		public string Xprop = "DataCorePlugin.GameData.AccelerationHeave",
-					  Xprop1 = "", Xprop2 = "",
-					  Yprop = "DataCorePlugin.GameData.GlobalAccelerationG";
+		public string Y0prop = "DataCorePlugin.GameData.AccelerationHeave",
+					  Y1prop = "", Y2prop = "",
+					  Xprop = "DataCorePlugin.GameData.GlobalAccelerationG";
 	}
 }

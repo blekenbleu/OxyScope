@@ -11,8 +11,13 @@ namespace blekenbleu.OxyScope
 		string Poly(double left, double right, string es)
 		{
 			// https://oxyplot.readthedocs.io/en/latest/models/series/FunctionSeries.html
+			try {
 			model.Series.Add(new FunctionSeries(cubicfit, left, right,
 							 (right - left) / 50, es + "cubic fit"));			  // x increments
+			} catch (Exception e) {
+				M.LinFit = 0;
+				M.XYprop2 = "Poly() Failed: " + e?.ToString();
+			}
 			return es + $"cubic:  {c[0]:#0.0000}+{c[1]:#0.0000}*x+{c[2]:#0.0000}*x**2+{c[3]:#0.00000}*x**3 "
 				 + $"slopes:  {slope[0]:#0.0000}, {slope[1]:#0.0000}@{inflection:#0.00}, {slope[2]:#0.0000}";
 		}

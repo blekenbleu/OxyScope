@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using System.Windows;			// Visibility
 using System.Windows.Controls;
+using System.Windows.Navigation;
 
 namespace blekenbleu.OxyScope
 {
@@ -17,34 +18,11 @@ namespace blekenbleu.OxyScope
 		static readonly double[] slope = new double[] { 0, 0, 0 };
 		static int p;								// current X property to plot
 
-		public Control()
-		{
-			DataContext = M = new Model();
-			InitializeComponent();
-		}
+		public Control() => InitializeComponent();
 
 		public Control(OxyScope plugin) : this()
 		{
-			Settings S;
-
-			O = plugin;
-			if (null != (S = plugin.Settings))
-			{
-				M.FilterX = S.FilterX;
-				M.FilterY = S.FilterY;
-				M.Refresh = S.Refresh;
-				M.AutoPlot = S.Plot;
-				M.LinFit = S.LinFit;
-				M.Xprop0 = S.Xprop;
-				M.Xprop1 = S.Xprop1;
-				M.Xprop2 = S.Xprop2;
-				M.Yprop = S.Yprop;
-			} else {
-				M.Refresh = M.LinFit = 1;
-				M.AutoPlot = true;
-				M.Xprop0 = M.Yprop = "random";
-				M.FilterY = M.FilterX = 1;
-			}
+			DataContext = M = new Model(O = plugin);
 			O.x = new double[4, M.length = 1201];
 			M.length /= 5; 
 			M.start = new ushort[] { 0, M.length };
@@ -56,7 +34,7 @@ namespace blekenbleu.OxyScope
 		}
 
 		private void Hyperlink_RequestNavigate(object sender,
-									System.Windows.Navigation.RequestNavigateEventArgs e)
+									RequestNavigateEventArgs e)
 		{
 			System.Diagnostics.Process.Start(e.Uri.AbsoluteUri);
 		}
@@ -67,16 +45,16 @@ namespace blekenbleu.OxyScope
 			M.which = choose;
 			M.Range = 0 < M.Refresh ? 0 : M.max[p,M.which] - M.min[p,M.which];
 
-			double Nmax = M.max[0,M.which];    // plot range for up to 3 Xprops
+			double Nmax = M.max[0,M.which];    // plot range for up to 3 Yprops
 			double Nmin = M.min[0,M.which];
-			if (M.a[1])
+			if (M.axis[1])
 			{
 				if (Nmin > M.min[1,M.which])
 					Nmin = M.min[1,M.which];
 				if (Nmax < M.max[1,M.which])
 					Nmax = M.max[1,M.which];
 			}
-			if (M.a[2])
+			if (M.axis[2])
 			{
 				if (Nmin > M.min[2,M.which])
 					Nmin = M.min[2,M.which];
@@ -85,22 +63,22 @@ namespace blekenbleu.OxyScope
 			}
 			if (1 == M.Refresh || M.Reset)		// first time or 3 second
 			{
-				Xmax = Nmax;
-				Xmin = Nmin;
-				Ymax = M.max[3,M.which];
-				Ymin = M.min[3,M.which];
+				Ymax = Nmax;
+				Ymin = Nmin;
+				Xmax = M.max[3,M.which];
+				Xmin = M.min[3,M.which];
 			} else {
 		 		if (0 == M.Refresh && Xmin < Nmin && Xmax > Nmax)
 					return;
 
-				if (Xmin > Nmin)
-					Xmin = Nmin;
-				if (Xmax < Nmax)
-					Xmax = Nmax;
-				if (Ymin > M.min[3,M.which])
-					Ymin = M.min[3,M.which];
-				if (Ymax < M.max[3,M.which])
-					Ymax = M.max[3,M.which];
+				if (Ymin > Nmin)
+					Ymin = Nmin;
+				if (Ymax < Nmax)
+					Ymax = Nmax;
+				if (Xmin > M.min[3,M.which])
+					Xmin = M.min[3,M.which];
+				if (Xmax < M.max[3,M.which])
+					Xmax = M.max[3,M.which];
 			}
 			M.Reset = false;
 			if (M.AutoPlot)
@@ -130,6 +108,7 @@ namespace blekenbleu.OxyScope
 		private void APclick(object sender, RoutedEventArgs e)		// AutoPlot
 		{
 			M.AutoPlot = !M.AutoPlot;
+			M.Reset = true;
 			if (M.AutoPlot && Visibility.Visible == M.PVis)
 			{
 				M.PVis = Visibility.Hidden;
@@ -140,26 +119,26 @@ namespace blekenbleu.OxyScope
 
 		private void LFclick(object sender, RoutedEventArgs e)		// Line Fit button
 		{
-			// Accrue() now always maximizes StdDev for all Xprops
+			// Accrue() now always maximizes StdDev for all Yprops
 			if (0 == M.LinFit)
 				M.LinFit++;
 			else if (3 == M.LinFit)
 				M.LinFit = 0;
 			else if (1 == M.LinFit)
-				M.LinFit = (ushort)(M.a[1] ? 2 : M.a[2] ? 3 : 0);
-			else M.LinFit = (ushort)(M.a[2] ? 3 : 0);
+				M.LinFit = (ushort)(M.axis[1] ? 2 : M.axis[2] ? 3 : 0);
+			else M.LinFit = (ushort)(M.axis[2] ? 3 : 0);
 			ButtonUpdate();
 			Plot();
 		}
 
-		readonly string[] refresh = new string[]
-		{ 	"Hold max  X range",
-			"3 second refresh",
-			"Cumulative X range"
-		};
-
 		void ButtonUpdate()
 		{
+			string[] refresh = new string[]
+			{ 	"Hold max  X range",
+				"3 second refresh",
+				"Cumulative X range"
+			};
+
             System.Windows.Media.Brush[] color =
 			{ System.Windows.Media.Brushes.White,
 			  System.Windows.Media.Brushes.Red,
@@ -169,7 +148,7 @@ namespace blekenbleu.OxyScope
 			TH.Text = refresh[M.Refresh];
 			LF.Foreground = color[M.LinFit];	// 0: white
 
-            LF.Text = "Fit Curves " + ((0 < M.LinFit) ? ("Xprop"+(M.LinFit - 1)) : "disabled");
+            LF.Text = "Fit Curves " + ((0 < M.LinFit) ? ("Y0prop"+(M.LinFit - 1)) : "disabled");
 			TR.Text = (M.AutoPlot ? "Auto" : "Manual") + " Replot";
 		}
 	}	// class
