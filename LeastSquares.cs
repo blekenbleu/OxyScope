@@ -40,6 +40,7 @@ namespace blekenbleu.OxyScope
 		// iteratively invoked for NelderMeadSimplex solution to monotonic cubic Fit.Curve
 		readonly Func<double, double, double, double, double, double>
 					CurveFunc = (p0, p1, p2, p3, x) => ConstrainedCubic(p0, p1, p2, p3, x);
+
 		static double ConstrainedCubic(double p0, double p1, double p2, double p3, double x)
 		{
 			double sx, inflection;

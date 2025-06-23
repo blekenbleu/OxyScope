@@ -17,7 +17,7 @@ namespace blekenbleu.OxyScope
 			if (null == S)
 			{
 				Refresh = 1;
-				LinFit = 0;
+				LinFit = 3;
 				AutoPlot = false;
 			} else {
 				Refresh = S.Refresh;
@@ -30,7 +30,6 @@ namespace blekenbleu.OxyScope
 		readonly PropertyChangedEventArgs D3event = new PropertyChangedEventArgs(nameof(D3vis));
 		readonly PropertyChangedEventArgs FXevent = new PropertyChangedEventArgs(nameof(FilterX));
 		readonly PropertyChangedEventArgs FYevent = new PropertyChangedEventArgs(nameof(FilterY));
-		readonly PropertyChangedEventArgs LFevent = new PropertyChangedEventArgs(nameof(LinFit));
 		readonly PropertyChangedEventArgs PVevent = new PropertyChangedEventArgs(nameof(PVis));
 		readonly PropertyChangedEventArgs TIevent = new PropertyChangedEventArgs(nameof(Title));
 		readonly PropertyChangedEventArgs XY1event = new PropertyChangedEventArgs(nameof(XYprop1));
@@ -45,6 +44,7 @@ namespace blekenbleu.OxyScope
 		internal double[,]	min, max;
 		internal bool		AutoPlot, Restart = true;
 		internal bool[]		axis = { true, false, false, true };	// which axes have properties assigned
+		internal string[] PropName = { "", "", "", "" };
 
 		private string _title = "launch game or Replay to collect and plot property samples";
 		public string Title { get => _title;

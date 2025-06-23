@@ -88,6 +88,7 @@ namespace blekenbleu.OxyScope
 
 		private void RBclick(object sender, RoutedEventArgs e)		// Refresh button
 		{
+			// Accrue() now always maximizes StdDev for all Yprops
 			M.Refresh = (ushort)((++M.Refresh) % 3);
 			M.Reset = true;
 			ButtonUpdate();
@@ -105,21 +106,18 @@ namespace blekenbleu.OxyScope
 				}
 			} else {
 				M.Reset = true;
-				M.LinFit = 0;
+				M.LinFit = 3;
 			}
 			ButtonUpdate();
 		}
 
 		private void LFclick(object sender, RoutedEventArgs e)		// Line Fit button
 		{
-			// Accrue() now always maximizes StdDev for all Yprops
-			if (0 == M.LinFit)
-				M.LinFit++;
-			else if (3 == M.LinFit)
+			if (3 == M.LinFit)
 				M.LinFit = 0;
-			else if (1 == M.LinFit)
-				M.LinFit = (ushort)(M.axis[1] ? 2 : M.axis[2] ? 3 : 0);
-			else M.LinFit = (ushort)(M.axis[2] ? 3 : 0);
+			else if (0 == M.LinFit)
+				M.LinFit = (ushort)(M.axis[1] ? 1 : M.axis[2] ? 2 : 3);
+			else M.LinFit = (ushort)(M.axis[2] ? 2 : 3);
 			ButtonUpdate();
 			Plot();
 		}
@@ -133,15 +131,15 @@ namespace blekenbleu.OxyScope
 			};
 
             System.Windows.Media.Brush[] color =
-			{ System.Windows.Media.Brushes.White,
-			  System.Windows.Media.Brushes.Red,
+			{ System.Windows.Media.Brushes.Red,
 			  System.Windows.Media.Brushes.Green,
-			  System.Windows.Media.Brushes.Cyan
+			  System.Windows.Media.Brushes.Cyan,
+			  System.Windows.Media.Brushes.White
 			};
 			TH.Text = refresh[M.Refresh];
-			LF.Foreground = color[M.LinFit];	// 0: white
+			LF.Foreground = color[M.LinFit];	// 3: white
 
-            LF.Text = "Fit Curves " + ((0 < M.LinFit) ? ("Y0prop"+(M.LinFit - 1)) : "disabled");
+            LF.Text = "Fit Curves " + ((3 > M.LinFit) ? (M.PropName[M.LinFit]) : "disabled");
 			TR.Text = (M.AutoPlot ? "Auto" : "Manual") + " Replot";
 		}
 	}	// class

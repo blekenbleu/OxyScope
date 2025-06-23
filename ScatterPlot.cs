@@ -10,11 +10,16 @@ namespace blekenbleu.OxyScope
 		PlotModel ScatterPlot(string title, uint Yprop)
 		{
 			PlotModel model = new PlotModel { Title = M.Title };
+			string at = M.PropName[0];
+			if (M.axis[1])
+				at += ", " + M.PropName[1];
+			if (M.axis[2])
+				at += ", " + M.PropName[2];
 
 			model.Axes.Add(new LinearAxis
 			{
 				Position = AxisPosition.Left,
-				Title = M.Y0prop,
+				Title = at,
 				Minimum = Ymin,
 				Maximum = ymax
 			});
@@ -34,6 +39,8 @@ namespace blekenbleu.OxyScope
 			model.LegendBorderThickness = 1;
 			return model;
 		}
+
+		private ScatterSeries Scatter(uint Yprop) => Scatter(M.PropName[Yprop], Yprop);
 
 		private ScatterSeries Scatter(string title, uint Yprop)	// 3 possible
 		{

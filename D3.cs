@@ -11,14 +11,9 @@ namespace blekenbleu.OxyScope
 {
 	public partial class Control
 	{
-		string Last (string[] split)	// last substring
-		{
-			return split[split.Length - 1];
-		}
-
 		void D3()
 		{
-			string Text = Last(M.Xprop.Split('.'));
+			string Text = M.PropName[3];
             SaveFileDialog saveFileDialog = new SaveFileDialog
             {
 				Title = "Save 3D Visualization data as .txt",
@@ -29,9 +24,9 @@ namespace blekenbleu.OxyScope
 			if (DialogResult.OK == saveFileDialog.ShowDialog()
 			 && "" != saveFileDialog.FileName)
 			{
-				Text +=	";\n::"+Last(M.Y0prop.Split('.')) +
-						"::"+Last(M.Y1prop.Split('.')) +
-						"::"+Last(M.Y2prop.Split('.'))+";\n";
+				Text +=	";\n::"+M.PropName[0] +
+						"::"+M.PropName[1] +
+						"::"+M.PropName[2] + ";\n";
 				ushort s = M.start[M.which];
 				ushort stop = (ushort)(s +  M.length);
 				for (; s < stop; s++)

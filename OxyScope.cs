@@ -31,6 +31,9 @@ namespace blekenbleu.OxyScope
 		public string LeftMenuTitle => "OxyScope " + PluginVersion;
 
 		PluginManager PM;
+
+        string Last(string[] split) => split[split.Length - 1];    // last substring
+
         bool ValidateProp(int i, string prop)
 		{
 			var yp = PM.GetPropertyValue(prop);
@@ -41,7 +44,7 @@ namespace blekenbleu.OxyScope
 
                 VM.XYprop2 += $"invalid {foo} property:  " + prop;
 				oops = true;
-			}
+			} else VM.PropName[i] = Last(prop.Split('.'));
 			return VM.axis[i];
 		}
 
@@ -63,7 +66,7 @@ namespace blekenbleu.OxyScope
 		private ushort timeout;						// for Accrue
 		private ushort Sample;						// which x[,] is currently being worked
 		bool oops = false;
-		int m = 0;									// current LinFit
+		int clf = 0;								// current LinFit
 		string CarId = "";
 		double current, Range;
 		public void DataUpdate(PluginManager pluginManager, ref GameData data)
@@ -113,7 +116,7 @@ namespace blekenbleu.OxyScope
 					IIR[i] = f[i];
 				VM.start[work] = Sample = 0;
 				Total[0] = Total[1] = Total[2] = Range = 0;
-				m = (0 == VM.LinFit) ? 0 : VM.LinFit - 1;
+				clf = VM.LinFit % 3;
 			} else {	// check for redundant samples
 			  	if (1 > (double)pluginManager.GetPropertyValue("DataCorePlugin.GameData.SpeedKmh")
 				 || Sample >= 1200)
@@ -146,14 +149,14 @@ namespace blekenbleu.OxyScope
 			}
 			else if ((++Sample - VM.start[work]) >= VM.length)	// filled?
 			{
-				VM.Current = $"{VM.min[m,work]:#0.000} <= Y <= {VM.max[m,work]:#0.000};  "
+				VM.Current = $"{VM.min[clf,work]:#0.000} <= Y <= {VM.max[clf,work]:#0.000};  "
 						   + $"{VM.min[3,work]:#0.000} <= X <= {VM.max[3,work]:#0.000}";
 				// Refresh: 0 = max range, 1 = 3 second, 2 = cumulative range
-				// LinFit: 0 == no curve fitting; 1-3 correspond to Y0-Y2
+				// LinFit: 3 == no curve fitting; 0-2 correspond to Y0-Y2
 				if ( 1 == VM.Refresh
-				 || (0 == VM.Refresh && (VM.max[m,work] - VM.min[m,work]) > Range))
+				 || (0 == VM.Refresh && (VM.max[clf,work] - VM.min[clf,work]) > Range))
 				{
-					Range = VM.max[m,work] - VM.min[m,work];
+					Range = VM.max[clf,work] - VM.min[clf,work];
 					View.Dispatcher.Invoke(() => View.Replot(work));
 					work = (ushort)(1 - work);					// switch buffers
 				}
@@ -207,7 +210,7 @@ namespace blekenbleu.OxyScope
 					Y0prop = where+sy,
 					Y1prop = "", Y2prop = "",
 					Xprop = where+sx,
-					FilterX = 1, FilterY = 1, Refresh = 1, LinFit = 1
+					FilterX = 1, FilterY = 1, Refresh = 1, LinFit = 3
 				};
 			else {
 				if (0 == Settings.Y0prop.Length)
