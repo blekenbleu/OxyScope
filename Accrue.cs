@@ -7,16 +7,17 @@ namespace blekenbleu.OxyScope
 		private readonly double[] StdDev = { 0, 0, 0 };
 		private readonly double[] Avg = { 0, 0, 0 };
 		double[] Total = { 0, 0, 0 };
-		bool restart = true;
+		bool resume = true;
+		private ushort timeout;
 
 		void Accrue()
 		{
 			ushort p;
 
-			if (restart && (0 == Sample % 30 || 180 < ++timeout))
+			if (resume && (0 == Sample % 30 || 180 < ++timeout))
 			{
 				timeout = 0;
-				restart = false;
+				resume = false;
 				if (0 == Sample)
 				{
 					for (p = 0; p < 3; p++)
@@ -53,7 +54,7 @@ namespace blekenbleu.OxyScope
 					break;
 			if (3 > p)
 			{
-				restart = true;	// might stick at modulo 30 for awhile
+				resume = true;	// might stick at modulo 30 for awhile
 				if (VM.axis[1])
 					Total[1] += x[1,Sample];
 				if (VM.axis[2])

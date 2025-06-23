@@ -9,9 +9,9 @@ namespace blekenbleu.OxyScope
 	{
 		public event PropertyChangedEventHandler PropertyChanged;
 		public void OnPropertyChanged(PropertyChangedEventArgs myevent) => PropertyChanged?.Invoke(this, myevent);
-        static Settings S;
+		static Settings S;
 
-        public Model(OxyScope os)
+		public Model(OxyScope os)
 		{
 			S = os.Settings;
 			if (null == S)

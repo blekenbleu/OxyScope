@@ -2,6 +2,7 @@
 using SimHub.Plugins;
 using System.Diagnostics;
 using System.Reflection;
+using System.Windows;
 using System.Windows.Media;
 
 namespace blekenbleu.OxyScope
@@ -32,9 +33,9 @@ namespace blekenbleu.OxyScope
 
 		PluginManager PM;
 
-        string Last(string[] split) => split[split.Length - 1];    // last substring
+		string Last(string[] split) => split[split.Length - 1];	// last substring
 
-        bool ValidateProp(int i, string prop)
+		bool ValidateProp(int i, string prop)
 		{
 			var yp = PM.GetPropertyValue(prop);
 			VM.axis[i] = null != yp && float.TryParse(yp.ToString(), out f[i]);
@@ -42,7 +43,7 @@ namespace blekenbleu.OxyScope
 			{
 				string foo = 3 > i ? "Y" + i : "X";
 
-                VM.XYprop2 += $"invalid {foo} property:  " + prop;
+				VM.XYprop2 += $"invalid {foo} property:  " + prop;
 				oops = true;
 			} else VM.PropName[i] = Last(prop.Split('.'));
 			return VM.axis[i];
@@ -63,7 +64,6 @@ namespace blekenbleu.OxyScope
 		readonly double[] IIR = { 0, 0, 0, 0 };		// filtered property values from f[]
 		internal double[,] x;						// plot samples from IIR[]
 		private ushort work;						// arrays currently being sampled
-		private ushort timeout;						// for Accrue
 		private ushort Sample;						// which x[,] is currently being worked
 		bool oops = false;
 		int clf = 0;								// current LinFit
@@ -78,9 +78,9 @@ namespace blekenbleu.OxyScope
 				return;
 			current = data.NewData.CarSettings_CurrentDisplayedRPMPercent;
 
-            PM = pluginManager;
+			PM = pluginManager;
 			VM.XYprop2 = "";
-            if (!ValidateProp(0, VM.Y0prop) || !ValidateProp(3, VM.Xprop))
+			if (!ValidateProp(0, VM.Y0prop) || !ValidateProp(3, VM.Xprop))
 				return;
 
 			ValidateProp(1, VM.Y1prop);
@@ -111,7 +111,6 @@ namespace blekenbleu.OxyScope
 			if (VM.Restart)
 			{
 				VM.Restart = false;
-				restart = true;				// restart Accrue()
 				for (i = 0; i < 4; i++)
 					IIR[i] = f[i];
 				VM.start[work] = Sample = 0;
@@ -142,10 +141,10 @@ namespace blekenbleu.OxyScope
 						VM.max[i,work] = x[i,Sample];
 				}
 
-			if (2 == VM.Refresh)
+			if (2 == VM.Refresh)		// Accrue View.Replot() processes all samples in the buffer.
 			{
 				if (Sample < x.Length)
-					Accrue();
+					Accrue();			// runs until buffer is full; restart by changing Refresh mode
 			}
 			else if ((++Sample - VM.start[work]) >= VM.length)	// filled?
 			{
@@ -153,8 +152,8 @@ namespace blekenbleu.OxyScope
 						   + $"{VM.min[3,work]:#0.000} <= X <= {VM.max[3,work]:#0.000}";
 				// Refresh: 0 = max range, 1 = 3 second, 2 = cumulative range
 				// LinFit: 3 == no curve fitting; 0-2 correspond to Y0-Y2
-				if ( 1 == VM.Refresh
-				 || (0 == VM.Refresh && (VM.max[clf,work] - VM.min[clf,work]) > Range))
+				if (Visibility.Hidden == VM.PVis && (1 == VM.Refresh
+				 	|| (0 == VM.Refresh && (VM.max[clf,work] - VM.min[clf,work]) > Range)))
 				{
 					Range = VM.max[clf,work] - VM.min[clf,work];
 					View.Dispatcher.Invoke(() => View.Replot(work));

@@ -1,8 +1,6 @@
 // https://stackoverflow.com/questions/12946341/algorithm-for-scatter-plot-best-fit-line
 // alternatively:  https://christoph.ruegg.name/blog/linear-regression-mathnet-numerics
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace blekenbleu.OxyScope
 {

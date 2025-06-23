@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using System.Windows;			// Visibility
+﻿using System.Windows;			// Visibility
 using System.Windows.Controls;
 using System.Windows.Navigation;
 
@@ -41,7 +40,9 @@ namespace blekenbleu.OxyScope
 
 		internal void Replot(ushort w)
 		{
-			double Nmax = M.max[0,M.which = w];    // plot range for up to 3 Yprops
+			if (!M.AutoPlot)
+				M.PVis = Visibility.Visible;		// no more updates manual plot
+			double Nmax = M.max[0,M.which = w];		// plot range for up to 3 Yprops
 			double Nmin = M.min[0,M.which];
 			for (int i = 1; i < 3; i++)
 				if (M.axis[i])
@@ -69,9 +70,7 @@ namespace blekenbleu.OxyScope
 					Xmax = M.max[3,M.which];
 			}
 			M.Reset = false;
-			if (M.AutoPlot)
-				Plot();
-			else M.PVis = Visibility.Visible;
+			Plot();
 		}
 
 		private void D3click(object sender, RoutedEventArgs e)		// 3D visualize button
@@ -104,10 +103,7 @@ namespace blekenbleu.OxyScope
 					M.PVis = Visibility.Hidden;
 					Plot();
 				}
-			} else {
-				M.Reset = true;
-				M.LinFit = 3;
-			}
+			} else M.Reset = true;
 			ButtonUpdate();
 		}
 
@@ -130,7 +126,7 @@ namespace blekenbleu.OxyScope
 				"Cumulative X range"
 			};
 
-            System.Windows.Media.Brush[] color =
+			System.Windows.Media.Brush[] color =
 			{ System.Windows.Media.Brushes.Red,
 			  System.Windows.Media.Brushes.Green,
 			  System.Windows.Media.Brushes.Cyan,
@@ -139,7 +135,7 @@ namespace blekenbleu.OxyScope
 			TH.Text = refresh[M.Refresh];
 			LF.Foreground = color[M.LinFit];	// 3: white
 
-            LF.Text = "Fit Curves " + ((3 > M.LinFit) ? (M.PropName[M.LinFit]) : "disabled");
+			LF.Text = "Fit Curves " + ((3 > M.LinFit) ? (M.PropName[M.LinFit]) : "disabled");
 			TR.Text = (M.AutoPlot ? "Auto" : "Manual") + " Replot";
 		}
 	}	// class

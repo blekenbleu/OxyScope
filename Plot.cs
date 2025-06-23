@@ -1,7 +1,7 @@
 using MathNet.Numerics;
 using OxyPlot;
 using OxyPlot.Series;
-using System.Windows;           // Visibility
+using System.Windows;		   // Visibility
 using System.Linq;
 
 namespace blekenbleu.OxyScope
@@ -28,10 +28,10 @@ namespace blekenbleu.OxyScope
 			model.Series.Add(Scatter(0));
 			if (M.axis[1])
 				model.Series.Add(Scatter(1));
-            if (M.axis[2])
-                model.Series.Add(Scatter(2));
+			if (M.axis[2])
+				model.Series.Add(Scatter(2));
 
-            if (3 > M.LinFit && M.min[p,M.which] < M.max[p,M.which])	// curve fit?
+			if (3 > M.LinFit && M.min[p,M.which] < M.max[p,M.which])	// curve fit?
 			{
 				// https://numerics.mathdotnet.com/Regression
 				ys = GetRow(O.x, (ushort)(M.LinFit), M.start[M.which], M.length);
@@ -58,7 +58,7 @@ namespace blekenbleu.OxyScope
 		// draw line fit
 		LineSeries LineDraw(double m, double B, string title)
 		{
-			LineSeries line = new LineSeries();
+			LineSeries line = new LineSeries { Color = color[p] };
 			// min X value, Y value calculated from X value
 			line.Points.Add(new DataPoint(M.min[3,M.which], B + m * M.min[3,M.which]));
 			// max X value, Y value calculated from X value

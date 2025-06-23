@@ -14,13 +14,13 @@ namespace blekenbleu.OxyScope
 		void D3()
 		{
 			string Text = M.PropName[3];
-            SaveFileDialog saveFileDialog = new SaveFileDialog
-            {
+			SaveFileDialog saveFileDialog = new SaveFileDialog
+			{
 				Title = "Save 3D Visualization data as .txt",
-                Filter = "Text file (*.txt)|*.txt",
+				Filter = "Text file (*.txt)|*.txt",
 				FileName = Text,
-                InitialDirectory = Path.GetTempPath()
-            };
+				InitialDirectory = Path.GetTempPath()
+			};
 			if (DialogResult.OK == saveFileDialog.ShowDialog()
 			 && "" != saveFileDialog.FileName)
 			{
