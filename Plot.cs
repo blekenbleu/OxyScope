@@ -24,7 +24,8 @@ namespace blekenbleu.OxyScope
 		{
 			p = M.LinFit % 3;
 			ymax = 1.2 * (Ymax - Ymin) + Ymin;		// legend space
-			model = ScatterPlot(M.PropName[0], 0);
+			model = ScatterPlot();
+			model.Series.Add(Scatter(0));
 			if (M.axis[1])
 				model.Series.Add(Scatter(1));
             if (M.axis[2])

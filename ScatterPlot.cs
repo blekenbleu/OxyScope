@@ -7,7 +7,7 @@ namespace blekenbleu.OxyScope
 {
 	public partial class Control
 	{
-		PlotModel ScatterPlot(string title, uint Yprop)
+		PlotModel ScatterPlot()
 		{
 			PlotModel model = new PlotModel { Title = M.Title };
 			string at = M.PropName[0];
@@ -15,6 +15,8 @@ namespace blekenbleu.OxyScope
 				at += ", " + M.PropName[1];
 			if (M.axis[2])
 				at += ", " + M.PropName[2];
+			if (null == at || 0 == at.Length)
+				at = "watch this space";
 
 			model.Axes.Add(new LinearAxis
 			{
@@ -32,7 +34,6 @@ namespace blekenbleu.OxyScope
 						Maximum = Xmax + 0.005 * (Xmax - Xmin)
 			});
 
-			model.Series.Add(Scatter(title, Yprop));
 			model.LegendPosition = LegendPosition.TopLeft;
 			model.LegendFontSize = 12;
 			model.LegendBorder = OxyColors.Black;
@@ -74,7 +75,9 @@ namespace blekenbleu.OxyScope
 			}
 
 			Xmin = M.min[0,M.which];
-			plot.Model = ScatterPlot("Random plot", 0);
-		}
+			model = ScatterPlot();
+			model.Series.Add(Scatter("random", 0));
+            plot.Model = model;
+        }
 	}
 }
