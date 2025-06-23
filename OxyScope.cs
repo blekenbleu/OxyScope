@@ -61,10 +61,11 @@ namespace blekenbleu.OxyScope
 		internal double[,] x;						// plot samples from IIR[]
 		private ushort work;						// arrays currently being sampled
 		private ushort timeout;						// for Accrue
+		private ushort Sample;						// which x[,] is currently being worked
 		bool oops = false;
 		int m = 0;									// current LinFit
 		string CarId = "";
-		double current;
+		double current, Range;
 		public void DataUpdate(PluginManager pluginManager, ref GameData data)
 		{
 			if (!data.GameRunning || null == data.OldData || null == data.NewData)
@@ -103,57 +104,60 @@ namespace blekenbleu.OxyScope
 						 + "@"	 + pluginManager.GetPropertyValue("DataCorePlugin.GameData.TrackName")?.ToString();
 			}
 
+			int i;
 			if (VM.Restart)
 			{
 				VM.Restart = false;
 				restart = true;				// restart Accrue()
-				for (int i = 0; i < 4; i++)
+				for (i = 0; i < 4; i++)
 					IIR[i] = f[i];
-				VM.start[work] = VM.I;
+				VM.start[work] = Sample = 0;
+				Total[0] = Total[1] = Total[2] = Range = 0;
 				m = (0 == VM.LinFit) ? 0 : VM.LinFit - 1;
 			} else {	// check for redundant samples
 			  	if (1 > (double)pluginManager.GetPropertyValue("DataCorePlugin.GameData.SpeedKmh")
-				 || VM.I >= 1200)
+				 || Sample >= 1200)
 					return; 	// Restart sample may have been before car moved
 
-				int i;
 				for (i = 0; i < 3; i++)
-					if(VM.axis[i] && System.Math.Abs(f[i] - x[i,VM.I]) > 0.02 * (VM.max[i,work] - VM.min[i,work]))
+					if(VM.axis[i] && System.Math.Abs(f[i] - x[i,Sample]) > 0.02 * (VM.max[i,work] - VM.min[i,work]))
 						break;
 				if (3 == i)		// differed from previous by < 2% ?
 					return;
 			}
 
-			for (int i = 0; i < 4; i++)
+			for (i = 0; i < 4; i++)
 				if (VM.axis[i])
 				{
 					IIR[i] += (f[i] - IIR[i]) / VM.FilterX;
-					x[i,VM.I] = IIR[i];
-					if (VM.start[work] == VM.I)
-						VM.min[i,work] = VM.max[i,work] = x[i,VM.I];
-					else if (VM.min[i,work] > x[i,VM.I])	// volume of sample values
-						VM.min[i,work] = x[i,VM.I];
-					else if (VM.max[i,work] < x[i,VM.I])
-						VM.max[i,work] = x[i,VM.I];
+					x[i,Sample] = IIR[i];
+					if (VM.start[work] == Sample)
+						VM.min[i,work] = VM.max[i,work] = x[i,Sample];
+					else if (VM.min[i,work] > x[i,Sample])	// volume of sample values
+						VM.min[i,work] = x[i,Sample];
+					else if (VM.max[i,work] < x[i,Sample])
+						VM.max[i,work] = x[i,Sample];
 				}
 
 			if (2 == VM.Refresh)
 			{
-				if (VM.I < x.Length)
+				if (Sample < x.Length)
 					Accrue();
 			}
-			else if ((++VM.I - VM.start[work]) >= VM.length)	// filled?
+			else if ((++Sample - VM.start[work]) >= VM.length)	// filled?
 			{
 				VM.Current = $"{VM.min[m,work]:#0.000} <= Y <= {VM.max[m,work]:#0.000};  "
 						   + $"{VM.min[3,work]:#0.000} <= X <= {VM.max[3,work]:#0.000}";
 				// Refresh: 0 = max range, 1 = 3 second, 2 = cumulative range
+				// LinFit: 0 == no curve fitting; 1-3 correspond to Y0-Y2
 				if ( 1 == VM.Refresh
-				 || (0 == VM.Refresh && (VM.max[m,work] - VM.min[m,work]) > VM.Range))
+				 || (0 == VM.Refresh && (VM.max[m,work] - VM.min[m,work]) > Range))
 				{
+					Range = VM.max[m,work] - VM.min[m,work];
 					View.Dispatcher.Invoke(() => View.Replot(work));
 					work = (ushort)(1 - work);					// switch buffers
 				}
-				VM.I = VM.start[work];
+				Sample = VM.start[work];
 			}
 		}														// DataUpdate()
 

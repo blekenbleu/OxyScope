@@ -8,28 +8,28 @@ namespace blekenbleu.OxyScope
 	{
 		bool converge = true;
 
-		string Poly(double left, double right, string es)
+		string Poly(double left, double right)
 		{
 			// https://oxyplot.readthedocs.io/en/latest/models/series/FunctionSeries.html
 			try {
-			model.Series.Add(new FunctionSeries(cubicfit, left, right,
-							 (right - left) / 50, es + "cubic fit"));			  // x increments
+				model.Series.Add(new FunctionSeries(cubicfit, left, right,
+								 (right - left) / 50, "cubic fit"));			  // x increments
 			} catch (Exception e) {
 				M.LinFit = 0;
 				M.XYprop2 = "Poly() Failed: " + e?.ToString();
 			}
-			return es + $"cubic:  {c[0]:#0.0000}+{c[1]:#0.0000}*x+{c[2]:#0.0000}*x**2+{c[3]:#0.00000}*x**3 "
+			return $"cubic:  {c[0]:#0.0000}+{c[1]:#0.0000}*x+{c[2]:#0.0000}*x**2+{c[3]:#0.00000}*x**3 "
 				 + $"slopes:  {slope[0]:#0.0000}, {slope[1]:#0.0000}@{inflection:#0.00}, {slope[2]:#0.0000}";
 		}
 
-		string Curve(double left, double right, string es)
+		string Curve(double left, double right)
 		{
 			// cubic fit https://posts5865.rssing.com/chan-58562618/latest.php
 			c = Fit.Polynomial(xs, ys, 3, MathNet.Numerics.LinearRegression.DirectRegressionMethod.QR);
 
 			bool m0 = Monotonic(c[1], c[2], c[3]);
 			if (m0)
-				return Poly(left, right, es);
+				return Poly(left, right);
 			else
 			{							// https://blekenbleu.github.io/static/ImageProcessing/MonotoneCubic.htm
 				Count = 0;				// how many times ConstrainedCubic() invoked?
@@ -51,13 +51,13 @@ namespace blekenbleu.OxyScope
 					if (converge = Monotonic(c[1], c[2], c[3]))
 					{
 						model.Series.Add(new FunctionSeries(cubicfit, left, right, (right - left) / 50,	// x increments
-															es + "constrained cubic fit"));
-						return es + $"constrained cubic:  {c[0]:#0.0000} + {c[1]:#0.000000}*x "
+															"constrained cubic fit"));
+						return $"constrained cubic:  {c[0]:#0.0000} + {c[1]:#0.000000}*x "
 							 + $"+ {c[2]:#0.000000}*x**2 + {c[3]:#0.000000}*x**3;  Count = {Count / M.length}"
 							 + $";  slopes:  {slope[0]:#0.00000}, {slope[1]:#0.00000}@{inflection:#0.00}, {slope[2]:#0.00000}";
 					}
 				}
-				return "** non-monotonic! ** " + Poly(left, right, es);
+				return "** non-monotonic! ** " + Poly(left, right);
 			}
 		}
 

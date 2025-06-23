@@ -30,7 +30,7 @@ namespace blekenbleu.OxyScope
             if (M.axis[2])
                 model.Series.Add(Scatter(Last(M.Y2prop.Split('.')), 2));
 
-            if (0 < M.LinFit)
+            if (0 < M.LinFit && M.min[p,M.which] < M.max[p,M.which])
 			{
 				// https://numerics.mathdotnet.com/Regression
 				ys = GetRow(O.x, (ushort)(M.LinFit - 1), M.start[M.which], M.length);
@@ -42,7 +42,7 @@ namespace blekenbleu.OxyScope
 				M.Current += $";   R-squared = {r2:0.00}";
 				model.Series.Add(LineDraw(m, B, "line fit"));
 				lfs = $";   line:  {B:#0.0000} + {m:#0.00000}*x;   R-squared = {r2:0.00}";
-				M.XYprop2 = Curve(M.min[p,M.which], M.max[p,M.which], "");
+				M.XYprop2 = Curve(M.min[p,M.which], M.max[p,M.which]);
 			}
 			else lfs = "";
 

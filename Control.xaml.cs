@@ -39,28 +39,19 @@ namespace blekenbleu.OxyScope
 			System.Diagnostics.Process.Start(e.Uri.AbsoluteUri);
 		}
 
-		internal void Replot(ushort choose)
+		internal void Replot(ushort w)
 		{
-			p = (0 < M.LinFit) ? (M.LinFit - 1) : 0;
-			M.which = choose;
-			M.Range = 0 < M.Refresh ? 0 : M.max[p,M.which] - M.min[p,M.which];
-
-			double Nmax = M.max[0,M.which];    // plot range for up to 3 Yprops
+			double Nmax = M.max[0,M.which = w];    // plot range for up to 3 Yprops
 			double Nmin = M.min[0,M.which];
-			if (M.axis[1])
-			{
-				if (Nmin > M.min[1,M.which])
-					Nmin = M.min[1,M.which];
-				if (Nmax < M.max[1,M.which])
-					Nmax = M.max[1,M.which];
-			}
-			if (M.axis[2])
-			{
-				if (Nmin > M.min[2,M.which])
-					Nmin = M.min[2,M.which];
-				if (Nmax < M.max[2,M.which])
-					Nmax = M.max[2,M.which];
-			}
+			for (int i = 1; i < 3; i++)
+				if (M.axis[i])
+				{
+					if (Nmin > M.min[i,M.which])
+						Nmin = M.min[i,M.which];
+					if (Nmax < M.max[i,M.which])
+						Nmax = M.max[i,M.which];
+				}
+
 			if (1 == M.Refresh || M.Reset)		// first time or 3 second
 			{
 				Ymax = Nmax;
@@ -68,9 +59,6 @@ namespace blekenbleu.OxyScope
 				Xmax = M.max[3,M.which];
 				Xmin = M.min[3,M.which];
 			} else {
-		 		if (0 == M.Refresh && Xmin < Nmin && Xmax > Nmax)
-					return;
-
 				if (Ymin > Nmin)
 					Ymin = Nmin;
 				if (Ymax < Nmax)
@@ -108,11 +96,16 @@ namespace blekenbleu.OxyScope
 		private void APclick(object sender, RoutedEventArgs e)		// AutoPlot
 		{
 			M.AutoPlot = !M.AutoPlot;
-			M.Reset = true;
-			if (M.AutoPlot && Visibility.Visible == M.PVis)
+			if (M.AutoPlot)
 			{
-				M.PVis = Visibility.Hidden;
-				Plot();
+				if (Visibility.Visible == M.PVis)
+				{
+					M.PVis = Visibility.Hidden;
+					Plot();
+				}
+			} else {
+				M.Reset = true;
+				M.LinFit = 0;
 			}
 			ButtonUpdate();
 		}

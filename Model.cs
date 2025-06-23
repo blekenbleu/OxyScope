@@ -11,33 +11,39 @@ namespace blekenbleu.OxyScope
 		public void OnPropertyChanged(PropertyChangedEventArgs myevent) => PropertyChanged?.Invoke(this, myevent);
         static Settings S;
 
-		public Model(OxyScope os)
+        public Model(OxyScope os)
 		{
 			S = os.Settings;
+			if (null == S)
+			{
+				Refresh = 1;
+				LinFit = 0;
+				AutoPlot = false;
+			} else {
+				Refresh = S.Refresh;
+				LinFit = S.LinFit;
+				AutoPlot = S.Plot;
+			}
 		}
 
 		readonly PropertyChangedEventArgs Cevent = new PropertyChangedEventArgs(nameof(Current));
+		readonly PropertyChangedEventArgs D3event = new PropertyChangedEventArgs(nameof(D3vis));
 		readonly PropertyChangedEventArgs FXevent = new PropertyChangedEventArgs(nameof(FilterX));
 		readonly PropertyChangedEventArgs FYevent = new PropertyChangedEventArgs(nameof(FilterY));
+		readonly PropertyChangedEventArgs LFevent = new PropertyChangedEventArgs(nameof(LinFit));
 		readonly PropertyChangedEventArgs PVevent = new PropertyChangedEventArgs(nameof(PVis));
-		readonly PropertyChangedEventArgs D3event = new PropertyChangedEventArgs(nameof(D3vis));
 		readonly PropertyChangedEventArgs TIevent = new PropertyChangedEventArgs(nameof(Title));
-		readonly PropertyChangedEventArgs Y0event = new PropertyChangedEventArgs(nameof(Y0prop));
-		readonly PropertyChangedEventArgs Y1event = new PropertyChangedEventArgs(nameof(Y1prop));
-		readonly PropertyChangedEventArgs Y2event = new PropertyChangedEventArgs(nameof(Y2prop));
 		readonly PropertyChangedEventArgs XY1event = new PropertyChangedEventArgs(nameof(XYprop1));
 		readonly PropertyChangedEventArgs XY2event = new PropertyChangedEventArgs(nameof(XYprop2));
 		readonly PropertyChangedEventArgs Xevent = new PropertyChangedEventArgs(nameof(Xprop));
+		readonly PropertyChangedEventArgs Y0event = new PropertyChangedEventArgs(nameof(Y0prop));
+		readonly PropertyChangedEventArgs Y1event = new PropertyChangedEventArgs(nameof(Y1prop));
+		readonly PropertyChangedEventArgs Y2event = new PropertyChangedEventArgs(nameof(Y2prop));
 
-		internal ushort		I, length, which = 0,
-							Refresh = (ushort)((null == S) ? 1 : S.Refresh),
-							LinFit  = (ushort)((null == S) ? 1 : S.LinFit);
+		internal ushort		length, which, Refresh, LinFit;
 		internal ushort[]	start;					// split buffer
-		internal double		Range;
-		internal double[]	Total = { 0, 0, 0 };
-		internal double[]	Coef; // View uses for axes scaling
 		internal double[,]	min, max;
-		internal bool		AutoPlot = (null == S) || S.Plot, Once = true, Restart = true;
+		internal bool		AutoPlot, Restart = true;
 		internal bool[]		axis = { true, false, false, true };	// which axes have properties assigned
 
 		private string _title = "launch game or Replay to collect and plot property samples";
@@ -84,11 +90,10 @@ namespace blekenbleu.OxyScope
 		{   get => _reset;
 			set
 			{
-				if (_reset = value)
+				if (_reset = value)		// NOTE: save value, not test change..
 				{
-				   	Total[0] = Total[1] = Total[2] = Range = I = which = 0;	
-					Restart = Once = true;
-					Coef = null;
+				   	which = 0;	
+					Restart = true;								// Reset OxyScope
 					length = (ushort)(2 == Refresh ? 0 : 180);	// 0 for cumulative..
 				}
 			}
