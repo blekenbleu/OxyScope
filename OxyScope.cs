@@ -160,9 +160,9 @@ namespace blekenbleu.OxyScope
 				// Refresh: 0 = max range, 1 = 3 second, 2 = cumulative range
 				// LinFit: 3 == no curve fitting; 0-2 correspond to Y0-Y2
 				if (Visibility.Hidden == VM.PVis && (1 == VM.Refresh
-				 	|| (0 == VM.Refresh && (VM.max[clf,work] - VM.min[clf,work]) > Range)))
+				 	|| (0 == VM.Refresh && (VM.max[3,work] - VM.min[3,work]) > Range)))
 				{
-					Range = VM.max[clf,work] - VM.min[clf,work];
+					Range = VM.max[3,work] - VM.min[3,work];
 					View.Dispatcher.Invoke(() => View.Replot(work));
 					work = (ushort)(1 - work);					// switch buffers
 				}

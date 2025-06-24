@@ -39,7 +39,7 @@ namespace blekenbleu.OxyScope
 
 		internal void Replot(ushort w)
 		{
-			if (2 != M.Refresh && !M.AutoPlot)
+			if (2 != M.Refresh && !M.AutoPlot)		// neither autoplot nor Accrue?
 				M.PVis = Visibility.Visible;		// no more updates manual plot
 			double Nmax = M.max[0,M.which = w];		// plot range for up to 3 Yprops
 			double Nmin = M.min[0,M.which];
@@ -52,13 +52,13 @@ namespace blekenbleu.OxyScope
 						Nmax = M.max[i,M.which];
 				}
 
-			if (1 == M.Refresh || M.Reset)		// first time or 3 second
-			{
+//			if (1 == M.Refresh || M.Reset)		// first time or 3 second
+//			{
 				Ymax = Nmax;
 				Ymin = Nmin;
 				Xmax = M.max[3,M.which];
 				Xmin = M.min[3,M.which];
-			} else {
+/*			} else {							// remember max/min from previous plots
 				if (Ymin > Nmin)
 					Ymin = Nmin;
 				if (Ymax < Nmax)
@@ -67,7 +67,7 @@ namespace blekenbleu.OxyScope
 					Xmin = M.min[3,M.which];
 				if (Xmax < M.max[3,M.which])
 					Xmax = M.max[3,M.which];
-			}
+			}	*/
 			M.Reset = false;
 			Plot();
 		}
