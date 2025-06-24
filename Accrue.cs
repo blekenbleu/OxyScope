@@ -30,18 +30,18 @@ namespace blekenbleu.OxyScope
 						if (!VM.axis[p])
 							continue;
 
-						Avg[p] = Total[p] / (VM.length = Sample);
+						Avg[p] = Total[p] / (Sample);
 
 						double variance = 0;
-						for(int j = 0; j < VM.length; j++)
+						for(int j = 0; j < Sample; j++)
 						{
 							double diff = x[p,j] - Avg[p];
 							variance += diff * diff; 
 						}
-						StdDev[p] = Math.Sqrt(variance / VM.length);
+						StdDev[p] = Math.Sqrt(variance / Sample);
 					}
 
-					VM.Current = $"length = {VM.length};  StdDev = {StdDev[0]:0.0000}";
+					VM.Current = $"count = {Sample};  StdDev = {StdDev[0]:0.0000}";
 					if (VM.axis[1])
 						VM.Current += $", {StdDev[1]:0.0000}";
 					if (VM.axis[2])

@@ -18,8 +18,8 @@
 			<RowDefinition Height="50"/>
 			<RowDefinition Height="50"/>
 		</Grid.RowDefinitions>
-		<Canvas Grid.Row="0" Grid.Column="0" VerticalAlignment="Top">
-		<StackPanel Orientation="Horizontal" FlowDirection="LeftToRight" HorizontalAlignment="Center">
+
+		<StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" FlowDirection="LeftToRight" HorizontalAlignment="Center">
 			<TextBlock Width="45" Height="30" FontSize="18"
 				Background="White" TextAlignment="Center">
 				<Hyperlink RequestNavigate="Hyperlink_RequestNavigate"
@@ -29,14 +29,16 @@
 				Name="Current" Text="{Binding Current}"/>
 			<Button Width="90" Height="42" Click="LFclick"> <TextBlock Text="Linear Fit enabled"
 				TextWrapping="Wrap" TextAlignment="Center" Name="LF"/> </Button>
+			<TextBlock Text="  "/>
 			<Button Width="68" Height="42" Click="RBclick"> <TextBlock Text="3 second refresh"
 				TextWrapping="Wrap" TextAlignment="Center" Name="TH"/> </Button>
-			<Button Width="65" Height="42" Click="APclick"> <TextBlock Text="Auto Replot"
+			<TextBlock Text="  "/>
+			<Button Width="65" Height="42" Click="APclick" Name="BTR"> <TextBlock Text="Auto Replot"
 				TextWrapping="Wrap" TextAlignment="Center" Name="TR"/> </Button>
 			<Button Content="Replot" Width="60" Height="22"
 				Click="PBclick" Visibility="{Binding PVis}" Background="Red" />
 		</StackPanel>
-		</Canvas>
+
 		<GroupBox Grid.Row="1" Grid.Column="0" Height="550" VerticalAlignment="Top">
 			<GroupBox.Header>
 				<TextBlock Height="20" FontWeight="Bold"> Properties XY plot</TextBlock>
@@ -58,8 +60,8 @@
 			<TextBox Margin="415,0" TextWrapping="Wrap" Height="25" Width="385"
 					 Text="{Binding Y2prop, Mode=TwoWay}" Foreground="Cyan"/>
 		</Canvas>
-		<Canvas Grid.Row="3" Grid.Column="0" VerticalAlignment="Top">
 
+		<Canvas Grid.Row="3" Grid.Column="0" VerticalAlignment="Top">
 			<TextBox Margin="0,0" TextWrapping="Wrap" Height="25" Width="390"
 					 Text="{Binding Y0prop, Mode=TwoWay}" Foreground="Red"/>
 			<TextBox Margin="390,0" Text="vs" Width="20" Height="25"/>
@@ -84,5 +86,6 @@
 				 TickFrequency = "1" IsSnapToTickEnabled = "True"
 				 Maximum="10" Minimum="1" x:Name="ss"/> 
 		</Canvas>
+
 	</Grid>
 </UserControl>

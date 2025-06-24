@@ -35,9 +35,11 @@ namespace blekenbleu.OxyScope
 
 		string Last(string[] split) => split[split.Length - 1];	// last substring
 
+		bool change;
 		bool ValidateProp(int i, string prop)
 		{
 			var yp = PM.GetPropertyValue(prop);
+			string lst;
 			VM.axis[i] = null != yp && float.TryParse(yp.ToString(), out f[i]);
 			if (!VM.axis[i])
 			{
@@ -45,7 +47,10 @@ namespace blekenbleu.OxyScope
 
 				VM.XYprop2 += $"invalid {foo} property:  " + prop;
 				oops = true;
-			} else VM.PropName[i] = Last(prop.Split('.'));
+			} else if (VM.PropName[i] != (lst = Last(prop.Split('.')))) {
+				change = true;
+				VM.PropName[i] = lst;
+			}
 			return VM.axis[i];
 		}
 
@@ -80,11 +85,14 @@ namespace blekenbleu.OxyScope
 
 			PM = pluginManager;
 			VM.XYprop2 = "";
+			change = false;
 			if (!ValidateProp(0, VM.Y0prop) || !ValidateProp(3, VM.Xprop))
 				return;
 
 			ValidateProp(1, VM.Y1prop);
 			ValidateProp(2, VM.Y2prop);
+			if (change)
+				View.Dispatcher.Invoke(() => View.ButtonUpdate());
 
 			if (oops)
 			{
@@ -113,12 +121,14 @@ namespace blekenbleu.OxyScope
 				VM.Restart = false;
 				for (i = 0; i < 4; i++)
 					IIR[i] = f[i];
-				VM.start[work] = Sample = 0;
+				if (2 == VM.Refresh)
+					work = 0;			// Accrue() uses the full buffer
+				Sample = VM.start[work];
 				Total[0] = Total[1] = Total[2] = Range = 0;
 				clf = VM.LinFit % 3;
 			} else {	// check for redundant samples
 			  	if (1 > (double)pluginManager.GetPropertyValue("DataCorePlugin.GameData.SpeedKmh")
-				 || Sample >= 1200)
+				 || Sample >= x.Length >> 2)
 					return; 	// Restart sample may have been before car moved
 
 				for (i = 0; i < 3; i++)
@@ -142,10 +152,7 @@ namespace blekenbleu.OxyScope
 				}
 
 			if (2 == VM.Refresh)		// Accrue View.Replot() processes all samples in the buffer.
-			{
-				if (Sample < x.Length)
 					Accrue();			// runs until buffer is full; restart by changing Refresh mode
-			}
 			else if ((++Sample - VM.start[work]) >= VM.length)	// filled?
 			{
 				VM.Current = $"{VM.min[clf,work]:#0.000} <= Y <= {VM.max[clf,work]:#0.000};  "
@@ -186,6 +193,9 @@ namespace blekenbleu.OxyScope
 		public void End(PluginManager pluginManager)
 		{
 			// Save settings
+			Settings.Refresh = VM.Refresh;
+			Settings.LinFit = VM.LinFit;
+			Settings.Plot = VM.AutoPlot;
 			this.SaveCommonSettings("GeneralSettings", Settings);
 		}
 

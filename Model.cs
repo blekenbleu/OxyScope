@@ -39,8 +39,10 @@ namespace blekenbleu.OxyScope
 		readonly PropertyChangedEventArgs Y1event = new PropertyChangedEventArgs(nameof(Y1prop));
 		readonly PropertyChangedEventArgs Y2event = new PropertyChangedEventArgs(nameof(Y2prop));
 
-		internal ushort		length, which, Refresh, LinFit;
+		// work gets reinitialed by Restart
 		internal ushort[]	start;					// split buffer
+		internal ushort		which, Refresh, LinFit;
+		internal readonly ushort length = 240;
 		internal double[,]	min, max;
 		internal bool		AutoPlot, Restart = true;
 		internal bool[]		axis = { true, false, false, true };	// which axes have properties assigned
@@ -92,9 +94,7 @@ namespace blekenbleu.OxyScope
 			{
 				if (_reset = value)		// NOTE: save value, not test change..
 				{
-				   	which = 0;	
 					Restart = true;								// Reset OxyScope
-					length = (ushort)(2 == Refresh ? 0 : 180);	// 0 for cumulative..
 				}
 			}
 		}

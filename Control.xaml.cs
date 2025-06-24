@@ -22,8 +22,7 @@ namespace blekenbleu.OxyScope
 		public Control(OxyScope plugin) : this()
 		{
 			DataContext = M = new Model(O = plugin);
-			O.x = new double[4, M.length = 1201];
-			M.length /= 5; 
+			O.x = new double[4, 1 + 5 * M.length];
 			M.start = new ushort[] { 0, M.length };
 
 			ButtonUpdate();
@@ -40,7 +39,7 @@ namespace blekenbleu.OxyScope
 
 		internal void Replot(ushort w)
 		{
-			if (!M.AutoPlot)
+			if (2 != M.Refresh && !M.AutoPlot)
 				M.PVis = Visibility.Visible;		// no more updates manual plot
 			double Nmax = M.max[0,M.which = w];		// plot range for up to 3 Yprops
 			double Nmin = M.min[0,M.which];
@@ -87,12 +86,22 @@ namespace blekenbleu.OxyScope
 
 		private void RBclick(object sender, RoutedEventArgs e)		// Refresh button
 		{
+			// 0 = max range, 1 = 3 second, 2 = Accrue
 			// Accrue() now always maximizes StdDev for all Yprops
+			if (2 == M.Refresh)
+				M.Reset = true;
 			M.Refresh = (ushort)((++M.Refresh) % 3);
-			M.Reset = true;
+			if (2 == M.Refresh)
+			{
+				M.Reset = true;
+				M.PVis = Visibility.Hidden;
+			}
+			else if (!M.AutoPlot)
+				M.PVis = Visibility.Visible;
 			ButtonUpdate();
 		}
 
+		// inaccessible when 2 == M.Refresh
 		private void APclick(object sender, RoutedEventArgs e)		// AutoPlot
 		{
 			M.AutoPlot = !M.AutoPlot;
@@ -100,10 +109,10 @@ namespace blekenbleu.OxyScope
 			{
 				if (Visibility.Visible == M.PVis)
 				{
-					M.PVis = Visibility.Hidden;
 					Plot();
+					M.PVis = Visibility.Hidden;
 				}
-			} else M.Reset = true;
+			} else M.PVis = Visibility.Visible;
 			ButtonUpdate();
 		}
 
@@ -118,12 +127,12 @@ namespace blekenbleu.OxyScope
 			Plot();
 		}
 
-		void ButtonUpdate()
+		internal void ButtonUpdate()
 		{
 			string[] refresh = new string[]
-			{ 	"Hold max  X range",
+			{ 	"Hold max range",
 				"3 second refresh",
-				"Cumulative X range"
+				"Cumulative range"
 			};
 
 			System.Windows.Media.Brush[] color =
@@ -132,9 +141,10 @@ namespace blekenbleu.OxyScope
 			  System.Windows.Media.Brushes.Cyan,
 			  System.Windows.Media.Brushes.White
 			};
+
+			BTR.Visibility = (2 == M.Refresh) ? Visibility.Hidden : Visibility.Visible;
 			TH.Text = refresh[M.Refresh];
 			LF.Foreground = color[M.LinFit];	// 3: white
-
 			LF.Text = "Fit Curves " + ((3 > M.LinFit) ? (M.PropName[M.LinFit]) : "disabled");
 			TR.Text = (M.AutoPlot ? "Auto" : "Manual") + " Replot";
 		}

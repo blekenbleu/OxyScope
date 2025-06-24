@@ -34,7 +34,7 @@ namespace blekenbleu.OxyScope
 			if (3 > M.LinFit && M.min[p,M.which] < M.max[p,M.which])	// curve fit?
 			{
 				// https://numerics.mathdotnet.com/Regression
-				ys = GetRow(O.x, (ushort)(M.LinFit), M.start[M.which], M.length);
+				ys = GetRow(O.x, M.LinFit, M.start[M.which], M.length);
 				xs = GetRow(O.x, 3, M.start[M.which], M.length);
 				(double, double)fl = Fit.Line(xs, ys);
 				B = fl.Item1;
