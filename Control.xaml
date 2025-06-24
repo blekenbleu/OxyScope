@@ -19,24 +19,23 @@
 			<RowDefinition Height="50"/>
 		</Grid.RowDefinitions>
 		<Canvas Grid.Row="0" Grid.Column="0" VerticalAlignment="Top">
-			<TextBlock Width="45" Height="30" Margin="4,8" FontSize="18"
+		<StackPanel Orientation="Horizontal" FlowDirection="LeftToRight" HorizontalAlignment="Center">
+			<TextBlock Width="45" Height="30" FontSize="18"
 				Background="White" TextAlignment="Center">
 				<Hyperlink RequestNavigate="Hyperlink_RequestNavigate"
 				NavigateUri="https://blekenbleu.github.io/SimHub/oxyhelp.htm">Help</Hyperlink>
 			</TextBlock>
-			<TextBox Width="455" Height="22" Margin="50,12"
+			<TextBox Width="440" Height="22"
 				Name="Current" Text="{Binding Current}"/>
-			<Button Content="Replot" Width="60" Height="22" Margin="510,12"
+			<Button Width="90" Height="42" Click="LFclick"> <TextBlock Text="Linear Fit enabled"
+				TextWrapping="Wrap" TextAlignment="Center" Name="LF"/> </Button>
+			<Button Width="68" Height="42" Click="RBclick"> <TextBlock Text="3 second refresh"
+				TextWrapping="Wrap" TextAlignment="Center" Name="TH"/> </Button>
+			<Button Width="65" Height="42" Click="APclick"> <TextBlock Text="Auto Replot"
+				TextWrapping="Wrap" TextAlignment="Center" Name="TR"/> </Button>
+			<Button Content="Replot" Width="60" Height="22"
 				Click="PBclick" Visibility="{Binding PVis}" Background="Red" />
-			<Button Width="65" Height="42" Margin="575,2" Click="APclick">
-				<TextBlock Text="Auto Replot" TextWrapping="Wrap" TextAlignment="Center" Name="TR"/>
-			</Button>
-			<Button Width="68" Height="42" Margin="643,2" Click="RBclick">
-				<TextBlock Text="3 second refresh" TextWrapping="Wrap" TextAlignment="Center" Name="TH"/>
-			</Button>
-			<Button Width="70" Height="42" Margin="716,2" Click="LFclick">
-				<TextBlock Text="Linear Fit enabled" TextWrapping="Wrap" TextAlignment="Center" Name="LF"/>
-			</Button>
+		</StackPanel>
 		</Canvas>
 		<GroupBox Grid.Row="1" Grid.Column="0" Height="550" VerticalAlignment="Top">
 			<GroupBox.Header>
@@ -52,16 +51,16 @@
 		</GroupBox>
 
 		<Canvas Grid.Row="2" Grid.Column="0" VerticalAlignment="Top">
-			<TextBox Margin="0,0"   TextWrapping="Wrap" Height="25" Width="385"
+			<TextBox Margin="0,0" TextWrapping="Wrap" Height="25" Width="385"
 					 Text="{Binding Y1prop, Mode=TwoWay}" Foreground="Green"/>
 			<Button Content="3D" Width="30" Height="25" Margin="385,0"
-				Click="D3click" Visibility="{Binding D3vis}" Background="Green" />  
+				Click="D3click" Visibility="{Binding D3vis}" Background="Green" />
 			<TextBox Margin="415,0" TextWrapping="Wrap" Height="25" Width="385"
 					 Text="{Binding Y2prop, Mode=TwoWay}" Foreground="Cyan"/>
 		</Canvas>
 		<Canvas Grid.Row="3" Grid.Column="0" VerticalAlignment="Top">
 
-			<TextBox Margin="0,0"   TextWrapping="Wrap" Height="25" Width="390"
+			<TextBox Margin="0,0" TextWrapping="Wrap" Height="25" Width="390"
 					 Text="{Binding Y0prop, Mode=TwoWay}" Foreground="Red"/>
 			<TextBox Margin="390,0" Text="vs" Width="20" Height="25"/>
 			<TextBox Margin="410,0" TextWrapping="Wrap" Height="25" Width="390"
