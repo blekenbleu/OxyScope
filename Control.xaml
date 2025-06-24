@@ -42,14 +42,20 @@
 			<GroupBox.Header>
 				<TextBlock Height="20" FontWeight="Bold"> Properties XY plot</TextBlock>
 			</GroupBox.Header>
-			<oxy:PlotView Name="plot"/>
+			<oxy:PlotView Name="plot">
+				<oxy:PlotView.Resources>
+					<Style TargetType="oxy:TrackerControl">
+						<Setter Property="Background" Value="Gray"/>
+					</Style>
+				</oxy:PlotView.Resources>
+			</oxy:PlotView>
 		</GroupBox>
 
 		<Canvas Grid.Row="2" Grid.Column="0" VerticalAlignment="Top">
 			<TextBox Margin="0,0"   TextWrapping="Wrap" Height="25" Width="385"
 					 Text="{Binding Y1prop, Mode=TwoWay}" Foreground="Green"/>
 			<Button Content="3D" Width="30" Height="25" Margin="385,0"
-                Click="D3click" Visibility="{Binding D3vis}" Background="Green" />  
+				Click="D3click" Visibility="{Binding D3vis}" Background="Green" />  
 			<TextBox Margin="415,0" TextWrapping="Wrap" Height="25" Width="385"
 					 Text="{Binding Y2prop, Mode=TwoWay}" Foreground="Cyan"/>
 		</Canvas>
