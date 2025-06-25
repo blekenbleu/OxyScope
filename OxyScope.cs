@@ -122,9 +122,14 @@ namespace blekenbleu.OxyScope
 				for (i = 0; i < 4; i++)
 					IIR[i] = f[i];
 				if (2 == VM.Refresh)
+				{
 					work = 0;			// Accrue() uses the full buffer
+					Total[0] = Total[1] = Total[2] = oldTotal[0] = oldTotal[1] = oldTotal[2] = 0;
+					backfill = false;
+					resume = true;
+				}
 				Sample = VM.start[work];
-				Total[0] = Total[1] = Total[2] = Range = 0;
+				Range = 0;
 				clf = VM.LinFit % 3;
 			} else {	// check for redundant samples
 			  	if (1 > (double)pluginManager.GetPropertyValue("DataCorePlugin.GameData.SpeedKmh")
