@@ -56,7 +56,7 @@ namespace blekenbleu.OxyScope
 								 (right - left) / 50, "constrained cubic fit") { Color = OxyColors.Orange };	// x increments
 						model.Series.Add(function);
 						return $"constrained cubic:  {c[0]:#0.0000} + {c[1]:#0.000000}*x "
-							 + $"+ {c[2]:#0.000000}*x**2 + {c[3]:#0.000000}*x**3;  Count = {Count / M.length}"
+							 + $"+ {c[2]:#0.000000}*x**2 + {c[3]:#0.000000}*x**3;  Count = {Count}"
 							 + $";  slopes:  {slope[0]:#0.00000}, {slope[1]:#0.00000}@{inflection:#0.00}, {slope[2]:#0.00000}";
 					}
 				}

@@ -173,7 +173,7 @@ namespace blekenbleu.OxyScope
 				 	|| (0 == VM.Refresh && (VM.max[work][3] - VM.min[work][3]) > Range)))
 				{
 					Range = VM.max[work][3] - VM.min[work][3];
-					View.Dispatcher.Invoke(() => View.Replot(VM.start[work], VM.min[work], VM.max[work]));
+					View.Dispatcher.Invoke(() => View.Replot(VM.start[work], VM.length, VM.min[work], VM.max[work]));
 					work = (ushort)(1 - work);					// switch buffers
 				}
 				Sample = VM.start[work];

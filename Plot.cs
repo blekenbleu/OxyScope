@@ -24,7 +24,7 @@ namespace blekenbleu.OxyScope
 		{
 			p = M.LinFit % 3;
 			ymax = 1.2 * (Ymax - Ymin) + Ymin;		// legend space
-			model = ScatterPlot();
+			model = ScopeModel();
 			model.Series.Add(Scatter(0));
 			if (M.axis[1])
 				model.Series.Add(Scatter(1));
@@ -34,8 +34,8 @@ namespace blekenbleu.OxyScope
 			if (3 > M.LinFit && min[p] < max[p])	// curve fit?
 			{
 				// https://numerics.mathdotnet.com/Regression
-				ys = GetRow(O.x, M.LinFit, start, M.length);
-				xs = GetRow(O.x, 3, start, M.length);
+				ys = GetRow(O.x, M.LinFit, start, Length);
+				xs = GetRow(O.x, 3, start, Length);
 				(double, double)fl = Fit.Line(xs, ys);
 				B = fl.Item1;
 				m = fl.Item2;
@@ -50,8 +50,8 @@ namespace blekenbleu.OxyScope
 			M.XYprop1 = $"{min[p]:#0.000} <= Y <= {max[p]:#0.000};  "
 					 + $"{min[3]:#0.000} <= X <= {max[3]:#0.000}" + lfs;
 
-			plot.Model = model;											// OxyPlot
-			if (M.axis[1] && M.axis[2])
+			plot.Model = model;										// OxyPlot
+			if (M.axis[1] || M.axis[2])								// 2 or 3 Y properties
 				M.D3vis = Visibility.Visible;
 		}
 

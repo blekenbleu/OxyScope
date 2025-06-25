@@ -39,14 +39,14 @@ namespace blekenbleu.OxyScope
 			System.Diagnostics.Process.Start(e.Uri.AbsoluteUri);
 		}
 
-		ushort start;
+		ushort start, Length;
 		static double[] min, max;					// static required for CubicSlope()
-		internal void Replot(ushort rs, double[] rmin, double[] rmax)
+		internal void Replot(ushort rs, ushort rl, double[] rmin, double[] rmax)
 		{
 			if (2 != M.Refresh && !M.AutoPlot)		// neither autoplot nor Accrue?
 				M.PVis = Visibility.Visible;		// no more updates manual plot
 
-			start = rs; min = rmin; max = rmax;
+			start = rs; min = rmin; max = rmax; Length = rl;
 			double Nmax = max[0];					// plot range for up to 3 Yprops
 			double Nmin = min[0];
 			for (int i = 1; i < 3; i++)
