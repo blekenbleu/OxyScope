@@ -143,6 +143,7 @@ namespace blekenbleu.OxyScope
 					return;
 			}
 
+			bool[] mm = { false, false };					// remember whether min or max change
 			for (i = 0; i < 4; i++)
 				if (VM.axis[i])
 				{
@@ -150,14 +151,18 @@ namespace blekenbleu.OxyScope
 					x[i,Sample] = IIR[i];
 					if (VM.start[work] == Sample)
 						VM.min[work][i] = VM.max[work][i] = x[i,Sample];
-					else if (VM.min[work][i] > x[i,Sample])	// volume of sample values
+					else if (mm[0] = VM.min[work][i] > x[i,Sample])	// volume of sample values
 						VM.min[work][i] = x[i,Sample];
-					else if (VM.max[work][i] < x[i,Sample])
+					else if (mm[1] = VM.max[work][i] < x[i,Sample])
 						VM.max[work][i] = x[i,Sample];
 				}
 
 			if (2 == VM.Refresh)		// Accrue View.Replot() processes all samples in the buffer.
-					Accrue();			// runs until buffer is full; restart by changing Refresh mode
+			{
+				if ((mm[0] || mm[1]) && backfill)
+					ExtendIntervals(x[3,Sample]);
+				Accrue();				// runs until buffer is full; restart by changing Refresh mode
+			}
 			else if ((++Sample - VM.start[work]) >= VM.length)	// filled?
 			{
 				VM.Current = $"{VM.min[work][clf]:#0.000} <= Y <= {VM.max[work][clf]:#0.000};  "
