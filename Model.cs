@@ -41,9 +41,9 @@ namespace blekenbleu.OxyScope
 
 		// work gets reinitialed by Restart
 		internal ushort[]	start;					// split buffer
-		internal ushort		which, Refresh, LinFit;
+		internal ushort		Refresh, LinFit;
 		internal readonly ushort length = 240;
-		internal double[,]	min, max;
+		internal double[][]	min, max;
 		internal bool		AutoPlot, Restart = true;
 		internal bool[]		axis = { true, false, false, true };	// which axes have properties assigned
 		internal string[] PropName = { "", "", "", "" };

@@ -23,12 +23,12 @@ namespace blekenbleu.OxyScope
 		// https://blekenbleu.github.io/static/ImageProcessing/MonotoneCubic.htm
 		static bool Monotonic(double p1, double p2, double p3)
 		{
-			slope[0] = CubicSlope(p1, p2, p3, M.min[p,M.which]);
-			slope[2] = CubicSlope(p1, p2, p3, M.max[p,M.which]);
+			slope[0] = CubicSlope(p1, p2, p3, min[p]);
+			slope[2] = CubicSlope(p1, p2, p3, max[p]);
 			if (0 <= slope[0] * slope[2])
 			{
 				inflection = - p2 / (3 * p3);
-				slope[1] = (M.max[p,M.which] < inflection || inflection < M.min[p,M.which]) ? 0
+				slope[1] = (max[p] < inflection || inflection < min[p]) ? 0
 						 : CubicSlope(p1, p2, p3, inflection);
 				return 0 <= slope[0] * slope[1];
 			} else inflection = slope[1] = 0;
@@ -43,8 +43,8 @@ namespace blekenbleu.OxyScope
 		{
 			double sx, inflection;
 			Count++; 
-			if (0 <= CubicSlope(p1, p2, p3, M.min[p,M.which]) * (sx = CubicSlope(p1, p2, p3, M.max[p,M.which]))
-			 && (M.max[p,M.which] < (inflection = - p2 / (3 *p3)) || M.min[p,M.which] > inflection
+			if (0 <= CubicSlope(p1, p2, p3, min[p]) * (sx = CubicSlope(p1, p2, p3, max[p]))
+			 && (max[p] < (inflection = - p2 / (3 *p3)) || min[p] > inflection
 			 || 0 <= sx * CubicSlope(p1, p2, p3, inflection))) 
 				return p0 + x * (p1 + x * (p2 + x * p3));	// unconstrained
 			else return 2 * (0 > m ? ymax : Ymin); 	// tell NelderMeadSimplex slope changes are bad

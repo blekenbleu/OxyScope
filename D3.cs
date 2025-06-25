@@ -27,7 +27,7 @@ namespace blekenbleu.OxyScope
 				Text +=	";\n::"+M.PropName[0] +
 						"::"+M.PropName[1] +
 						"::"+M.PropName[2] + ";\n";
-				ushort s = M.start[M.which];
+				ushort s = start;
 				ushort stop = (ushort)(s +  M.length);
 				for (; s < stop; s++)
 					Text += $"#P{s:000}::{O.x[0,s]:0.000}::{O.x[1,s]:0.000}::"

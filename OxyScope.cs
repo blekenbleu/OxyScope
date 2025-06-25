@@ -137,7 +137,7 @@ namespace blekenbleu.OxyScope
 					return; 	// Restart sample may have been before car moved
 
 				for (i = 0; i < 3; i++)
-					if(VM.axis[i] && System.Math.Abs(f[i] - x[i,Sample]) > 0.02 * (VM.max[i,work] - VM.min[i,work]))
+					if(VM.axis[i] && System.Math.Abs(f[i] - x[i,Sample]) > 0.02 * (VM.max[work][i] - VM.min[work][i]))
 						break;
 				if (3 == i)		// differed from previous by < 2% ?
 					return;
@@ -149,26 +149,26 @@ namespace blekenbleu.OxyScope
 					IIR[i] += (f[i] - IIR[i]) / VM.FilterX;
 					x[i,Sample] = IIR[i];
 					if (VM.start[work] == Sample)
-						VM.min[i,work] = VM.max[i,work] = x[i,Sample];
-					else if (VM.min[i,work] > x[i,Sample])	// volume of sample values
-						VM.min[i,work] = x[i,Sample];
-					else if (VM.max[i,work] < x[i,Sample])
-						VM.max[i,work] = x[i,Sample];
+						VM.min[work][i] = VM.max[work][i] = x[i,Sample];
+					else if (VM.min[work][i] > x[i,Sample])	// volume of sample values
+						VM.min[work][i] = x[i,Sample];
+					else if (VM.max[work][i] < x[i,Sample])
+						VM.max[work][i] = x[i,Sample];
 				}
 
 			if (2 == VM.Refresh)		// Accrue View.Replot() processes all samples in the buffer.
 					Accrue();			// runs until buffer is full; restart by changing Refresh mode
 			else if ((++Sample - VM.start[work]) >= VM.length)	// filled?
 			{
-				VM.Current = $"{VM.min[clf,work]:#0.000} <= Y <= {VM.max[clf,work]:#0.000};  "
-						   + $"{VM.min[3,work]:#0.000} <= X <= {VM.max[3,work]:#0.000}";
+				VM.Current = $"{VM.min[work][clf]:#0.000} <= Y <= {VM.max[work][clf]:#0.000};  "
+						   + $"{VM.min[work][3]:#0.000} <= X <= {VM.max[work][3]:#0.000}";
 				// Refresh: 0 = max range, 1 = 3 second, 2 = cumulative range
 				// LinFit: 3 == no curve fitting; 0-2 correspond to Y0-Y2
 				if (Visibility.Hidden == VM.PVis && (1 == VM.Refresh
-				 	|| (0 == VM.Refresh && (VM.max[3,work] - VM.min[3,work]) > Range)))
+				 	|| (0 == VM.Refresh && (VM.max[work][3] - VM.min[work][3]) > Range)))
 				{
-					Range = VM.max[3,work] - VM.min[3,work];
-					View.Dispatcher.Invoke(() => View.Replot(work));
+					Range = VM.max[work][3] - VM.min[work][3];
+					View.Dispatcher.Invoke(() => View.Replot(VM.start[work], VM.min[work], VM.max[work]));
 					work = (ushort)(1 - work);					// switch buffers
 				}
 				Sample = VM.start[work];

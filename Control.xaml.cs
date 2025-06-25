@@ -26,8 +26,10 @@ namespace blekenbleu.OxyScope
 			M.start = new ushort[] { 0, M.length };
 
 			ButtonUpdate();
-			M.min = new double[,] { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } };
-			M.max = new double[,] { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } };
+			M.min = new double[][] { new double[] { 0, 0, 0, 0 }, new double[] { 0, 0, 0, 0 } };
+			M.max = new double[][] { new double[] { 0, 0, 0, 0 }, new double[] { 0, 0, 0, 0 } };
+			min = M.min[0];  max = M.max[0];
+			start = 0;
 			RandomPlot();
 		}
 
@@ -37,36 +39,40 @@ namespace blekenbleu.OxyScope
 			System.Diagnostics.Process.Start(e.Uri.AbsoluteUri);
 		}
 
-		internal void Replot(ushort w)
+		ushort start;
+		static double[] min, max;					// static required for CubicSlope()
+		internal void Replot(ushort rs, double[] rmin, double[] rmax)
 		{
 			if (2 != M.Refresh && !M.AutoPlot)		// neither autoplot nor Accrue?
 				M.PVis = Visibility.Visible;		// no more updates manual plot
-			double Nmax = M.max[0,M.which = w];		// plot range for up to 3 Yprops
-			double Nmin = M.min[0,M.which];
+
+			start = rs; min = rmin; max = rmax;
+			double Nmax = max[0];					// plot range for up to 3 Yprops
+			double Nmin = min[0];
 			for (int i = 1; i < 3; i++)
 				if (M.axis[i])
 				{
-					if (Nmin > M.min[i,M.which])
-						Nmin = M.min[i,M.which];
-					if (Nmax < M.max[i,M.which])
-						Nmax = M.max[i,M.which];
+					if (Nmin > min[i])
+						Nmin = min[i];
+					if (Nmax < max[i])
+						Nmax = max[i];
 				}
 
 //			if (1 == M.Refresh || M.Reset)		// first time or 3 second
 //			{
 				Ymax = Nmax;
 				Ymin = Nmin;
-				Xmax = M.max[3,M.which];
-				Xmin = M.min[3,M.which];
+				Xmax = max[3];
+				Xmin = min[3];
 /*			} else {							// remember max/min from previous plots
 				if (Ymin > Nmin)
 					Ymin = Nmin;
 				if (Ymax < Nmax)
 					Ymax = Nmax;
-				if (Xmin > M.min[3,M.which])
-					Xmin = M.min[3,M.which];
-				if (Xmax < M.max[3,M.which])
-					Xmax = M.max[3,M.which];
+				if (Xmin > min[3])
+					Xmin = min[3];
+				if (Xmax < max[3])
+					Xmax = max[3];
 			}	*/
 			M.Reset = false;
 			Plot();

@@ -31,11 +31,11 @@ namespace blekenbleu.OxyScope
 			if (M.axis[2])
 				model.Series.Add(Scatter(2));
 
-			if (3 > M.LinFit && M.min[p,M.which] < M.max[p,M.which])	// curve fit?
+			if (3 > M.LinFit && min[p] < max[p])	// curve fit?
 			{
 				// https://numerics.mathdotnet.com/Regression
-				ys = GetRow(O.x, M.LinFit, M.start[M.which], M.length);
-				xs = GetRow(O.x, 3, M.start[M.which], M.length);
+				ys = GetRow(O.x, M.LinFit, start, M.length);
+				xs = GetRow(O.x, 3, start, M.length);
 				(double, double)fl = Fit.Line(xs, ys);
 				B = fl.Item1;
 				m = fl.Item2;
@@ -43,12 +43,12 @@ namespace blekenbleu.OxyScope
 				M.Current += $";   R-squared = {r2:0.00}";
 				model.Series.Add(LineDraw(m, B, "line fit"));
 				lfs = $";   line:  {B:#0.0000} + {m:#0.00000}*x;   R-squared = {r2:0.00}";
-				M.XYprop2 = Curve(M.min[3,M.which], M.max[3,M.which]);
+				M.XYprop2 = Curve(min[3], max[3]);
 			}
 			else lfs = "";
 
-			M.XYprop1 = $"{M.min[p,M.which]:#0.000} <= Y <= {M.max[p,M.which]:#0.000};  "
-					 + $"{M.min[3,M.which]:#0.000} <= X <= {M.max[3,M.which]:#0.000}" + lfs;
+			M.XYprop1 = $"{min[p]:#0.000} <= Y <= {max[p]:#0.000};  "
+					 + $"{min[3]:#0.000} <= X <= {max[3]:#0.000}" + lfs;
 
 			plot.Model = model;											// OxyPlot
 			if (M.axis[1] && M.axis[2])
@@ -60,9 +60,9 @@ namespace blekenbleu.OxyScope
 		{
 			LineSeries line = new LineSeries { Color = color[p] };
 			// min X value, Y value calculated from X value
-			line.Points.Add(new DataPoint(M.min[3,M.which], B + m * M.min[3,M.which]));
+			line.Points.Add(new DataPoint(min[3], B + m * min[3]));
 			// max X value, Y value calculated from X value
-			line.Points.Add(new DataPoint(M.max[3,M.which], B + m * M.max[3,M.which]));
+			line.Points.Add(new DataPoint(max[3], B + m * max[3]));
 			line.Title = title;
 			return line;
 		}
