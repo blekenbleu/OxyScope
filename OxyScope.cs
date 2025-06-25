@@ -43,10 +43,15 @@ namespace blekenbleu.OxyScope
 			VM.axis[i] = null != yp && float.TryParse(yp.ToString(), out f[i]);
 			if (!VM.axis[i])
 			{
-				string foo = 3 > i ? "Y" + i : "X";
+				if (VM.Restart)
+				{
+					string foo = 3 > i ? "Y" + i : "X";
 
-				VM.XYprop2 += $"invalid {foo} property:  " + prop;
-				oops = true;
+					if (oops)
+						VM.XYprop2 += $"invalid {foo} property:  " + prop;
+					else VM.XYprop2 = $"invalid {foo} property:  " + prop;
+					oops = true;
+				}
 			} else if (VM.PropName[i] != (lst = Last(prop.Split('.')))) {
 				change = true;
 				VM.PropName[i] = lst;
@@ -84,7 +89,6 @@ namespace blekenbleu.OxyScope
 			current = data.NewData.CarSettings_CurrentDisplayedRPMPercent;
 
 			PM = pluginManager;
-			VM.XYprop2 = "";
 			change = false;
 			if (!ValidateProp(0, VM.Y0prop) || !ValidateProp(3, VM.Xprop))
 				return;

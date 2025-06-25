@@ -39,10 +39,11 @@ namespace blekenbleu.OxyScope
 				(double, double)fl = Fit.Line(xs, ys);
 				B = fl.Item1;
 				m = fl.Item2;
+				double slope = m * (max[3] - min[3]) / (max[M.LinFit] - min[M.LinFit]);
 				double r2 = GoodnessOfFit.RSquared(xs.Select(x => B + m * x), ys);
 				M.Current += $";   R-squared = {r2:0.00}";
 				model.Series.Add(LineDraw(m, B, "line fit"));
-				lfs = $";   line:  {B:#0.0000} + {m:#0.00000}*x;   R-squared = {r2:0.00}";
+				lfs = $";   line:  {B:#0.0000} + {m:#0.00000}*x;   Slope = {slope:0.00}, R-squared = {r2:0.00}";
 				M.XYprop2 = Curve(min[3], max[3]);
 			}
 			else lfs = "";
