@@ -8,18 +8,10 @@
 			 mc:Ignorable="d"
 			 xmlns:oxy="http://oxyplot.org/wpf"
 			 d:DataContext="{d:DesignInstance Type=local:Model}"
-			 Height="750" Width="800">
-	<Grid>
-		<Grid.RowDefinitions>
-			<RowDefinition Height="50"/>
-			<RowDefinition Height="550"/>
-			<RowDefinition Height="25"/>
-			<RowDefinition Height="25"/>
-			<RowDefinition Height="50"/>
-			<RowDefinition Height="50"/>
-		</Grid.RowDefinitions>
+			 Width="800">
+	<StackPanel>
 
-		<StackPanel Height="40"  Grid.Row="0" Grid.Column="0" Orientation="Horizontal" FlowDirection="LeftToRight" HorizontalAlignment="Center">
+		<StackPanel Height="40" Orientation="Horizontal" FlowDirection="LeftToRight" HorizontalAlignment="Center">
 			<TextBlock VerticalAlignment="Center" Width="45" FontSize="18"
 				Background="White" TextAlignment="Center">
 				<Hyperlink RequestNavigate="Hyperlink_RequestNavigate"
@@ -39,7 +31,7 @@
 				Click="PBclick" Visibility="{Binding PVis}" Background="Red" />
 		</StackPanel>
 
-		<GroupBox Grid.Row="1" Grid.Column="0" Height="550" VerticalAlignment="Top">
+		<GroupBox Height="550" VerticalAlignment="Top">
 			<GroupBox.Header>
 				<TextBlock Height="20" FontWeight="Bold"> Properties XY plot</TextBlock>
 			</GroupBox.Header>
@@ -52,40 +44,27 @@
 			</oxy:PlotView>
 		</GroupBox>
 
-		<Canvas Grid.Row="2" Grid.Column="0" VerticalAlignment="Top">
-			<TextBox Margin="0,0" TextWrapping="Wrap" Height="25" Width="385"
-					 Text="{Binding Y1prop, Mode=TwoWay}" Foreground="Green"/>
-			<Button Content="3D" Width="30" Height="25" Margin="385,0"
-				Click="D3click" Visibility="{Binding D3vis}" Background="Green" />
-			<TextBox Margin="415,0" TextWrapping="Wrap" Height="25" Width="385"
-					 Text="{Binding Y2prop, Mode=TwoWay}" Foreground="Cyan"/>
-		</Canvas>
+		<StackPanel Orientation="Horizontal" Height="25">
+			<TextBox TextWrapping="Wrap" Width="385" Text="{Binding Y1prop, Mode=TwoWay}" Foreground="Green"/>
+			<Button Content="3D" Width="30" Click="D3click" Visibility="{Binding D3vis}" Background="Green" />
+			<TextBox TextWrapping="Wrap" Width="385" Text="{Binding Y2prop, Mode=TwoWay}" Foreground="Cyan"/>
+		</StackPanel>
 
-		<Canvas Grid.Row="3" Grid.Column="0" VerticalAlignment="Top">
-			<TextBox Margin="0,0" TextWrapping="Wrap" Height="25" Width="390"
-					 Text="{Binding Y0prop, Mode=TwoWay}" Foreground="Red"/>
-			<TextBox Margin="390,0" Text="vs" Width="20" Height="25"/>
-			<TextBox Margin="410,0" TextWrapping="Wrap" Height="25" Width="390"
-					 Text="{Binding Xprop, Mode=TwoWay}"/>
-		</Canvas>
+		<StackPanel Orientation="Horizontal" Height="25" >
+			<TextBox TextWrapping="Wrap" Width="390" Text="{Binding Y0prop, Mode=TwoWay}" Foreground="Red"/>
+			<TextBox Text="vs" Width="20"/>
+			<TextBox TextWrapping="Wrap" Width="390" Text="{Binding Xprop, Mode=TwoWay}"/>
+		</StackPanel>
 
-		<Canvas Grid.Row="4" Grid.Column="0" VerticalAlignment="Top">
-			<TextBox Canvas.Left="0" Height="25" Width="800"
-					 Name="XYprop1" Text="{Binding XYprop1}"/>
-			<TextBox Margin="0,25" Canvas.Left="0" Height="25" Width="800"
-					 Name="XYprop2" Text="{Binding XYprop2}"/>
-		</Canvas>
+		<TextBox Height="25" Width="800" Name="XYprop1" Text="{Binding XYprop1}"/>
+		<TextBox Height="25" Width="800" Name="XYprop2" Text="{Binding XYprop2}"/>
 
-		<Canvas Grid.Row="5" Grid.Column="0" VerticalAlignment="Top">
-			<ui:TitledSlider Title="	 Y-axis filter" Width="400"
-				 Value="{Binding FilterY, Mode=TwoWay}" Margin="0,5"
-				 TickFrequency = "1" IsSnapToTickEnabled = "True"
-				 Maximum="10" Minimum="1" x:Name="sv"/>
-			<ui:TitledSlider Title="	 X-axis filter" Width="400"
-				 Value="{Binding FilterX, Mode=TwoWay}" Margin="400,5"
-				 TickFrequency = "1" IsSnapToTickEnabled = "True"
-				 Maximum="10" Minimum="1" x:Name="ss"/> 
-		</Canvas>
+		<StackPanel Orientation="Horizontal">
+			<ui:TitledSlider  Title="	 Y-axis filter" Width="400" Value="{Binding FilterY, Mode=TwoWay}"
+				 TickFrequency = "1" IsSnapToTickEnabled = "True" Maximum="10" Minimum="1" x:Name="sv"/>
+			<ui:TitledSlider Title="	 X-axis filter" Width="400" Value="{Binding FilterX, Mode=TwoWay}"
+				 TickFrequency = "1" IsSnapToTickEnabled = "True" Maximum="10" Minimum="1" x:Name="ss"/> 
+		</StackPanel>
 
-	</Grid>
+	</StackPanel>
 </UserControl>
