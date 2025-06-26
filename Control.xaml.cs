@@ -75,7 +75,7 @@ namespace blekenbleu.OxyScope
 					Xmax = max[3];
 			}	*/
 			M.Reset = false;
-			Plot();
+			plot.Model = Plot();
 		}
 
 		private void D3click(object sender, RoutedEventArgs e)		// 3D visualize button
@@ -87,7 +87,7 @@ namespace blekenbleu.OxyScope
 		private void PBclick(object sender, RoutedEventArgs e)		// Plot button (for manual Refresh)
 		{
 			M.PVis = Visibility.Hidden;
-			Plot();
+			plot.Model = Plot();
 		}
 
 		private void RBclick(object sender, RoutedEventArgs e)		// Refresh button
@@ -115,7 +115,7 @@ namespace blekenbleu.OxyScope
 			{
 				if (Visibility.Visible == M.PVis)
 				{
-					Plot();
+					plot.Model = Plot();
 					M.PVis = Visibility.Hidden;
 				}
 			} else M.PVis = Visibility.Visible;
@@ -130,7 +130,7 @@ namespace blekenbleu.OxyScope
 				M.LinFit = (ushort)(M.axis[1] ? 1 : M.axis[2] ? 2 : 3);
 			else M.LinFit = (ushort)(M.axis[2] ? 2 : 3);
 			ButtonUpdate();
-			Plot();
+			plot.Model = Plot();
 		}
 
 		internal void ButtonUpdate()
@@ -148,11 +148,11 @@ namespace blekenbleu.OxyScope
 			  System.Windows.Media.Brushes.White
 			};
 
-			BTR.Visibility = (2 == M.Refresh) ? Visibility.Hidden : Visibility.Visible;
 			TH.Text = refresh[M.Refresh];
 			LF.Foreground = color[M.LinFit];	// 3: white
 			LF.Text = "Fit Curves " + ((3 > M.LinFit) ? (M.PropName[M.LinFit]) : "disabled");
 			TR.Text = (M.AutoPlot ? "Auto" : "Manual") + " Replot";
+			BTR.Visibility = (2 == M.Refresh) ? Visibility.Hidden : Visibility.Visible;
 		}
 	}	// class
 }

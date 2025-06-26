@@ -42,7 +42,7 @@ namespace blekenbleu.OxyScope
 		}
 
 		private ScatterSeries Scatter(uint Yprop) => Scatter(M.PropName[Yprop], Yprop);
-		readonly OxyColor[] color = { OxyColors.Red, OxyColors.Green, OxyColors.Cyan };
+		readonly OxyColor[] Ycolor = { OxyColors.Red, OxyColors.Green, OxyColors.Cyan };
 		
 		private ScatterSeries Scatter(string title, uint Yprop)	// 3 possible
 		{
@@ -52,7 +52,7 @@ namespace blekenbleu.OxyScope
 			var scatterSeries = new ScatterSeries { MarkerType = MarkerType.Circle };
 			for (ushort i = start; i < end; i++)
 				scatterSeries.Points.Add(new ScatterPoint(O.x[3,i], O.x[Yprop,i], size));
-			scatterSeries.MarkerFill = color[Yprop];
+			scatterSeries.MarkerFill = Ycolor[Yprop];
 			scatterSeries.Title = title;
 			return scatterSeries;
 		}
@@ -76,7 +76,7 @@ namespace blekenbleu.OxyScope
 			}
 
 			Xmin = min[0];
-			model = ScopeModel();
+            PlotModel model = ScopeModel();
 			model.Series.Add(Scatter("random", 0));
 			plot.Model = model;
 		}

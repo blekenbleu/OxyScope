@@ -8,23 +8,20 @@ namespace blekenbleu.OxyScope
 {
 	public partial class Control
 	{
-		static double[] c;				// least squares fit coefficient[s]
+		static double[] coef;				// least squares fit coefficient[s]
+		double[] xs, ys;				// Fit.Polynomial(), Fit.Curve(), Fit.Line()
 		string lfs;
-		static ushort Count;
-		static (double, double, double, double) Ft;
-		PlotModel model;
-		double[] xs, ys;
 
 		double[] GetRow(double[,] twoD, ushort row, ushort start, ushort length)
 		{
 			return Enumerable.Range(start, length).Select(x => twoD[row, x]).ToArray();	
 		}
 
-		internal void Plot()
+		internal PlotModel Plot()
 		{
 			p = M.LinFit % 3;
 			ymax = 1.2 * (Ymax - Ymin) + Ymin;		// legend space
-			model = ScopeModel();
+			PlotModel model = ScopeModel();
 			model.Series.Add(Scatter(0));
 			if (M.axis[1])
 				model.Series.Add(Scatter(1));
@@ -44,22 +41,22 @@ namespace blekenbleu.OxyScope
 				M.Current += $";   R-squared = {r2:0.00}";
 				model.Series.Add(LineDraw(m, B, "line fit"));
 				lfs = $";   line:  {B:#0.0000} + {m:#0.00000}*x;   Slope = {slope:0.00}, R-squared = {r2:0.00}";
-				M.XYprop2 = Curve(min[3], max[3]);
+				M.XYprop2 = Curve(min[3], max[3], model);
 			}
 			else M.XYprop2 = lfs = "";
 
 			M.XYprop1 = $"{min[p]:#0.000} <= Y <= {max[p]:#0.000};  "
 					 + $"{min[3]:#0.000} <= X <= {max[3]:#0.000}" + lfs;
 
-			plot.Model = model;										// OxyPlot
 			if (M.axis[1] || M.axis[2])								// 2 or 3 Y properties
 				M.D3vis = Visibility.Visible;
+			return model;
 		}
 
 		// draw line fit
 		LineSeries LineDraw(double m, double B, string title)
 		{
-			LineSeries line = new LineSeries { Color = color[p] };
+			LineSeries line = new LineSeries { Color = Ycolor[p] };
 			// min X value, Y value calculated from X value
 			line.Points.Add(new DataPoint(min[3], B + m * min[3]));
 			// max X value, Y value calculated from X value

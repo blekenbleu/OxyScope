@@ -12,8 +12,8 @@ namespace blekenbleu.OxyScope
 
 	public partial class Control
 	{
-		// cubic functions for OxyPlot FunctionSeries()
-		readonly Func<double, double> cubicfit = (x) => c[0] + x * (c[1] + x * (c[2] +  x * c[3]));
+		// Cubic functions for OxyPlot FunctionSeries()
+		readonly Func<double, double> CubicFit = (x) => coef[0] + x * (coef[1] + x * (coef[2] +  x * coef[3]));
 
 		static double CubicSlope(double p1, double p2, double p3, double x)
 		{
@@ -35,7 +35,7 @@ namespace blekenbleu.OxyScope
 			return false;
 		}
 
-		// iteratively invoked for NelderMeadSimplex solution to monotonic cubic Fit.Curve
+		// iteratively invoked for NelderMeadSimplex solution to monotonic coef Fit.Curve
 		readonly Func<double, double, double, double, double, double>
 					CurveFunc = (p0, p1, p2, p3, x) => ConstrainedCubic(p0, p1, p2, p3, x);
 
