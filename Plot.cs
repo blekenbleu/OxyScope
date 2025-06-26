@@ -8,7 +8,9 @@ namespace blekenbleu.OxyScope
 {
 	public partial class Control
 	{
-		static double[] coef;				// least squares fit coefficient[s]
+		static double[] coef;			// least squares fit coefficient[s]
+		static double ymax;				// static for ConstrainedCubic()
+		static int p;					// current X property to plot
 		double[] xs, ys;				// Fit.Polynomial(), Fit.Curve(), Fit.Line()
 		string lfs;
 
@@ -40,7 +42,7 @@ namespace blekenbleu.OxyScope
 				double r2 = GoodnessOfFit.RSquared(xs.Select(x => B + m * x), ys);
 				M.Current += $";   R-squared = {r2:0.00}";
 				model.Series.Add(LineDraw(m, B, "line fit"));
-				lfs = $";   line:  {B:#0.0000} + {m:#0.00000}*x;   Slope = {slope:0.00}, R-squared = {r2:0.00}";
+				lfs = $";   line:  {B:#0.0000} + {m:#0.00000}*x;   slope = {slope:0.00}, R-squared = {r2:0.00}";
 				M.XYprop2 = Curve(min[3], max[3], model);
 			}
 			else M.XYprop2 = lfs = "";

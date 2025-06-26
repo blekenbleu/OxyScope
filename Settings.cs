@@ -2,6 +2,7 @@
 {
 	/// <summary>
 	/// Settings class, make sure it can be correctly serialized using JSON.net
+	/// elements must be public for Model : INotifyPropertyChanged class
 	/// </summary>
 	public class Settings
 	{

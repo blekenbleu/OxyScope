@@ -12,6 +12,8 @@ namespace blekenbleu.OxyScope
 
 	public partial class Control
 	{
+		static readonly double[] Slope = new double[] { 0, 0, 0 }; // LeastSquares inflections
+
 		// Cubic functions for OxyPlot FunctionSeries()
 		readonly Func<double, double> CubicFit = (x) => coef[0] + x * (coef[1] + x * (coef[2] +  x * coef[3]));
 
@@ -23,15 +25,15 @@ namespace blekenbleu.OxyScope
 		// https://blekenbleu.github.io/static/ImageProcessing/MonotoneCubic.htm
 		static bool Monotonic(double p1, double p2, double p3)
 		{
-			slope[0] = CubicSlope(p1, p2, p3, min[p]);
-			slope[2] = CubicSlope(p1, p2, p3, max[p]);
-			if (0 <= slope[0] * slope[2])
+			Slope[0] = CubicSlope(p1, p2, p3, min[p]);
+			Slope[2] = CubicSlope(p1, p2, p3, max[p]);
+			if (0 <= Slope[0] * Slope[2])
 			{
 				inflection = - p2 / (3 * p3);
-				slope[1] = (max[p] < inflection || inflection < min[p]) ? 0
+				Slope[1] = (max[p] < inflection || inflection < min[p]) ? 0
 						 : CubicSlope(p1, p2, p3, inflection);
-				return 0 <= slope[0] * slope[1];
-			} else inflection = slope[1] = 0;
+				return 0 <= Slope[0] * Slope[1];
+			} else inflection = Slope[1] = 0;
 			return false;
 		}
 
@@ -47,7 +49,7 @@ namespace blekenbleu.OxyScope
 			 && (max[p] < (inflection = - p2 / (3 *p3)) || min[p] > inflection
 			 || 0 <= sx * CubicSlope(p1, p2, p3, inflection))) 
 				return p0 + x * (p1 + x * (p2 + x * p3));	// unconstrained
-			else return 2 * (0 > m ? ymax : Ymin); 	// tell NelderMeadSimplex slope changes are bad
+			else return 2 * (0 > m ? ymax : Ymin); 			// penalize NelderMeadSimplex non-monotonic solutions
 		}
 	}
 }

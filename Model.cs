@@ -3,7 +3,7 @@ using System.Windows;
 
 namespace blekenbleu.OxyScope
 {
-	
+	// elements must be public
 	// https://intellitect.com/blog/getting-started-model-view-viewmodel-mvvm-pattern-using-windows-presentation-framework-wpf/
 	public class Model : INotifyPropertyChanged
 	{

@@ -10,12 +10,9 @@ namespace blekenbleu.OxyScope
 	/// </summary>
 	public partial class Control : UserControl
 	{
-		public static Model M;
-		public OxyScope O;
-		static double Xmax, Ymax, Xmin, Ymin, ymax,	// axes limits
-						m, B, inflection;
-		static readonly double[] slope = new double[] { 0, 0, 0 }; // LeastSquares inflections
-		static int p;								// current X property to plot
+		internal static Model M;
+		internal OxyScope O;
+		static double Xmax, Ymax, Xmin, Ymin;	// axes limits
 
 		public Control() => InitializeComponent();
 

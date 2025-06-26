@@ -8,6 +8,7 @@ namespace blekenbleu.OxyScope
 	public partial class Control
 	{
 		static (double, double, double, double) Ft;
+		static double m, B, inflection;
 		static ushort Count;
 
 		string Poly(double left, double right, PlotModel model)
@@ -22,7 +23,7 @@ namespace blekenbleu.OxyScope
 				M.XYprop2 = "Poly(): " + e?.ToString();
 			}
 			return $"cubic:  {coef[0]:#0.0000}+{coef[1]:#0.0000}*x+{coef[2]:#0.0000}*x**2+{coef[3]:#0.00000}*x**3"
-				 + $";  slopes:  {slope[0]:#0.0000}, {slope[1]:#0.0000}@{inflection:#0.00}, {slope[2]:#0.0000}";
+				 + $";  Slopes:  {Slope[0]:#0.0000}, {Slope[1]:#0.0000}@{inflection:#0.00}, {Slope[2]:#0.0000}";
 		}
 
 		string Curve(double left, double right, PlotModel model)
@@ -61,7 +62,7 @@ namespace blekenbleu.OxyScope
 						model.Series.Add(function);
 						return $"constrained coef:  {coef[0]:#0.0000} + {coef[1]:#0.000000}*x;  Count = {Count}"
 							 + $"+ {coef[2]:#0.000000}*x**2 + {coef[3]:#0.000000}*x**3"
-							 + $";  slopes:  {slope[0]:#0.00000}, {slope[1]:#0.00000}@{inflection:#0.00}, {slope[2]:#0.00000}";
+							 + $";  Slopes:  {Slope[0]:#0.00000}, {Slope[1]:#0.00000}@{inflection:#0.00}, {Slope[2]:#0.00000}";
 					}
 				}
 				return "** non-monotonic! ** " + Poly(left, right, model);
