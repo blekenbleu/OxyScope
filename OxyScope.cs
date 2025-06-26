@@ -184,8 +184,13 @@ namespace blekenbleu.OxyScope
 
 			if (2 == VM.Refresh)		// Accrue View.Replot() processes all samples in the buffer.
 			{
-				if ((mm[0] || mm[1]) && backfill)
-					ExtendIntervals(x[3,Sample]);
+				if (backfill)
+				{
+					if (mm[0])
+						PrefixIntervals(x[3,Sample]);
+					else if (mm[1])
+						AppendIntervals(x[3,Sample]);
+				}
 				Accrue();				// runs until buffer is full; restart by changing Refresh mode
 			}
 			else if ((++Sample - VM.start[work]) >= VM.length)	// filled?
@@ -271,10 +276,15 @@ namespace blekenbleu.OxyScope
 					Settings.FilterY = 1;
 			}
 
-			this.AttachDelegate("IIRY0", () => IIR[0]);
-			this.AttachDelegate("IIRY1", () => IIR[1]);
-			this.AttachDelegate("IIRY2", () => IIR[2]);
-			this.AttachDelegate("IIRX",	 () => IIR[3]);
+			this.AttachDelegate("IIRY0-2,X", () => $"{IIR[0]:#.00},{IIR[1]:#.00},{IIR[2]:#.00},{IIR[3]:#.00}");
+			this.AttachDelegate("Sample",() => Sample);
+			this.AttachDelegate("Intervals.Count",() => Intervals.Count);
+			this.AttachDelegate("overtime",() => overtime);
+			this.AttachDelegate("backfill",() => backfill);
+			this.AttachDelegate("timeout",() => timeout);
+			this.AttachDelegate("StdDev",() => $"{StdDev[0]:#0.00},{StdDev[1]:#0.00},{StdDev[2]:#0.00}");
+			this.AttachDelegate("resume",() => resume);
+			this.AttachDelegate("backfill",() => backfill);
 		}
 	}
 }

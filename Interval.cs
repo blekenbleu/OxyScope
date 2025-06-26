@@ -30,7 +30,7 @@ namespace blekenbleu.OxyScope
 		}
 
 		// preserve current histogram buckets; append new buckets as needed
-		void ExtendIntervals(double xValue)
+		void PrefixIntervals(double xValue)
 		{
 			double bucket_width = (Imax - Imin) / Intervals.Count;
 
@@ -39,6 +39,11 @@ namespace blekenbleu.OxyScope
 				Intervals.Insert(0, 0);
 				Imin -= bucket_width;
 			}
+		}
+		void AppendIntervals(double xValue)
+		{
+			double bucket_width = (Imax - Imin) / Intervals.Count;
+
 			while (Imax < xValue)
 			{
 				Intervals.Add(0);
