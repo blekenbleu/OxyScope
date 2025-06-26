@@ -75,10 +75,11 @@ namespace blekenbleu.OxyScope
 		internal double[,] x;						// plot samples from IIR[]
 		private ushort work;						// arrays currently being sampled
 		private ushort Sample;						// which x[,] is currently being worked
-		bool oops = false;
+		bool oops = false, Bfull = false, cid = false;
 		int clf = 0;								// current LinFit
 		string CarId = "";
 		double current, Range;
+		uint WaitCt = 0;
 		public void DataUpdate(PluginManager pluginManager, ref GameData data)
 		{
 			PM = pluginManager;		// ValidateProp() uses
@@ -96,17 +97,25 @@ namespace blekenbleu.OxyScope
 				VM.XYprop2 += ";  continuing...";
 			}
 
+			if (!data.GameRunning || null == data.OldData || null == data.NewData)
+			{
+				if (!cid)	// avoid wiping XYprop1 if already past this;  replays can get here
+					VM.XYprop1 = "waiting for valid data";
+				return;
+			}
+
 			if (0 == data.NewData.CarId.Length)
 			{
 				VM.XYprop1 = "waiting for CarId...";
 				return;
 			}
 
-			if (!data.GameRunning || null == data.OldData || null == data.NewData
-				|| current == data.NewData.CarSettings_CurrentDisplayedRPMPercent
-				|| 1 > (double)pluginManager.GetPropertyValue("DataCorePlugin.GameData.SpeedKmh"))
+			cid = true;
+			if (1 > (double)pluginManager.GetPropertyValue("DataCorePlugin.GameData.SpeedKmh")
+				|| current == data.NewData.CarSettings_CurrentDisplayedRPMPercent)
 			{
-				VM.XYprop1 = "waiting for action";
+				if (!Bfull && 30 < ++ WaitCt)
+					VM.XYprop1 = "waiting for action";
 				return;
 			}
 
@@ -114,7 +123,7 @@ namespace blekenbleu.OxyScope
 			if (CarId != data.NewData.CarId)
 			{
 				CarId = data.NewData.CarId;
-				// implicit Reset
+				// Title change sets Reset, which sets Restart
 		   		VM.Title = pluginManager.GetPropertyValue("DataCorePlugin.CurrentGame")?.ToString()
 						 + ":  " + pluginManager.GetPropertyValue("DataCorePlugin.GameData.CarModel")?.ToString()
 						 + "@"	 + pluginManager.GetPropertyValue("DataCorePlugin.GameData.TrackName")?.ToString();
@@ -123,7 +132,8 @@ namespace blekenbleu.OxyScope
 			int i;
 			if (VM.Restart)
 			{
-				VM.Restart = false;
+				VM.Restart = Bfull = false;
+				VM.XYprop1 = "Restart";
 				for (i = 0; i < 4; i++)
 					IIR[i] = f[i];
 				if (2 == VM.Refresh)
@@ -139,7 +149,11 @@ namespace blekenbleu.OxyScope
 			} else {	// check for redundant samples
 			  	if (Sample >= x.Length >> 2)
 				{
-					VM.XYprop1 = "sample buffer full";
+					if (!Bfull)
+					{
+						VM.XYprop1 = $"sample buffer full;  {Intervals.Count} histogram buckets";
+						Bfull = true;
+					}
 					return; 	// Restart sample may have been before car moved
 				}
 				for (i = 0; i < 3; i++)
@@ -147,6 +161,11 @@ namespace blekenbleu.OxyScope
 						break;
 				if (3 == i)		// differed from previous by < 2% ?
 					return;
+				if (30 < WaitCt)
+				{
+					VM.XYprop1 = "";
+					WaitCt = 0;
+				}
 			}
 
 			bool[] mm = { false, false };					// remember whether min or max change
