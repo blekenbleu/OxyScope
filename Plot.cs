@@ -46,7 +46,7 @@ namespace blekenbleu.OxyScope
 				lfs = $";   line:  {B:#0.0000} + {m:#0.00000}*x;   Slope = {slope:0.00}, R-squared = {r2:0.00}";
 				M.XYprop2 = Curve(min[3], max[3]);
 			}
-			else lfs = "";
+			else M.XYprop2 = lfs = "";
 
 			M.XYprop1 = $"{min[p]:#0.000} <= Y <= {max[p]:#0.000};  "
 					 + $"{min[3]:#0.000} <= X <= {max[3]:#0.000}" + lfs;

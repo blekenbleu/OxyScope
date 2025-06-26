@@ -81,20 +81,12 @@ namespace blekenbleu.OxyScope
 		double current, Range;
 		public void DataUpdate(PluginManager pluginManager, ref GameData data)
 		{
-			if (!data.GameRunning || null == data.OldData || null == data.NewData)
-				return;
-
-			if (current == data.NewData.CarSettings_CurrentDisplayedRPMPercent)
-				return;
-			current = data.NewData.CarSettings_CurrentDisplayedRPMPercent;
-
-			PM = pluginManager;
+			PM = pluginManager;		// ValidateProp() uses
 			change = false;
 			if (!ValidateProp(0, VM.Y0prop) || !ValidateProp(3, VM.Xprop))
 				return;
 
-			ValidateProp(1, VM.Y1prop);
-			ValidateProp(2, VM.Y2prop);
+			ValidateProp(1, VM.Y1prop); ValidateProp(2, VM.Y2prop);
 			if (change)
 				View.Dispatcher.Invoke(() => View.ButtonUpdate());
 
@@ -110,6 +102,15 @@ namespace blekenbleu.OxyScope
 				return;
 			}
 
+			if (!data.GameRunning || null == data.OldData || null == data.NewData
+				|| current == data.NewData.CarSettings_CurrentDisplayedRPMPercent
+				|| 1 > (double)pluginManager.GetPropertyValue("DataCorePlugin.GameData.SpeedKmh"))
+			{
+				VM.XYprop1 = "waiting for action";
+				return;
+			}
+
+			current = data.NewData.CarSettings_CurrentDisplayedRPMPercent;
 			if (CarId != data.NewData.CarId)
 			{
 				CarId = data.NewData.CarId;
@@ -136,10 +137,11 @@ namespace blekenbleu.OxyScope
 				Range = 0;
 				clf = VM.LinFit % 3;
 			} else {	// check for redundant samples
-			  	if (1 > (double)pluginManager.GetPropertyValue("DataCorePlugin.GameData.SpeedKmh")
-				 || Sample >= x.Length >> 2)
+			  	if (Sample >= x.Length >> 2)
+				{
+					VM.XYprop1 = "sample buffer full";
 					return; 	// Restart sample may have been before car moved
-
+				}
 				for (i = 0; i < 3; i++)
 					if(VM.axis[i] && System.Math.Abs(f[i] - x[i,Sample]) > 0.02 * (VM.max[work][i] - VM.min[work][i]))
 						break;
