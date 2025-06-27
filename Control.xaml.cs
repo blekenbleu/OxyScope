@@ -14,7 +14,7 @@ namespace blekenbleu.OxyScope
 		internal OxyScope O;
 		static double Xmax, Ymax, Xmin, Ymin;	// axes limits
 		ushort start, Length;
-		static double[] min, max;					// static required for CubicSlope()
+		static double[] min, max;				// static required for CubicSlope()
 
 		public Control() => InitializeComponent();
 
@@ -56,9 +56,10 @@ namespace blekenbleu.OxyScope
 				}
 
 			Ymax = Nmax;
-			Ymin = Nmin;
-			Xmax = max[3];
-			Xmin = min[3];
+			// move plot points inside limits
+			Ymin = Nmin - 0.01 * (Nmax - Nmin);
+			Xmax = max[3] + (Xmin = 0.01 * (max[3] - min[3]));
+			Xmin = min[3] - Xmin;
 			M.Reset = false;
 			plot.Model = Plot();
 		}
