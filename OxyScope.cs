@@ -83,7 +83,7 @@ namespace blekenbleu.OxyScope
 		public void DataUpdate(PluginManager pluginManager, ref GameData data)
 		{
 			PM = pluginManager;		// ValidateProp() uses
-			change = false;
+			change = oops = false;
 			if (!ValidateProp(0, VM.Y0prop) || !ValidateProp(3, VM.Xprop))
 				return;
 

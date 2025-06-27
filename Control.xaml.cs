@@ -110,11 +110,10 @@ namespace blekenbleu.OxyScope
 
 		private void LFclick(object sender, RoutedEventArgs e)		// Line Fit button
 		{
-			if (3 == M.LinFit)
-				M.LinFit = 0;
-			else if (0 == M.LinFit)
-				M.LinFit = (ushort)(M.axis[1] ? 1 : M.axis[2] ? 2 : 3);
-			else M.LinFit = (ushort)(M.axis[2] ? 2 : 3);
+			for (byte b = 0; b < 3; b++)
+				if (M.axis[M.LinFit = (ushort)((1 + M.LinFit) % 4)])
+					break;
+
 			ButtonUpdate();
 			plot.Model = Plot();
 		}
