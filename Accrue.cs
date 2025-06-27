@@ -9,7 +9,7 @@ namespace blekenbleu.OxyScope
 		readonly double[] Total = { 0, 0, 0 }, oldTotal = { 0, 0, 0 };
 		bool resume = true, backfill = false;
 		private ushort timeout, overtime;
-		readonly double[] dev = { 0, 0, 0};
+		readonly double[] StdSample = { 0, 0, 0};
 
 		void Accrue()
 		{
@@ -58,10 +58,16 @@ namespace blekenbleu.OxyScope
 				backfill = true;
 				SetupIntervals();
 			}
+			bool keep = false;
 			for (p = 0; p < 3; p++)
-				if (VM.axis[p] && (dev[p] = Math.Abs(x[p,Sample] - Avg[p])) > 2 * StdDev[p])
-					break;
-			if (3 > p || (backfill && Interval()))
+				if (VM.axis[p])
+				{
+					double diff = x[p,Sample] - Avg[p];
+					StdSample[p] = diff * diff;
+					if (StdSample[p] > 2 * StdDev[p])
+						keep = true;
+				}
+			if (keep || (backfill && Interval()))
 			{
 				resume = true;	// might stick at modulo 30 for awhile
 				if (VM.axis[1])

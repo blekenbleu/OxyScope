@@ -276,15 +276,16 @@ namespace blekenbleu.OxyScope
 					Settings.FilterY = 1;
 			}
 
+			this.AttachDelegate("backfill",() => backfill);
+			this.AttachDelegate("bucket",() => bucket);
 			this.AttachDelegate("IIRY0-2,X", () => $"{IIR[0]:#.00},{IIR[1]:#.00},{IIR[2]:#.00},{IIR[3]:#.00}");
-			this.AttachDelegate("Sample",() => Sample);
 			this.AttachDelegate("Intervals.Count",() => Intervals.Count);
 			this.AttachDelegate("overtime",() => overtime);
-			this.AttachDelegate("backfill",() => backfill);
-			this.AttachDelegate("timeout",() => timeout);
-			this.AttachDelegate("StdDev",() => $"{StdDev[0]:#0.00},{StdDev[1]:#0.00},{StdDev[2]:#0.00}");
 			this.AttachDelegate("resume",() => resume);
-			this.AttachDelegate("backfill",() => backfill);
+			this.AttachDelegate("Sample",() => Sample);
+			this.AttachDelegate("StdDev",() => $"{StdDev[0]:#0.00},{StdDev[1]:#0.00},{StdDev[2]:#0.00}");
+			this.AttachDelegate("StdSample",() => $"{StdSample[0]:#0.00},{StdSample[1]:#0.00},{StdSample[2]:#0.00}");
+			this.AttachDelegate("timeout",() => timeout);
 		}
 	}
 }
