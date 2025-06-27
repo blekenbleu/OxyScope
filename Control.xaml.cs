@@ -13,6 +13,8 @@ namespace blekenbleu.OxyScope
 		internal static Model M;
 		internal OxyScope O;
 		static double Xmax, Ymax, Xmin, Ymin;	// axes limits
+		ushort start, Length;
+		static double[] min, max;					// static required for CubicSlope()
 
 		public Control() => InitializeComponent();
 
@@ -30,20 +32,18 @@ namespace blekenbleu.OxyScope
 			RandomPlot();
 		}
 
-		private void Hyperlink_RequestNavigate(object sender,
-									RequestNavigateEventArgs e)
+		private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
 		{
 			System.Diagnostics.Process.Start(e.Uri.AbsoluteUri);
 		}
 
-		ushort start, Length;
-		static double[] min, max;					// static required for CubicSlope()
 		internal void Replot(ushort rs, ushort rl, double[] rmin, double[] rmax)
 		{
+			start = rs; min = rmin; max = rmax; Length = rl;
+
 			if (2 != M.Refresh && !M.AutoPlot)		// neither autoplot nor Accrue?
 				M.PVis = Visibility.Visible;		// no more updates manual plot
 
-			start = rs; min = rmin; max = rmax; Length = rl;
 			double Nmax = max[0];					// plot range for up to 3 Yprops
 			double Nmin = min[0];
 			for (int i = 1; i < 3; i++)
@@ -55,22 +55,10 @@ namespace blekenbleu.OxyScope
 						Nmax = max[i];
 				}
 
-//			if (1 == M.Refresh || M.Reset)		// first time or 3 second
-//			{
-				Ymax = Nmax;
-				Ymin = Nmin;
-				Xmax = max[3];
-				Xmin = min[3];
-/*			} else {							// remember max/min from previous plots
-				if (Ymin > Nmin)
-					Ymin = Nmin;
-				if (Ymax < Nmax)
-					Ymax = Nmax;
-				if (Xmin > min[3])
-					Xmin = min[3];
-				if (Xmax < max[3])
-					Xmax = max[3];
-			}	*/
+			Ymax = Nmax;
+			Ymin = Nmin;
+			Xmax = max[3];
+			Xmin = min[3];
 			M.Reset = false;
 			plot.Model = Plot();
 		}
@@ -151,5 +139,5 @@ namespace blekenbleu.OxyScope
 			TR.Text = (M.AutoPlot ? "Auto" : "Manual") + " Replot";
 			BTR.Visibility = (2 == M.Refresh) ? Visibility.Hidden : Visibility.Visible;
 		}
-	}	// class
+	}	// class Control
 }
