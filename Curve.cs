@@ -14,9 +14,10 @@ namespace blekenbleu.OxyScope
 		string Poly(double left, double right, PlotModel model)
 		{
 			// https://oxyplot.readthedocs.io/en/latest/models/series/FunctionSeries.html
-			try {
-				FunctionSeries function = new FunctionSeries(CubicFit, left, right,
-								 (right - left) / 50, "cubic fit") { Color = OxyColors.Orange };	// x increments
+			try {	// CubicFit() gets declared as FunctionSeries Func in LeastSquares.cs
+				double incr = (right - left) / 50;	// 50 x increments
+				FunctionSeries function = new FunctionSeries(CubicFit, left, right, incr, "cubic fit")
+				{ Color = OxyColors.Orange };
 				model.Series.Add(function);
 			} catch (Exception e) {
 				M.LinFit = 0;
@@ -30,9 +31,8 @@ namespace blekenbleu.OxyScope
 		{
 			// cubic fit https://posts5865.rssing.com/chan-58562618/latest.php
 			coef = Fit.Polynomial(xs, ys, 3, MathNet.Numerics.LinearRegression.DirectRegressionMethod.QR);
-			bool m0 = Monotonic(coef[1], coef[2], coef[3]);
 
-			if (m0)
+			if (Monotonic(coef))
 				return Poly(left, right, model);
 
 			else
@@ -55,7 +55,7 @@ namespace blekenbleu.OxyScope
 				if (converge)
 				{
 					coef[0] = Ft.Item1; coef[1] = Ft.Item2; coef[2] = Ft.Item3; coef[3] = Ft.Item4;
-					if (Monotonic(coef[1], coef[2], coef[3]))
+					if (Monotonic(coef))
 					{
 						FunctionSeries function = new FunctionSeries(CubicFit, left, right,
 								 (right - left) / 50, "constrained coef fit") { Color = OxyColors.Orange };	// x increments

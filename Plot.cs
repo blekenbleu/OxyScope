@@ -10,7 +10,7 @@ namespace blekenbleu.OxyScope
 	{
 		static double[] coef;			// least squares fit coefficient[s]
 		static double ymax;				// static for ConstrainedCubic()
-		static int p;					// current X property to plot
+		static byte Yf;					// current Y property to fit curves
 		double[] xs, ys;				// Fit.Polynomial(), Fit.Curve(), Fit.Line()
 		string lfs;
 
@@ -21,7 +21,7 @@ namespace blekenbleu.OxyScope
 
 		internal PlotModel Plot()
 		{
-			p = M.LinFit % 3;
+			Yf = (byte)(M.LinFit % 3);
 			ymax = 1.2 * (Ymax - Ymin) + Ymin;		// legend space
 			PlotModel model = ScopeModel();
 			model.Series.Add(Scatter(0));
@@ -30,7 +30,7 @@ namespace blekenbleu.OxyScope
 			if (M.axis[2])
 				model.Series.Add(Scatter(2));
 
-			if (3 > M.LinFit && min[p] < max[p])	// curve fit?
+			if (3 > M.LinFit && min[Yf] < max[Yf])	// curve fit?
 			{
 				// https://numerics.mathdotnet.com/Regression
 				ys = GetRow(O.x, M.LinFit, start, Length);
@@ -47,8 +47,8 @@ namespace blekenbleu.OxyScope
 			}
 			else M.XYprop2 = lfs = "";
 
-			M.XYprop1 = $"{min[p]:#0.000} <= Y <= {max[p]:#0.000};  "
-					 + $"{min[3]:#0.000} <= X <= {max[3]:#0.000}" + lfs;
+			M.XYprop1 = $"{min[Yf]:#0.000} <= Y <= {max[Yf]:#0.000};  "
+					  + $"{min[ 3]:#0.000} <= X <= {max[ 3]:#0.000}" + lfs;
 
 			if (M.axis[1] || M.axis[2])								// 2 or 3 Y properties
 				M.D3vis = Visibility.Visible;
@@ -58,7 +58,7 @@ namespace blekenbleu.OxyScope
 		// draw line fit
 		LineSeries LineDraw(double m, double B, string title)
 		{
-			LineSeries line = new LineSeries { Color = Ycolor[p] };
+			LineSeries line = new LineSeries { Color = Ycolor[Yf] };
 			// min X value, Y value calculated from X value
 			line.Points.Add(new DataPoint(min[3], B + m * min[3]));
 			// max X value, Y value calculated from X value
