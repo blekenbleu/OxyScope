@@ -4,7 +4,7 @@ namespace blekenbleu.OxyScope
 {
 	public partial class OxyScope
 	{
-		double Imin, Imax;
+		double Imin, Imax, Ifac;
 		short bucket;
         //		readonly ushort[] Intervals = new ushort[10];
         // because Intervals may need to be increased after SetupIntervals()
@@ -20,8 +20,8 @@ namespace blekenbleu.OxyScope
 		bool Interval()
 		{	// find Intervals index corresponding to current x[3, Sample] value
 			double Irange = Imax - Imin;
-			double Ifac = ((double)Intervals.Count - 0.01) / Irange;
-			bucket = (short)(Ifac *(x[3, Sample] -  Imin) / Irange);
+			Ifac = (Intervals.Count - 0.01) / Irange;
+			bucket = (short)(Ifac *(x[3, Sample] -  Imin));
 
 			if (Intervals[bucket] < (double)Sample / Intervals.Count)	// less than average population?
 				for (ushort p = 0; p < 3; p++)

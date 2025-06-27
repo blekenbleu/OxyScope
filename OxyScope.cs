@@ -279,6 +279,9 @@ namespace blekenbleu.OxyScope
 			this.AttachDelegate("backfill",() => backfill);
 			this.AttachDelegate("bucket",() => bucket);
 			this.AttachDelegate("IIRY0-2,X", () => $"{IIR[0]:#.00},{IIR[1]:#.00},{IIR[2]:#.00},{IIR[3]:#.00}");
+			this.AttachDelegate("Ifac",() => Ifac);
+			this.AttachDelegate("Imax",() => Imax);
+			this.AttachDelegate("Imin",() => Imin);
 			this.AttachDelegate("Intervals.Count",() => Intervals.Count);
 			this.AttachDelegate("overtime",() => overtime);
 			this.AttachDelegate("resume",() => resume);
