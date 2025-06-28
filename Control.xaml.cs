@@ -108,12 +108,15 @@ namespace blekenbleu.OxyScope
 			ButtonUpdate();
 		}
 
-		private void PropertySelect(object sender, RoutedEventArgs e)		// Line Fit button
+		private void PropertySelect(object sender, RoutedEventArgs e)
 		{
 			for (byte b = 0; b < 3; b++)
 				if (M.axis[M.property = (ushort)((1 + M.property) % 4)])
 					break;
 
+			if (Visibility.Hidden == M.PVis && 1 != M.Refresh)
+				M.Reset = true;				// restart sampling with newly selected property
+											// else just property for curve fitting
 			ButtonUpdate();
 			plot.Model = Plot();
 		}
@@ -135,7 +138,9 @@ namespace blekenbleu.OxyScope
 
 			TH.Text = refresh[M.Refresh];
 			LF.Foreground = color[M.property];	// 3: white
-			LF.Text = "Fit Curves " + ((3 > M.property) ? (M.PropName[M.property]) : "disabled");
+			if (Visibility.Hidden == M.PVis && 1 != M.Refresh)
+				LF.Text = M.PropName[M.property] + " selected";
+			else LF.Text = "Fit " + ((3 > M.property) ? (M.PropName[M.property]) : "disabled");
 			TR.Text = (M.AutoPlot ? "Auto" : "Manual") + " Replot";
 			BTR.Visibility = (2 == M.Refresh) ? Visibility.Hidden : Visibility.Visible;
 		}

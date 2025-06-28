@@ -11,17 +11,17 @@ namespace blekenbleu.OxyScope
         readonly List<ushort> Intervals = new List<ushort> {0,0,0,0,0,0,0,0,0,0};
 		void SetupIntervals()
 		{
-			Imax = VM.max[work][3]; Imin = VM.min[work][3];
+			Imax = VM.max[work][VM.property]; Imin = VM.min[work][VM.property];
 			double Ifac = (Intervals.Count - 0.01) / (Imax - Imin);
 			for (ushort i = 0; i < Sample; i++)
-				Intervals[(ushort)(Ifac * (x[3, i] -  Imin))]++;
+				Intervals[(ushort)(Ifac * (x[VM.property, i] -  Imin))]++;
 		}
 
 		bool Interval()
-		{	// find Intervals index corresponding to current x[3, Sample] value
+		{	// find Intervals index corresponding to current x[VM.property, Sample] value
 			double Irange = Imax - Imin;
 			Ifac = (Intervals.Count - 0.01) / Irange;
-			bucket = (short)(Ifac *(x[3, Sample] -  Imin));
+			bucket = (short)(Ifac * (x[VM.property, Sample] -  Imin));
 
 			if (Intervals[bucket] < (double)Sample / Intervals.Count)	// less than average population?
 				for (ushort p = 0; p < 3; p++)

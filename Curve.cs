@@ -20,7 +20,6 @@ namespace blekenbleu.OxyScope
 				{ Color = OxyColors.Orange };
 				model.Series.Add(function);
 			} catch (Exception e) {
-				M.property = 0;
 				M.XYprop2 = "Poly(): " + e?.ToString();
 			}
 			return $"cubic:  {coef[0]:#0.0000}+{coef[1]:#0.0000}*x+{coef[2]:#0.0000}*x**2+{coef[3]:#0.00000}*x**3"

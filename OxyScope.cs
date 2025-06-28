@@ -76,7 +76,7 @@ namespace blekenbleu.OxyScope
 		private ushort work;						// arrays currently being sampled
 		private ushort Sample;						// which x[,] is currently being worked
 		bool oops = false, Bfull = false, cid = false;
-		int clf = 0;								// current property
+		int clf = 0;								// current Y property
 		string CarId = "";
 		double current, Range;
 		uint WaitCt = 0;
@@ -177,9 +177,17 @@ namespace blekenbleu.OxyScope
 					if (VM.start[work] == Sample)
 						VM.min[work][i] = VM.max[work][i] = x[i,Sample];
 					else if (mm[0] = VM.min[work][i] > x[i,Sample])	// volume of sample values
+					{
+						if (i == VM.property)
+							mm[0] = true;
 						VM.min[work][i] = x[i,Sample];
-					else if (mm[1] = VM.max[work][i] < x[i,Sample])
+					}
+					else if (VM.max[work][i] < x[i,Sample])
+					{
+						if (i == VM.property)
+							mm[1] = true;
 						VM.max[work][i] = x[i,Sample];
+					}
 				}
 
 			if (2 == VM.Refresh)		// Accrue View.Replot() processes all samples in the buffer.
@@ -187,9 +195,9 @@ namespace blekenbleu.OxyScope
 				if (backfill)
 				{
 					if (mm[0])
-						PrefixIntervals(x[3,Sample]);
+						PrefixIntervals(x[VM.property,Sample]);
 					else if (mm[1])
-						AppendIntervals(x[3,Sample]);
+						AppendIntervals(x[VM.property,Sample]);
 				}
 				Accrue();				// runs until buffer is full; restart by changing Refresh mode
 			}
@@ -200,9 +208,9 @@ namespace blekenbleu.OxyScope
 				// Refresh: 0 = max range, 1 = 3 second, 2 = cumulative range
 				// property: 3 == no curve fitting; 0-2 correspond to Y0-Y2
 				if (Visibility.Hidden == VM.PVis && (1 == VM.Refresh
-				 	|| (0 == VM.Refresh && (VM.max[work][3] - VM.min[work][3]) > Range)))
+				 	|| (0 == VM.Refresh && (VM.max[work][VM.property] - VM.min[work][VM.property]) > Range)))
 				{
-					Range = VM.max[work][3] - VM.min[work][3];
+					Range = VM.max[work][VM.property] - VM.min[work][VM.property];
 					View.Dispatcher.Invoke(() => View.Replot(VM.start[work], VM.length, VM.min[work], VM.max[work]));
 					work = (ushort)(1 - work);					// switch buffers
 				}
