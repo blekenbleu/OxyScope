@@ -76,7 +76,7 @@ namespace blekenbleu.OxyScope
 			plot.Model = Plot();
 		}
 
-		private void RBclick(object sender, RoutedEventArgs e)		// Refresh button
+		private void RefreshMode(object sender, RoutedEventArgs e)		// Refresh button
 		{
 			// 0 = max range, 1 = 3 second, 2 = Accrue
 			// Accrue() now always maximizes StdDev for all Yprops
@@ -94,7 +94,7 @@ namespace blekenbleu.OxyScope
 		}
 
 		// inaccessible when 2 == M.Refresh
-		private void APclick(object sender, RoutedEventArgs e)		// AutoPlot
+		private void PlotMode(object sender, RoutedEventArgs e)		// AutoPlot
 		{
 			M.AutoPlot = !M.AutoPlot;
 			if (M.AutoPlot)
@@ -108,10 +108,10 @@ namespace blekenbleu.OxyScope
 			ButtonUpdate();
 		}
 
-		private void LFclick(object sender, RoutedEventArgs e)		// Line Fit button
+		private void PropertySelect(object sender, RoutedEventArgs e)		// Line Fit button
 		{
 			for (byte b = 0; b < 3; b++)
-				if (M.axis[M.LinFit = (ushort)((1 + M.LinFit) % 4)])
+				if (M.axis[M.property = (ushort)((1 + M.property) % 4)])
 					break;
 
 			ButtonUpdate();
@@ -134,8 +134,8 @@ namespace blekenbleu.OxyScope
 			};
 
 			TH.Text = refresh[M.Refresh];
-			LF.Foreground = color[M.LinFit];	// 3: white
-			LF.Text = "Fit Curves " + ((3 > M.LinFit) ? (M.PropName[M.LinFit]) : "disabled");
+			LF.Foreground = color[M.property];	// 3: white
+			LF.Text = "Fit Curves " + ((3 > M.property) ? (M.PropName[M.property]) : "disabled");
 			TR.Text = (M.AutoPlot ? "Auto" : "Manual") + " Replot";
 			BTR.Visibility = (2 == M.Refresh) ? Visibility.Hidden : Visibility.Visible;
 		}

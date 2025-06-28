@@ -17,15 +17,14 @@
 				<Hyperlink RequestNavigate="Hyperlink_RequestNavigate"
 				NavigateUri="https://blekenbleu.github.io/SimHub/oxyhelp.htm">Help</Hyperlink>
 			</TextBlock>
-			<TextBox Width="440"
-				Name="Current" VerticalAlignment="Center"  Text="{Binding Current}"/>
-			<Button Width="90" Click="LFclick"> <TextBlock Text="Linear Fit enabled"
-				TextWrapping="Wrap" TextAlignment="Center" Name="LF"/> </Button>
-			<TextBlock Text="  "/>
-			<Button Width="68" Click="RBclick"> <TextBlock Text="3 second refresh"
+			<TextBox Width="440" Name="Current" VerticalAlignment="Center" Text="{Binding Current}"/>
+			<Button Width="68" Click="RefreshMode"> <TextBlock Text="3 second refresh"
 				TextWrapping="Wrap" TextAlignment="Center" Name="TH"/> </Button>
 			<TextBlock Text="  "/>
-			<Button Width="65" Click="APclick" Name="BTR"> <TextBlock Text="Auto Replot"
+			<Button Width="90" Click="PropertySelect"> <TextBlock Text="Fit disabled"
+				TextWrapping="Wrap" TextAlignment="Center" Name="LF"/> </Button>
+			<TextBlock Text="  "/>
+			<Button Width="65" Click="PlotMode" Name="BTR"> <TextBlock Text="Auto Replot"
 				TextWrapping="Wrap" TextAlignment="Center" Name="TR"/> </Button>
 			<Button Content="Replot" Width="60" Height="22"
 				Click="PBclick" Visibility="{Binding PVis}" Background="Red" />

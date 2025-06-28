@@ -21,7 +21,7 @@ namespace blekenbleu.OxyScope
 
 		internal PlotModel Plot()
 		{
-			Yf = (byte)(M.LinFit % 3);
+			Yf = (byte)(M.property % 3);
 			ymax = 1.2 * (Ymax - Ymin) + Ymin;		// legend space
 			PlotModel model = ScopeModel();
 			model.Series.Add(Scatter(0));
@@ -30,15 +30,15 @@ namespace blekenbleu.OxyScope
 			if (M.axis[2])
 				model.Series.Add(Scatter(2));
 
-			if (3 > M.LinFit && min[Yf] < max[Yf])	// curve fit?
+			if (3 > M.property && min[Yf] < max[Yf])	// curve fit?
 			{
 				// https://numerics.mathdotnet.com/Regression
-				ys = GetRow(O.x, M.LinFit, start, Length);
+				ys = GetRow(O.x, M.property, start, Length);
 				xs = GetRow(O.x, 3, start, Length);
 				(double, double)fl = Fit.Line(xs, ys);
 				B = fl.Item1;
 				m = fl.Item2;
-				double slope = m * (max[3] - min[3]) / (max[M.LinFit] - min[M.LinFit]);
+				double slope = m * (max[3] - min[3]) / (max[M.property] - min[M.property]);
 				double r2 = GoodnessOfFit.RSquared(xs.Select(x => B + m * x), ys);
 				M.Current += $";   R-squared = {r2:0.00}";
 				model.Series.Add(LineDraw(m, B, "line fit"));

@@ -76,7 +76,7 @@ namespace blekenbleu.OxyScope
 		private ushort work;						// arrays currently being sampled
 		private ushort Sample;						// which x[,] is currently being worked
 		bool oops = false, Bfull = false, cid = false;
-		int clf = 0;								// current LinFit
+		int clf = 0;								// current property
 		string CarId = "";
 		double current, Range;
 		uint WaitCt = 0;
@@ -145,7 +145,7 @@ namespace blekenbleu.OxyScope
 				}
 				Sample = VM.start[work];
 				Range = 0;
-				clf = VM.LinFit % 3;
+				clf = VM.property % 3;
 			} else {	// check for redundant samples
 			  	if (Sample >= x.Length >> 2)
 				{
@@ -198,7 +198,7 @@ namespace blekenbleu.OxyScope
 				VM.Current = $"{VM.min[work][clf]:#0.000} <= Y <= {VM.max[work][clf]:#0.000};  "
 						   + $"{VM.min[work][3]:#0.000} <= X <= {VM.max[work][3]:#0.000}";
 				// Refresh: 0 = max range, 1 = 3 second, 2 = cumulative range
-				// LinFit: 3 == no curve fitting; 0-2 correspond to Y0-Y2
+				// property: 3 == no curve fitting; 0-2 correspond to Y0-Y2
 				if (Visibility.Hidden == VM.PVis && (1 == VM.Refresh
 				 	|| (0 == VM.Refresh && (VM.max[work][3] - VM.min[work][3]) > Range)))
 				{
@@ -234,7 +234,7 @@ namespace blekenbleu.OxyScope
 		{
 			// Save settings
 			Settings.Refresh = VM.Refresh;
-			Settings.LinFit = VM.LinFit;
+			Settings.property = VM.property;
 			Settings.Plot = VM.AutoPlot;
 			this.SaveCommonSettings("GeneralSettings", Settings);
 		}
@@ -259,7 +259,7 @@ namespace blekenbleu.OxyScope
 					Y0prop = where+sy,
 					Y1prop = "", Y2prop = "",
 					Xprop = where+sx,
-					FilterX = 1, FilterY = 1, Refresh = 1, LinFit = 3
+					FilterX = 1, FilterY = 1, Refresh = 1, property = 3
 				};
 			else {
 				if (0 == Settings.Y0prop.Length)

@@ -17,11 +17,11 @@ namespace blekenbleu.OxyScope
 			if (null == S)
 			{
 				Refresh = 1;
-				LinFit = 3;
+				property = 3;
 				AutoPlot = false;
 			} else {
 				Refresh = S.Refresh;
-				LinFit = S.LinFit;
+				property = S.property;
 				AutoPlot = S.Plot;
 			}
 		}
@@ -41,7 +41,7 @@ namespace blekenbleu.OxyScope
 
 		// work gets reinitialed by Restart
 		internal ushort[]	start;					// split buffer
-		internal ushort		Refresh, LinFit;
+		internal ushort		Refresh, property;
 		internal readonly ushort length = 240;
 		internal double[][]	min, max;
 		internal bool		AutoPlot, Restart = true;
