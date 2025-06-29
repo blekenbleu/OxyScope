@@ -13,7 +13,7 @@ namespace blekenbleu.OxyScope
 		internal static Model M;
 		internal OxyScope O;
 		static double Xmax, Ymax, Xmin, Ymin;	// axes limits
-		ushort start, Length;
+		ushort start, Length, property = 3;
 		static double[] min, max;				// static required for CubicSlope()
 
 		public Control() => InitializeComponent();
@@ -41,8 +41,14 @@ namespace blekenbleu.OxyScope
 		{
 			start = rs; min = rmin; max = rmax; Length = rl;
 
-			if (2 != M.Refresh && !M.AutoPlot)		// neither autoplot nor Accrue?
-				M.PVis = Visibility.Visible;		// no more updates manual plot
+			if (!M.AutoPlot)
+			{
+				if (Visibility.Hidden == M.PVis)
+					property = M.property;			// Accrue buffer full hint: switch to curve fit property selection
+				M.PVis = Visibility.Visible;		// no more updates;  manual plot
+				ButtonUpdate();
+			}
+
 
 			double Nmax = max[0];					// plot range for up to 3 Yprops
 			double Nmin = min[0];
@@ -70,9 +76,12 @@ namespace blekenbleu.OxyScope
 			M.D3vis = Visibility.Hidden;
 		}
 
-		private void PBclick(object sender, RoutedEventArgs e)		// Plot button (for manual Refresh)
+		private void PBclick(object sender, RoutedEventArgs e)		// Plot Button (for manual Refresh)
 		{
 			M.PVis = Visibility.Hidden;
+			if (2 == M.Refresh)
+				M.AutoPlot = M.Reset = true;						// Restart Accrue
+			ButtonUpdate();
 			plot.Model = Plot();
 		}
 
@@ -85,11 +94,11 @@ namespace blekenbleu.OxyScope
 			M.Refresh = (ushort)((++M.Refresh) % 3);
 			if (2 == M.Refresh)
 			{
-				M.Reset = true;
+				M.AutoPlot = M.Reset = true;
 				M.PVis = Visibility.Hidden;
 			}
-			else if (!M.AutoPlot)
-				M.PVis = Visibility.Visible;
+			else if (!M.AutoPlot && !M.Reset)
+					M.PVis = Visibility.Visible;
 			ButtonUpdate();
 		}
 
@@ -110,13 +119,17 @@ namespace blekenbleu.OxyScope
 
 		private void PropertySelect(object sender, RoutedEventArgs e)
 		{
-			for (byte b = 0; b < 3; b++)
-				if (M.axis[M.property = (ushort)((1 + M.property) % 4)])
+			if (Visibility.Hidden == M.PVis && 1 != M.Refresh)
+			{
+				M.Reset = true;				// restart sampling with newly selected property
+				for (byte b = 0; b < 3; b++)	// change M.Refresh Y property
+					if (M.axis[M.property = (ushort)((1 + M.property) % 4)])
+						break;
+			}
+			else for (byte b = 0; b < 3; b++)	// just property for curve fitting
+				if (M.axis[property = (ushort)((1 + property) % 4)])
 					break;
 
-			if (Visibility.Hidden == M.PVis && 1 != M.Refresh)
-				M.Reset = true;				// restart sampling with newly selected property
-											// else just property for curve fitting
 			ButtonUpdate();
 			plot.Model = Plot();
 		}
@@ -137,12 +150,23 @@ namespace blekenbleu.OxyScope
 			};
 
 			TH.Text = refresh[M.Refresh];
-			LF.Foreground = color[M.property];	// 3: white
 			if (Visibility.Hidden == M.PVis && 1 != M.Refresh)
+			{
 				LF.Text = M.PropName[M.property] + " selected";
-			else LF.Text = "Fit " + ((3 > M.property) ? (M.PropName[M.property]) : "disabled");
-			TR.Text = (M.AutoPlot ? "Auto" : "Manual") + " Replot";
+				LF.Foreground = color[M.property];	// 3: white
+			} else {
+				LF.Text = "Fit " + ((3 > property) ? (M.PropName[property]) : "disabled");
+				LF.Foreground = color[property];	// 3: white
+			}
+
 			BTR.Visibility = (2 == M.Refresh) ? Visibility.Hidden : Visibility.Visible;
+
+			if (M.AutoPlot)
+			{
+				M.PVis = Visibility.Hidden;
+				TR.Text = "Auto Replot";
+			}
+			else TR.Text = "Manual Replot";
 		}
 	}	// class Control
 }

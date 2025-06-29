@@ -22,7 +22,7 @@ namespace blekenbleu.OxyScope
 			} else {
 				Refresh = S.Refresh;
 				property = S.property;
-				AutoPlot = S.Plot;
+				AutoPlot = S.AutoPlot;
 			}
 		}
 

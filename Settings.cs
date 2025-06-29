@@ -8,7 +8,7 @@
 	{
 		public double FilterX = 1, FilterY = 1;
 		public ushort Refresh = 0, property = 3;
-		public bool Plot = true;
+		public bool AutoPlot = true;
 		public string Y0prop = "DataCorePlugin.GameData.AccelerationHeave",
 					  Y1prop = "", Y2prop = "",
 					  Xprop = "DataCorePlugin.GameData.GlobalAccelerationG";

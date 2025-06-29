@@ -138,7 +138,7 @@ namespace blekenbleu.OxyScope
 					IIR[i] = f[i];
 				if (2 == VM.Refresh)
 				{
-					work = 0;			// Accrue() uses the full buffer
+					work = 0;				// Accrue() uses the full buffer
 					Total[0] = Total[1] = Total[2] = oldTotal[0] = oldTotal[1] = oldTotal[2] = 0;
 					backfill = false;
 					resume = true;
@@ -148,27 +148,30 @@ namespace blekenbleu.OxyScope
 				clf = VM.property % 3;
 			} else {	// check for redundant samples
 			  	if (Sample >= x.Length >> 2)
-				{
+				{							// this should occur only for accumulations (2 == VM.Refresh)
 					if (!Bfull)
-					{
+					{						// victory lap
 						VM.XYprop1 = $"sample buffer full;  {Intervals.Count} histogram buckets";
 						Bfull = true;
+						VM.AutoPlot = false;// signal to Replot(): update Control property
+						View.Dispatcher.Invoke(() => View.Replot(VM.start[work], (ushort)(Sample - 1), VM.min[work], VM.max[work]));
 					}
-					return; 	// Restart sample may have been before car moved
+					return; 				// Restart sample may have been before car moved
 				}
 				for (i = 0; i < 3; i++)
 					if(VM.axis[i] && System.Math.Abs(f[i] - x[i,Sample]) > 0.02 * (VM.max[work][i] - VM.min[work][i]))
 						break;
-				if (3 == i)		// differed from previous by < 2% ?
+				if (3 == i)					// differed from previous by < 2% ?
 					return;
+
 				if (30 < WaitCt)
 				{
-					VM.XYprop1 = "";
+//					VM.XYprop1 = "";
 					WaitCt = 0;
 				}
 			}
 
-			bool[] mm = { false, false };					// remember whether min or max change
+			bool[] mm = { false, false };	// remember whether min or max change
 			for (i = 0; i < 4; i++)
 				if (VM.axis[i])
 				{
@@ -243,7 +246,7 @@ namespace blekenbleu.OxyScope
 			// Save settings
 			Settings.Refresh = VM.Refresh;
 			Settings.property = VM.property;
-			Settings.Plot = VM.AutoPlot;
+			Settings.AutoPlot = VM.AutoPlot;
 			this.SaveCommonSettings("GeneralSettings", Settings);
 		}
 

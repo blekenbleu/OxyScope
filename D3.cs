@@ -2,7 +2,6 @@
  ;	https://blekenbleu.github.io/SimHub/MBAI.htm
  ;	SaveFileDialog:  https://www.c-sharpcorner.com/uploadfile/mahesh/savefiledialog-in-C-Sharp/
  ;	- default to TMP folder
- ;  - use property names after last dot for title and axes labels
  */
 using System.IO;
 using System.Windows.Forms;
