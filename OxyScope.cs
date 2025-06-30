@@ -142,6 +142,7 @@ namespace blekenbleu.OxyScope
 					Total[0] = Total[1] = Total[2] = oldTotal[0] = oldTotal[1] = oldTotal[2] = 0;
 					backfill = false;
 					resume = true;
+					VM.AutoPlot = true;
 				}
 				Sample = VM.start[work];
 				Range = 0;

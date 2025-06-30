@@ -46,7 +46,7 @@ namespace blekenbleu.OxyScope
 						StdDev[p] = Math.Sqrt(variance / Sample);
 					}
 
-					VM.Current = $"count = {Sample};  StdDev = {StdDev[0]:0.0000}";
+					VM.Current = (backfill ? "backfill " : "") + $"count = {Sample};  StdDev = {StdDev[0]:0.0000}";
 					if (VM.axis[1])
 						VM.Current += $", {StdDev[1]:0.0000}";
 					if (VM.axis[2])
