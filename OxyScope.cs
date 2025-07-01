@@ -207,7 +207,7 @@ namespace blekenbleu.OxyScope
 			{
 				VM.Current = $"{VM.min[work][clf]:#0.000} <= Y <= {VM.max[work][clf]:#0.000};  "
 						   + $"{VM.min[work][3]:#0.000} <= X <= {VM.max[work][3]:#0.000}";
-				// Refresh: 0 = max range, 1 = 3 second, 2 = cumulative range
+				// Refresh: 0 = max range, 1 = snapshot, 2 = cumulative range
 				// property: 3 == no curve fitting; 0-2 correspond to Y0-Y2
 				if (Visibility.Hidden == VM.PVis && (1 == VM.Refresh
 				 	|| (0 == VM.Refresh && (VM.max[work][VM.property] - VM.min[work][VM.property]) > Range)))

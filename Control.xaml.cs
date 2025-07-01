@@ -86,7 +86,7 @@ namespace blekenbleu.OxyScope
 
 		private void RefreshMode(object sender, RoutedEventArgs e)		// Refresh button
 		{
-			// 0 = max range, 1 = 3 second, 2 = Accrue
+			// 0 = max range, 1 = snapshot, 2 = Accrue
 			// Accrue() now always maximizes StdDev for all Yprops
 			if (2 == M.Refresh)
 				M.Restart = true;
@@ -137,7 +137,7 @@ namespace blekenbleu.OxyScope
 		{
 			string[] refresh = new string[]
 			{ 	"Hold max range",
-				"3 second refresh",
+				"snapshot",
 				"Cumulative range"
 			};
 

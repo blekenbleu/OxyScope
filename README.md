@@ -62,11 +62,11 @@ Optionally generate data for [**3D plots**](https://blekenbleu.github.io/SimHub/
 - also always show current *plot* statistics
 - eliminate Threshold, Below sliders
 - Replot button: **Auto** vs **Manual**
-- update button: **3 second refresh** vs **Hold max X range**
+- update button: **snapshot** vs **Hold max X range**
 - cubic fit added
 #### 26 Nov:&nbsp; force monotonic cubic slope at Xmin or Xmax
 - forcing endpoint slopes sometimes results in very poor fit
-- update button: **3 second refresh** vs **Hold max X range** vs **Hold max R-squared**
+- update button: **snapshot** vs **Hold max X range** vs **Hold max R-squared**
 #### 28 Nov:&nbsp; Fit.Curve() to iteratively match [constrained cubic function](https://blekenbleu.github.io/static/ImageProcessing/MonotoneCubic.htm)
 - debug using simple cubic function
 - *30 Nov*:&nbsp;  Montonic() debugged
@@ -74,7 +74,7 @@ Optionally generate data for [**3D plots**](https://blekenbleu.github.io/SimHub/
 ### More better data - **Accrual mode**
 - *2 Dec*:&nbsp; interpolating beyond fitted data is doomed:  curves likely go non-monotonic
 	- preserve inflection point?
-- practically, no single 3 second sample set is likely to include highest and lowest values
+- practically, no single snapshot sample set is likely to include highest and lowest values
 ![](Doc/correlate.png)
 *illustrative example*:  `red dots are current samples`, *clustered around 0*  
 uniform distribution along X axis is preferred...  

@@ -18,7 +18,7 @@
 				NavigateUri="https://blekenbleu.github.io/SimHub/oxyhelp.htm">Help</Hyperlink>
 			</TextBlock>
 			<TextBox Width="440" Name="Current" VerticalAlignment="Center" Text="{Binding Current}"/>
-			<Button Width="68" Click="RefreshMode"> <TextBlock Text="3 second refresh"
+			<Button Width="68" Click="RefreshMode"> <TextBlock Text="snapshot"
 				TextWrapping="Wrap" TextAlignment="Center" Name="TH"/> </Button>
 			<TextBlock Text="  "/>
 			<Button Width="90" Click="PropertySelect"> <TextBlock Text="Fit disabled"
