@@ -7,9 +7,9 @@ using System.Windows.Media;
 
 namespace blekenbleu.OxyScope
 {
-	[PluginDescription("XY OxyPlot of paired SimHub properties")]
+	[PluginDescription("scatter plot one SimHub property vs others")]
 	[PluginAuthor("blekenbleu")]
-	[PluginName("OxyPlot XY")]
+	[PluginName("OxyScope")]
 	public partial class OxyScope : IPlugin, IDataPlugin, IWPFSettingsV2
 	{
 		public static string PluginVersion = FileVersionInfo.GetVersionInfo(
@@ -75,7 +75,7 @@ namespace blekenbleu.OxyScope
 		internal double[,] x;						// plot samples from IIR[]
 		private ushort work;						// arrays currently being sampled
 		private ushort Sample;						// which x[,] is currently being worked
-		bool oops = false, Bfull = false, cid = false;
+		bool oops = false, Bfull = false;
 		int clf = 0;								// current Y property
 		string CarId = "";
 		double current, Range;
@@ -99,7 +99,7 @@ namespace blekenbleu.OxyScope
 
 			if (!data.GameRunning || null == data.OldData || null == data.NewData)
 			{
-				if (!cid)	// avoid wiping XYprop1 if already past this;  replays can get here
+				if (0 == CarId.Length)	// avoid wiping XYprop1 if already past this;  replays can get here
 					VM.XYprop1 = "waiting for valid data";
 				return;
 			}
@@ -110,16 +110,6 @@ namespace blekenbleu.OxyScope
 				return;
 			}
 
-			cid = true;
-			if (1 > (double)pluginManager.GetPropertyValue("DataCorePlugin.GameData.SpeedKmh")
-				|| current == data.NewData.CarSettings_CurrentDisplayedRPMPercent)
-			{
-				if (!Bfull && 30 < ++ WaitCt)
-					VM.XYprop1 = "waiting for action";
-				return;
-			}
-
-			current = data.NewData.CarSettings_CurrentDisplayedRPMPercent;
 			if (CarId != data.NewData.CarId)
 			{
 				CarId = data.NewData.CarId;
@@ -128,6 +118,16 @@ namespace blekenbleu.OxyScope
 						 + ":  " + pluginManager.GetPropertyValue("DataCorePlugin.GameData.CarModel")?.ToString()
 						 + "@"	 + pluginManager.GetPropertyValue("DataCorePlugin.GameData.TrackName")?.ToString();
 			}
+
+			if (1 > (double)pluginManager.GetPropertyValue("DataCorePlugin.GameData.SpeedKmh")
+				|| current == data.NewData.CarSettings_CurrentDisplayedRPMPercent)
+			{
+				if (!Bfull && 30 < ++WaitCt)
+					VM.XYprop1 = "waiting for action";
+				return;
+			}
+
+			current = data.NewData.CarSettings_CurrentDisplayedRPMPercent;
 
 			int i;
 			if (VM.Restart)
@@ -147,7 +147,7 @@ namespace blekenbleu.OxyScope
 				Sample = VM.start[work];
 				Range = 0;
 				clf = VM.property % 3;
-			} else {	// check for redundant samples
+			} else {	// full buffer, check for redundant samples
 			  	if (Sample >= x.Length >> 2)
 				{							// this should occur only for accumulations (2 == VM.Refresh)
 					if (!Bfull)
@@ -159,6 +159,7 @@ namespace blekenbleu.OxyScope
 					}
 					return; 				// Restart sample may have been before car moved
 				}
+
 				for (i = 0; i < 3; i++)
 					if(VM.axis[i] && System.Math.Abs(f[i] - x[i,Sample]) > 0.02 * (VM.max[work][i] - VM.min[work][i]))
 						break;
@@ -166,10 +167,7 @@ namespace blekenbleu.OxyScope
 					return;
 
 				if (30 < WaitCt)
-				{
-//					VM.XYprop1 = "";
 					WaitCt = 0;
-				}
 			}
 
 			bool[] mm = { false, false };	// remember whether min or max change
@@ -180,7 +178,7 @@ namespace blekenbleu.OxyScope
 					x[i,Sample] = IIR[i];
 					if (VM.start[work] == Sample)
 						VM.min[work][i] = VM.max[work][i] = x[i,Sample];
-					else if (mm[0] = VM.min[work][i] > x[i,Sample])	// volume of sample values
+					else if (VM.min[work][i] > x[i,Sample])	// volume of sample values
 					{
 						if (i == VM.property)
 							mm[0] = true;

@@ -66,7 +66,6 @@ namespace blekenbleu.OxyScope
 			Ymin = Nmin - 0.01 * (Nmax - Nmin);
 			Xmax = max[3] + (Xmin = 0.01 * (max[3] - min[3]));
 			Xmin = min[3] - Xmin;
-			M.Reset = false;
 			plot.Model = Plot();
 		}
 
@@ -80,7 +79,7 @@ namespace blekenbleu.OxyScope
 		{
 			M.PVis = Visibility.Hidden;
 			if (2 == M.Refresh)
-				M.AutoPlot = M.Reset = true;						// Restart Accrue
+				M.AutoPlot = M.Restart = true;						// Restart Accrue
 			ButtonUpdate();
 			plot.Model = Plot();
 		}
@@ -90,14 +89,14 @@ namespace blekenbleu.OxyScope
 			// 0 = max range, 1 = 3 second, 2 = Accrue
 			// Accrue() now always maximizes StdDev for all Yprops
 			if (2 == M.Refresh)
-				M.Reset = true;
+				M.Restart = true;
 			M.Refresh = (ushort)((++M.Refresh) % 3);
 			if (2 == M.Refresh)
 			{
-				M.AutoPlot = M.Reset = true;
+				M.AutoPlot = M.Restart = true;
 				M.PVis = Visibility.Hidden;
 			}
-			else if (!M.AutoPlot && !M.Reset)
+			else if (!M.AutoPlot && !M.Restart)
 					M.PVis = Visibility.Visible;
 			ButtonUpdate();
 		}
@@ -121,7 +120,7 @@ namespace blekenbleu.OxyScope
 		{
 			if (Visibility.Hidden == M.PVis && 1 != M.Refresh)
 			{
-				M.Reset = true;				// restart sampling with newly selected property
+				M.Restart = true;				// restart sampling with newly selected property
 				for (byte b = 0; b < 3; b++)	// change M.Refresh Y property
 					if (M.axis[M.property = (ushort)((1 + M.property) % 4)])
 						break;
