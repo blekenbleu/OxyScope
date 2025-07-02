@@ -50,9 +50,9 @@
 		</StackPanel>
 
 		<StackPanel Orientation="Horizontal" Height="25" >
-			<TextBox TextWrapping="Wrap" Width="390" Text="{Binding Y0prop, Mode=TwoWay}" Foreground="Red"/>
-			<TextBox Text="vs" Width="20"/>
-			<TextBox TextWrapping="Wrap" Width="390" Text="{Binding Xprop, Mode=TwoWay}"/>
+			<TextBox TextWrapping="Wrap" Width="385" Text="{Binding Y0prop, Mode=TwoWay}" Foreground="Red"/>
+			<Button Width="30" Content="vs" Click="VSclick" Foreground="{Binding ForeVS}"/>
+			<TextBox TextWrapping="Wrap" Width="385" Text="{Binding Xprop, Mode=TwoWay}"/>
 		</StackPanel>
 
 		<TextBox Height="25" Width="800" Name="XYprop1" Text="{Binding XYprop1}"/>

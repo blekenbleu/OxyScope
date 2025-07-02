@@ -84,6 +84,14 @@ namespace blekenbleu.OxyScope
 			plot.Model = Plot();
 		}
 
+		// VS TextBox converted to Button
+		private void VSclick(object sender, RoutedEventArgs e)		// rotate thru properties as X-axis
+		{
+			if (Visibility.Hidden == M.PVis)
+				return;
+			M.ForeVS = "White";
+		}
+
 		private void RefreshMode(object sender, RoutedEventArgs e)		// Refresh button
 		{
 			// 0 = max range, 1 = snapshot, 2 = Accrue

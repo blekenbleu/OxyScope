@@ -28,6 +28,7 @@ namespace blekenbleu.OxyScope
 
 		readonly PropertyChangedEventArgs Cevent	= new PropertyChangedEventArgs(nameof(Current));
 		readonly PropertyChangedEventArgs D3event	= new PropertyChangedEventArgs(nameof(D3vis));
+		readonly PropertyChangedEventArgs FVevent	= new PropertyChangedEventArgs(nameof(ForeVS));
 		readonly PropertyChangedEventArgs FXevent	= new PropertyChangedEventArgs(nameof(FilterX));
 		readonly PropertyChangedEventArgs FYevent	= new PropertyChangedEventArgs(nameof(FilterY));
 		readonly PropertyChangedEventArgs PVevent	= new PropertyChangedEventArgs(nameof(PVis));
@@ -80,6 +81,7 @@ namespace blekenbleu.OxyScope
 				{
 					_unseen = value;
 					PropertyChanged?.Invoke(this, PVevent);
+					ForeVS = (Visibility.Hidden == _unseen) ? "White" : "Green";
 				}
 			} 
 		}
@@ -195,6 +197,19 @@ namespace blekenbleu.OxyScope
 				{
 					S.FilterY = value;
 					PropertyChanged?.Invoke(this, FYevent);
+				}
+			}
+		}
+
+		private string _foreVS = "White";	// VS TextBox converted to Button
+		public string ForeVS
+		{	get => _foreVS;
+			set
+			{
+				if (_foreVS != value)
+				{
+					_foreVS = value;
+					PropertyChanged?.Invoke(this, FVevent);
 				}
 			}
 		}
