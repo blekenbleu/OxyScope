@@ -53,7 +53,7 @@ namespace blekenbleu.OxyScope
 			 && (max[3] < (inflection = - p2 / (3 *p3)) || min[3] > inflection
 			 || 0 <= sx * CubicSlope(p1, p2, p3, inflection))) 
 				return p0 + x * (p1 + x * (p2 + x * p3));	// unconstrained
-			else return 2 * (0 > m ? ymax : Ymin); 			// penalize NelderMeadSimplex non-monotonic solutions
+			else return 2 * (0 > m ? ymax : Ymin[0]); 			// penalize NelderMeadSimplex non-monotonic solutions
 		}
 	}
 }

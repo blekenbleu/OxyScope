@@ -1,4 +1,5 @@
-﻿using System.Windows;			// Visibility
+﻿using System.Collections.Generic;
+using System.Windows;				// Visibility
 using System.Windows.Controls;
 using System.Windows.Navigation;
 
@@ -12,9 +13,10 @@ namespace blekenbleu.OxyScope
 	{
 		internal static Model M;
 		internal OxyScope O;
-		static double Xmax, Ymax, Xmin, Ymin;	// axes limits
+		static double[] Xmax, Ymax, Xmin, Ymin;	// axes limits
 		ushort start, Length, property = 3;
 		static double[] min, max;				// static required for CubicSlope()
+		List<byte> xmap;						// M.PropName[] indices for rotating thru plot axes
 
 		public Control() => InitializeComponent();
 
@@ -23,11 +25,13 @@ namespace blekenbleu.OxyScope
 			DataContext = M = new Model(O = plugin);
 			O.x = new double[4, 1 + 5 * M.length];
 			M.start = new ushort[] { 0, M.length };
+			Xmax = new double[] { 0, 0 }; Xmin = new double[] { 0, 0 }; Ymax = new double[] { 0, 0 }; Ymin = new double[] { 0, 0 };
 
 			ButtonUpdate();
 			M.min = new double[][] { new double[] { 0, 0, 0, 0 }, new double[] { 0, 0, 0, 0 } };
 			M.max = new double[][] { new double[] { 0, 0, 0, 0 }, new double[] { 0, 0, 0, 0 } };
 			min = M.min[0];  max = M.max[0];
+			xmap = new List<byte> { 3, 0 };
 			start = 0;
 			RandomPlot();
 		}
@@ -52,20 +56,23 @@ namespace blekenbleu.OxyScope
 
 			double Nmax = max[0];					// plot range for up to 3 Yprops
 			double Nmin = min[0];
-			for (int i = 1; i < 3; i++)
+			xmap = new List<byte> { 3, 0 };
+
+			for (byte i = 1; i < 3; i++)
 				if (M.axis[i])
 				{
+					xmap.Add(i);
 					if (Nmin > min[i])
 						Nmin = min[i];
 					if (Nmax < max[i])
 						Nmax = max[i];
 				}
 
-			Ymax = Nmax;
+			Ymax[0] = Nmax;
 			// move plot points inside limits
-			Ymin = Nmin - 0.01 * (Nmax - Nmin);
-			Xmax = max[3] + (Xmin = 0.01 * (max[3] - min[3]));
-			Xmin = min[3] - Xmin;
+			Ymin[0] = Nmin - 0.01 * (Nmax - Nmin);
+			Xmax[0] = max[3] + (Xmin[0] = 0.01 * (max[3] - min[3]));
+			Xmin[0] = min[3] - Xmin[0];
 			plot.Model = Plot();
 		}
 

@@ -22,7 +22,7 @@ namespace blekenbleu.OxyScope
 		internal PlotModel Plot()
 		{
 			Yf = (byte)(property % 3);
-			ymax = 1.2 * (Ymax - Ymin) + Ymin;		// legend space
+			ymax = 1.2 * (Ymax[0] - Ymin[0]) + Ymin[0];		// legend space
 			PlotModel model = ScopeModel();
 			model.Series.Add(Scatter(0));
 			if (M.axis[1])
