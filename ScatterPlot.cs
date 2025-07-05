@@ -10,13 +10,9 @@ namespace blekenbleu.OxyScope
 		PlotModel ScopeModel()
 		{
 			PlotModel model = new PlotModel { Title = M.Title };
-			string at = M.PropName[0];
-			if (M.axis[1])
-				at += ", " + M.PropName[1];
-			if (M.axis[2])
-				at += ", " + M.PropName[2];
-			if (null == at || 0 == at.Length)
-				at = "watch this space";
+			string at = M.PropName[xmap[1]];
+			for (byte b = 2; b < xmap.Count; b++)
+				at += ", " + M.PropName[xmap[b]];
 
 			model.Axes.Add(new LinearAxis
 			{
@@ -51,7 +47,7 @@ namespace blekenbleu.OxyScope
 
 			var scatterSeries = new ScatterSeries { MarkerType = MarkerType.Circle };
 			for (ushort i = start; i < end; i++)
-				scatterSeries.Points.Add(new ScatterPoint(O.x[3,i], O.x[Yprop,i], size));
+				scatterSeries.Points.Add(new ScatterPoint(O.x[xmap[0],i], O.x[Yprop,i], size));
 			scatterSeries.MarkerFill = Ycolor[Yprop];
 			scatterSeries.Title = title;
 			return scatterSeries;

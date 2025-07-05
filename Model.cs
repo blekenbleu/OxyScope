@@ -74,7 +74,7 @@ namespace blekenbleu.OxyScope
 
 		private Visibility _unseen = Visibility.Hidden;
 		public Visibility PVis
-		{ 	get => _unseen;
+		{ 	get => _unseen;				// PVis
 			set
 			{
 				if (_unseen != value)

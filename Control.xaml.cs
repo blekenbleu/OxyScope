@@ -16,7 +16,7 @@ namespace blekenbleu.OxyScope
 		static double Ymax, Ymin;				// axes limits - consolidated for all Y properties
 		static double[] Xmax, Xmin;				// axes limits = unique for configured Xprop
 		ushort start, Length, property = 3;
-		byte currentX;							// index Xmin[] and Xmax[] for plot axes rotations
+		byte currentX, highY;					// index Xmin[] and Xmax[] for plot axes rotations
 		static double[] min, max;				// static required for CubicSlope()
 		List<byte> xmap;						// M.PropName[] indices for rotating thru plot axes
 
@@ -47,6 +47,7 @@ namespace blekenbleu.OxyScope
 		{
 			start = rs; min = rmin; max = rmax; Length = rl;
 			currentX = 0;
+			M.ForeVS = "White";
 
 			if (!M.AutoPlot)
 			{
@@ -60,10 +61,12 @@ namespace blekenbleu.OxyScope
 			double Nmax = max[0];					// plot range for up to 3 Yprops
 			double Nmin = min[0];
 			xmap = new List<byte> { 3, 0 };
+			highY = 0;
 
 			for (byte i = 1; i < 3; i++)
 				if (M.axis[i])
 				{
+					highY = i;
 					xmap.Add(i);
 					if (Nmin > min[i])
 						Nmin = min[i];
@@ -97,9 +100,23 @@ namespace blekenbleu.OxyScope
 		// VS TextBox converted to Button
 		private void VSclick(object sender, RoutedEventArgs e)		// rotate thru properties as X-axis
 		{
-			if (Visibility.Hidden == M.PVis)
-				return;
-			M.ForeVS = "White";
+			byte currentY = xmap[0];
+
+			if (Visibility.Hidden == M.PVis || "White" == M.ForeVS)
+				return;												// not while in RePlot()
+
+			if (3 == currentY)
+			{
+				xmap.RemoveAt(0);
+				currentX = 1;										// Use Ymax for Xmax, Ymin for Xmin
+			} else {
+				xmap.Add(currentY);
+				if (highY == currentY) {
+					xmap[0] = 3;									// restore configured X axis
+					currentX = 0;
+				} else xmap.RemoveAt(0);
+			}
+			plot.Model = Plot();
 		}
 
 		private void RefreshMode(object sender, RoutedEventArgs e)		// Refresh button

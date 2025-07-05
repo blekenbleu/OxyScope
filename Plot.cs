@@ -24,11 +24,8 @@ namespace blekenbleu.OxyScope
 			Yf = (byte)(property % 3);
 			ymax = 1.2 * (Ymax - Ymin) + Ymin;		// legend space
 			PlotModel model = ScopeModel();
-			model.Series.Add(Scatter(0));
-			if (M.axis[1])
-				model.Series.Add(Scatter(1));
-			if (M.axis[2])
-				model.Series.Add(Scatter(2));
+			for (byte b = 1; b < xmap.Count; b++)
+				model.Series.Add(Scatter(xmap[b]));
 
 			if (3 > property && min[Yf] < max[Yf])	// curve fit?
 			{
@@ -52,6 +49,8 @@ namespace blekenbleu.OxyScope
 
 			if (M.axis[1] || M.axis[2])								// 2 or 3 Y properties
 				M.D3vis = Visibility.Visible;
+			if (Visibility.Visible == M.PVis)
+				M.ForeVS = "Green";
 			return model;
 		}
 
