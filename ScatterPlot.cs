@@ -22,7 +22,7 @@ namespace blekenbleu.OxyScope
 			{
 				Position = AxisPosition.Left,
 				Title = at,
-				Minimum = Ymin[0],
+				Minimum = Ymin,
 				Maximum = ymax
 			});
 
@@ -30,8 +30,8 @@ namespace blekenbleu.OxyScope
 			{
 				Position = AxisPosition.Bottom,
 				Title = M.PropName[xmap[0]],
-						Minimum = Xmin[0] - 0.005 * (Xmax[0] - Xmin[0]),	// space for dot@Xmin
-						Maximum = Xmax[0] + 0.005 * (Xmax[0] - Xmin[0])
+						Minimum = Xmin[currentX] - 0.005 * (Xmax[currentX] - Xmin[currentX]),	// space for dot@Xmin
+						Maximum = Xmax[currentX] + 0.005 * (Xmax[currentX] - Xmin[currentX])
 			});
 
 			model.LegendPosition = LegendPosition.TopLeft;
@@ -62,20 +62,20 @@ namespace blekenbleu.OxyScope
 			// fill the plot with random data
 			Random rnd = new Random();
 			double xi;
-			Xmin[0] = min[0];	 // RandomPlot()
-			Xmax[0] = 100 + Xmin[0];
-			Ymin[0] = min[3];
-			ymax = 100 + Ymin[0];
+			Xmin[0] = min[0];								// RandomPlot()
+			Xmax[0] = 100 + Xmin[0];						// RandomPlot()
+			Ymin = min[3];
+			ymax = 100 + Ymin;
 			Length = M.length;
 			xi = 100.0 / Length;
-			for (int i = 0; i < Length; i++)	// fill the plot
+			for (int i = 0; i < Length; i++)				// fill RandomPlot()
 			{
-				O.x[3,i] = Ymin[0] + 100 * rnd.NextDouble();
-				O.x[0,i] = Xmin[0];
-				Xmin[0] += xi;
+				O.x[3,i] = Ymin + 100 * rnd.NextDouble();	// RandomPlot()
+				O.x[0,i] = Xmin[0];							// RandomPlot()
+				Xmin[0] += xi;								// RandomPlot()
 			}
 
-			Xmin[0] = min[0];
+			Xmin[0] = min[0];								// RandomPlot()
             PlotModel model = ScopeModel();
 			model.Series.Add(Scatter("random", 0));
 			plot.Model = model;

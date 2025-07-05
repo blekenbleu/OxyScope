@@ -13,8 +13,10 @@ namespace blekenbleu.OxyScope
 	{
 		internal static Model M;
 		internal OxyScope O;
-		static double[] Xmax, Ymax, Xmin, Ymin;	// axes limits
+		static double Ymax, Ymin;				// axes limits - consolidated for all Y properties
+		static double[] Xmax, Xmin;				// axes limits = unique for configured Xprop
 		ushort start, Length, property = 3;
+		byte currentX;							// index Xmin[] and Xmax[] for plot axes rotations
 		static double[] min, max;				// static required for CubicSlope()
 		List<byte> xmap;						// M.PropName[] indices for rotating thru plot axes
 
@@ -25,7 +27,7 @@ namespace blekenbleu.OxyScope
 			DataContext = M = new Model(O = plugin);
 			O.x = new double[4, 1 + 5 * M.length];
 			M.start = new ushort[] { 0, M.length };
-			Xmax = new double[] { 0, 0 }; Xmin = new double[] { 0, 0 }; Ymax = new double[] { 0, 0 }; Ymin = new double[] { 0, 0 };
+			Xmax = new double[] { 0, 0 }; Xmin = new double[] { 0, 0 }; Ymax = 0; Ymin = 0;
 
 			ButtonUpdate();
 			M.min = new double[][] { new double[] { 0, 0, 0, 0 }, new double[] { 0, 0, 0, 0 } };
@@ -44,6 +46,7 @@ namespace blekenbleu.OxyScope
 		internal void Replot(ushort rs, ushort rl, double[] rmin, double[] rmax)
 		{
 			start = rs; min = rmin; max = rmax; Length = rl;
+			currentX = 0;
 
 			if (!M.AutoPlot)
 			{
@@ -68,9 +71,9 @@ namespace blekenbleu.OxyScope
 						Nmax = max[i];
 				}
 
-			Ymax[0] = Nmax;
+			Xmax[1] = Ymax = Nmax;
 			// move plot points inside limits
-			Ymin[0] = Nmin - 0.01 * (Nmax - Nmin);
+			Xmin[1] = Ymin = Nmin - 0.01 * (Nmax - Nmin);
 			Xmax[0] = max[3] + (Xmin[0] = 0.01 * (max[3] - min[3]));
 			Xmin[0] = min[3] - Xmin[0];
 			plot.Model = Plot();
