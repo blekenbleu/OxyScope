@@ -2,11 +2,31 @@ using OxyPlot;
 using OxyPlot.Series;
 using OxyPlot.Axes;
 using System;
+using System.Windows;               // Visibility
 
 namespace blekenbleu.OxyScope
 {
 	public partial class Control
 	{
+		internal void ButtonUpdate()	// LF button: property/fit select
+		{
+			System.Windows.Media.Brush[] color =
+			{ System.Windows.Media.Brushes.Red,
+			  System.Windows.Media.Brushes.Green,
+			  System.Windows.Media.Brushes.Cyan,
+			  System.Windows.Media.Brushes.White
+			};
+
+			if (Visibility.Hidden == M.PVis && 1 != M.Refresh)
+			{
+				LF.Text = M.PropName[M.property] + " selected";
+				LF.Foreground = color[M.property];	// 3: white
+			} else {
+				LF.Text = "Fit " + ((3 > property) ? (M.PropName[property]) : "disabled");
+				LF.Foreground = color[property];	// 3: white
+			}
+		}
+
 		PlotModel ScopeModel()
 		{
 			PlotModel model = new PlotModel { Title = M.Title };

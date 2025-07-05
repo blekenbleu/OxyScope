@@ -49,14 +49,13 @@ namespace blekenbleu.OxyScope
 			currentX = 0;
 			M.ForeVS = "White";
 
-			if (!M.AutoPlot)
+			if (!M.AutoPlot && Visibility.Hidden == M.PVis)
 			{
-				if (Visibility.Hidden == M.PVis)
-					property = M.property;			// Accrue buffer full hint: switch to curve fit property selection
-				M.PVis = Visibility.Visible;		// no more updates;  manual plot
-				ButtonUpdate();
+				if (2 != M.Refresh)
+					M.PVis = Visibility.Visible;	// no more updates;  hold plot
+				property = M.property;				// switch curve fit property selection
+				ButtonUpdate();						// color coding
 			}
-
 
 			double Nmax = max[0];					// plot range for up to 3 Yprops
 			double Nmin = min[0];
@@ -88,7 +87,7 @@ namespace blekenbleu.OxyScope
 			M.D3vis = Visibility.Hidden;
 		}
 
-		private void PBclick(object sender, RoutedEventArgs e)		// Plot Button (for manual Refresh)
+		private void PBclick(object sender, RoutedEventArgs e)		// Plot Button (for hold plot)
 		{
 			M.PVis = Visibility.Hidden;
 			if (2 == M.Refresh)
@@ -122,6 +121,7 @@ namespace blekenbleu.OxyScope
 			ButtonUpdate();
 		}
 
+		string[] TRtext = { "Auto Replot", "Hold Plot" };
 		private void RefreshMode(object sender, RoutedEventArgs e)		// Refresh button
 		{
 			// 0 = max range, 1 = snapshot, 2 = Accrue
@@ -133,9 +133,19 @@ namespace blekenbleu.OxyScope
 			{
 				M.AutoPlot = M.Restart = true;
 				M.PVis = Visibility.Hidden;
-			}
-			else if (!M.AutoPlot && !M.Restart)
+				TR.Text = TRtext[0];
+			} else {
+				if (!M.AutoPlot && !M.Restart)
 					M.PVis = Visibility.Visible;
+				if (0 == M.Refresh)
+					TR.Text = TRtext[0];
+			}
+			string[] refresh = new string[]
+			{ 	"most range",
+				"one shot",
+				"grow range"
+			};
+			TH.Text = refresh[M.Refresh];
 			ButtonUpdate();
 		}
 
@@ -150,7 +160,11 @@ namespace blekenbleu.OxyScope
 					plot.Model = Plot();
 					M.PVis = Visibility.Hidden;
 				}
-			} else M.PVis = Visibility.Visible;
+				TR.Text = TRtext[0];
+			} else {
+				M.PVis = Visibility.Visible;
+				TR.Text = TRtext[1];
+			}
 			ButtonUpdate();
 		}
 
@@ -174,41 +188,6 @@ namespace blekenbleu.OxyScope
 			}
 			ButtonUpdate();
 			plot.Model = Plot();
-		}
-
-		internal void ButtonUpdate()
-		{
-			string[] refresh = new string[]
-			{ 	"Hold max range",
-				"snapshot",
-				"Cumulative range"
-			};
-
-			System.Windows.Media.Brush[] color =
-			{ System.Windows.Media.Brushes.Red,
-			  System.Windows.Media.Brushes.Green,
-			  System.Windows.Media.Brushes.Cyan,
-			  System.Windows.Media.Brushes.White
-			};
-
-			TH.Text = refresh[M.Refresh];
-			if (Visibility.Hidden == M.PVis && 1 != M.Refresh)
-			{
-				LF.Text = M.PropName[M.property] + " selected";
-				LF.Foreground = color[M.property];	// 3: white
-			} else {
-				LF.Text = "Fit " + ((3 > property) ? (M.PropName[property]) : "disabled");
-				LF.Foreground = color[property];	// 3: white
-			}
-
-			BTR.Visibility = (2 == M.Refresh) ? Visibility.Hidden : Visibility.Visible;
-
-			if (M.AutoPlot)
-			{
-				M.PVis = Visibility.Hidden;
-				TR.Text = "Auto Replot";
-			}
-			else TR.Text = "Manual Replot";
 		}
 	}	// class Control
 }

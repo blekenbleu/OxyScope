@@ -1,5 +1,6 @@
 ﻿using GameReaderCommon;
 using SimHub.Plugins;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
@@ -140,6 +141,7 @@ namespace blekenbleu.OxyScope
 				{
 					work = 0;				// Accrue() uses the full buffer
 					Total[0] = Total[1] = Total[2] = oldTotal[0] = oldTotal[1] = oldTotal[2] = 0;
+					Intervals = new List<ushort> {0,0,0,0,0,0,0,0,0,0};
 					backfill = false;
 					resume = true;
 					VM.AutoPlot = true;
@@ -147,7 +149,11 @@ namespace blekenbleu.OxyScope
 				Sample = VM.start[work];
 				Range = 0;
 				clf = VM.property % 3;
-			} else {	// full buffer, check for redundant samples
+			} else {
+				if (2 == VM.Refresh && ! VM.AutoPlot)
+					return;
+
+				// check for full buffer, redundant samples
 			  	if (Sample >= x.Length >> 2)
 				{							// this should occur only for accumulations (2 == VM.Refresh)
 					if (!Bfull)

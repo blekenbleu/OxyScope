@@ -18,15 +18,15 @@
 				NavigateUri="https://blekenbleu.github.io/SimHub/oxyhelp.htm">Help</Hyperlink>
 			</TextBlock>
 			<TextBox Width="440" Name="Current" VerticalAlignment="Center" Text="{Binding Current}"/>
-			<Button Width="68" Click="RefreshMode"> <TextBlock Text="snapshot"
+			<Button Width="40" Click="RefreshMode"> <TextBlock Text="one shot"
 				TextWrapping="Wrap" TextAlignment="Center" Name="TH"/> </Button>
-			<TextBlock Text="  "/>
-			<Button Width="90" Click="PropertySelect"> <TextBlock Text="Fit disabled"
+			<TextBlock Text=" "/>
+			<Button Width="65" Click="PropertySelect"> <TextBlock Text="Fit disabled"
 				TextWrapping="Wrap" TextAlignment="Center" Name="LF"/> </Button>
-			<TextBlock Text="  "/>
-			<Button Width="65" Click="PlotMode" Name="BTR"> <TextBlock Text="Auto Replot"
+			<TextBlock Text=" "/>
+			<Button Width="50" Click="PlotMode" Name="BTR"> <TextBlock Text="Auto Replot"
 				TextWrapping="Wrap" TextAlignment="Center" Name="TR"/> </Button>
-			<Button Content="Replot" Width="60" Height="22"
+			<Button Content="Replot" Width="48" Height="22"
 				Click="PBclick" Visibility="{Binding PVis}" Background="Red" />
 		</StackPanel>
 
