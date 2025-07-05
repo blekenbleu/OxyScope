@@ -16,7 +16,7 @@ namespace blekenbleu.OxyScope
 		static double Ymax, Ymin;				// axes limits - consolidated for all Y properties
 		static double[] Xmax, Xmin;				// axes limits = unique for configured Xprop
 		ushort start, Length, property = 3;
-		byte currentX, highY;					// index Xmin[] and Xmax[] for plot axes rotations
+		byte currentX, highY, currentP;			// index Xmin[] and Xmax[] for plot axes rotations
 		static double[] min, max;				// static required for CubicSlope()
 		List<byte> xmap;						// M.PropName[] indices for rotating thru plot axes
 
@@ -116,7 +116,10 @@ namespace blekenbleu.OxyScope
 					currentX = 0;
 				} else xmap.RemoveAt(0);
 			}
+			currentP = 0;											// curve fitting property index
+			property = 3;											// disable curve fit until user selects
 			plot.Model = Plot();
+			ButtonUpdate();
 		}
 
 		private void RefreshMode(object sender, RoutedEventArgs e)		// Refresh button
@@ -160,10 +163,15 @@ namespace blekenbleu.OxyScope
 					if (M.axis[M.property = (ushort)((1 + M.property) % 4)])
 						break;
 			}
-			else for (byte b = 0; b < 3; b++)	// just property for curve fitting
-				if (M.axis[property = (ushort)((1 + property) % 4)])
-					break;
-
+			else {	// just property for curve fitting
+				currentP++;
+				if (currentP >= xmap.Count)
+				{
+					currentP = 0;
+					property = 3;
+				}
+				else property = xmap[currentP];
+			}
 			ButtonUpdate();
 			plot.Model = Plot();
 		}
