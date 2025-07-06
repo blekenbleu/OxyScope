@@ -36,7 +36,6 @@ namespace blekenbleu.OxyScope
 
 		string Last(string[] split) => split[split.Length - 1];	// last substring
 
-		bool change;
 		bool ValidateProp(int i, string prop)
 		{
 			var yp = PM.GetPropertyValue(prop);
@@ -54,7 +53,7 @@ namespace blekenbleu.OxyScope
 					oops = true;
 				}
 			} else if (VM.PropName[i] != (lst = Last(prop.Split('.')))) {
-				change = true;
+				VM.Restart = true;
 				VM.PropName[i] = lst;
 			}
 			return VM.axis[i];
@@ -84,12 +83,12 @@ namespace blekenbleu.OxyScope
 		public void DataUpdate(PluginManager pluginManager, ref GameData data)
 		{
 			PM = pluginManager;		// ValidateProp() uses
-			change = oops = false;
+			oops = false;
 			if (!ValidateProp(0, VM.Y0prop) || !ValidateProp(3, VM.Xprop))
 				return;
 
 			ValidateProp(1, VM.Y1prop); ValidateProp(2, VM.Y2prop);
-			if (change)
+			if (VM.Restart)
 				View.Dispatcher.Invoke(() => View.ButtonUpdate());
 
 			if (oops)
@@ -114,7 +113,7 @@ namespace blekenbleu.OxyScope
 			if (CarId != data.NewData.CarId)
 			{
 				CarId = data.NewData.CarId;
-				// Title change sets Reset, which sets Restart
+				// Title change sets Restart
 		   		VM.Title = pluginManager.GetPropertyValue("DataCorePlugin.CurrentGame")?.ToString()
 						 + ":  " + pluginManager.GetPropertyValue("DataCorePlugin.GameData.CarModel")?.ToString()
 						 + "@"	 + pluginManager.GetPropertyValue("DataCorePlugin.GameData.TrackName")?.ToString();
@@ -167,7 +166,7 @@ namespace blekenbleu.OxyScope
 				}
 
 				for (i = 0; i < 3; i++)
-					if(VM.axis[i] && System.Math.Abs(f[i] - x[i,Sample]) > 0.02 * (VM.max[work][i] - VM.min[work][i]))
+					if(VM.axis[i] && System.Math.Abs(f[i] - IIR[i]) > 0.02 * (VM.max[work][i] - VM.min[work][i]))
 						break;
 				if (3 == i)					// differed from previous by < 2% ?
 					return;

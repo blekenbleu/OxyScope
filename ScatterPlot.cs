@@ -2,7 +2,7 @@ using OxyPlot;
 using OxyPlot.Series;
 using OxyPlot.Axes;
 using System;
-using System.Windows;               // Visibility
+using System.Windows;			   // Visibility
 
 namespace blekenbleu.OxyScope
 {
@@ -17,13 +17,12 @@ namespace blekenbleu.OxyScope
 			  System.Windows.Media.Brushes.White
 			};
 
-			if (Visibility.Hidden == M.PVis && 1 != M.Refresh)
-			{
-				LF.Text = M.PropName[M.property] + " selected";
-				LF.Foreground = color[M.property];	// 3: white
-			} else {
+			if (1 == M.Refresh || !M.AutoPlot) {
 				LF.Text = "Fit " + ((3 > property) ? (M.PropName[property]) : "disabled");
 				LF.Foreground = color[property];	// 3: white
+			} else {
+				LF.Text = M.PropName[M.property] + " selected";
+				LF.Foreground = color[M.property];	// 3: white
 			}
 		}
 
@@ -92,7 +91,7 @@ namespace blekenbleu.OxyScope
 			}
 
 			Xmin[0] = min[0];								// RandomPlot()
-            PlotModel model = ScopeModel();
+			PlotModel model = ScopeModel();
 			model.Series.Add(Scatter("random", 0));
 			plot.Model = model;
 		}

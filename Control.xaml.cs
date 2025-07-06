@@ -29,6 +29,10 @@ namespace blekenbleu.OxyScope
 			M.start = new ushort[] { 0, M.length };
 			Xmax = new double[] { 0, 0 }; Xmin = new double[] { 0, 0 }; Ymax = 0; Ymin = 0;
 
+			TR.Text = TRtext[M.AutoPlot ? 0 : 1];
+			TH.Text = refresh[M.Refresh];
+			if (1 == M.Refresh)
+				M.property = 3;
 			ButtonUpdate();
 			M.min = new double[][] { new double[] { 0, 0, 0, 0 }, new double[] { 0, 0, 0, 0 } };
 			M.max = new double[][] { new double[] { 0, 0, 0, 0 }, new double[] { 0, 0, 0, 0 } };
@@ -53,7 +57,8 @@ namespace blekenbleu.OxyScope
 			{
 				if (2 != M.Refresh)
 					M.PVis = Visibility.Visible;	// no more updates;  hold plot
-				property = M.property;				// switch curve fit property selection
+				if (1 != M.Refresh)
+					property = M.property;			// switch curve fit property selection
 				ButtonUpdate();						// color coding
 			}
 
@@ -87,13 +92,10 @@ namespace blekenbleu.OxyScope
 			M.D3vis = Visibility.Hidden;
 		}
 
-		private void PBclick(object sender, RoutedEventArgs e)		// Plot Button (for hold plot)
+		private void REPLOTclick(object sender, RoutedEventArgs e)		// REPLOT Button
 		{
 			M.PVis = Visibility.Hidden;
-			if (2 == M.Refresh)
-				M.AutoPlot = M.Restart = true;						// Restart Accrue
 			ButtonUpdate();
-			plot.Model = Plot();
 		}
 
 		// VS TextBox converted to Button
@@ -122,9 +124,10 @@ namespace blekenbleu.OxyScope
 		}
 
 		string[] TRtext = { "Auto Replot", "Hold Plot" };
-		private void RefreshMode(object sender, RoutedEventArgs e)		// Refresh button
+		string[] refresh = { "more range", "one shot", "grow range" };
+		private void Refreshclick(object sender, RoutedEventArgs e)		// Refresh button
 		{
-			// 0 = max range, 1 = snapshot, 2 = Accrue
+			// 0 = max range, 1 = one shot, 2 = grow
 			// Accrue() now always maximizes StdDev for all Yprops
 			if (2 == M.Refresh)
 				M.Restart = true;
@@ -132,52 +135,40 @@ namespace blekenbleu.OxyScope
 			if (2 == M.Refresh)
 			{
 				M.AutoPlot = M.Restart = true;
-				M.PVis = Visibility.Hidden;
 				TR.Text = TRtext[0];
+				M.PVis = Visibility.Hidden;
 			} else {
-				if (!M.AutoPlot && !M.Restart)
-					M.PVis = Visibility.Visible;
+//				if (!M.AutoPlot && !M.Restart)
+//					M.PVis = Visibility.Visible;
 				if (0 == M.Refresh)
 					TR.Text = TRtext[0];
+				if (1 == M.Refresh)
+					M.property = 3;
 			}
-			string[] refresh = new string[]
-			{ 	"most range",
-				"one shot",
-				"grow range"
-			};
 			TH.Text = refresh[M.Refresh];
 			ButtonUpdate();
 		}
 
-		// inaccessible when 2 == M.Refresh
-		private void PlotMode(object sender, RoutedEventArgs e)		// AutoPlot
+		// M.AutoPlot false stalls 2 == M.Refresh
+		private void Plotclick(object sender, RoutedEventArgs e)		// AutoPlot
 		{
 			M.AutoPlot = !M.AutoPlot;
 			if (M.AutoPlot)
 			{
+				TR.Text = TRtext[0];
 				if (Visibility.Visible == M.PVis)
 				{
 					plot.Model = Plot();
 					M.PVis = Visibility.Hidden;
 				}
-				TR.Text = TRtext[0];
-			} else {
-				M.PVis = Visibility.Visible;
-				TR.Text = TRtext[1];
-			}
+			} else TR.Text = TRtext[1];
 			ButtonUpdate();
 		}
 
-		private void PropertySelect(object sender, RoutedEventArgs e)
+		private void Propertyclick(object sender, RoutedEventArgs e)
 		{
-			if (Visibility.Hidden == M.PVis && 1 != M.Refresh)
-			{
-				M.Restart = true;				// restart sampling with newly selected property
-				for (byte b = 0; b < 3; b++)	// change M.Refresh Y property
-					if (M.axis[M.property = (ushort)((1 + M.property) % 4)])
-						break;
-			}
-			else {	// just property for curve fitting
+			if (1 == M.Refresh || !M.AutoPlot)
+			{									// just property for curve fitting
 				currentP++;
 				if (currentP >= xmap.Count)
 				{
@@ -185,9 +176,15 @@ namespace blekenbleu.OxyScope
 					property = 3;
 				}
 				else property = xmap[currentP];
-			}
+				plot.Model = Plot();
+			} else for (byte b = 0; b < 3; b++)	// change M.Refresh Y property
+				if (M.axis[M.property = (ushort)((1 + M.property) % 4)])
+				{
+					M.Restart = true;			// restart sampling with newly selected property
+					break;
+				}
+
 			ButtonUpdate();
-			plot.Model = Plot();
 		}
 	}	// class Control
 }
