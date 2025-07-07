@@ -97,6 +97,9 @@ namespace blekenbleu.OxyScope
 				VM.XYprop2 += ";  continuing...";
 			}
 
+			if (1 != VM.Refresh && ! VM.AutoPlot)
+				return;
+
 			if (!data.GameRunning || null == data.OldData || null == data.NewData)
 			{
 				if (0 == CarId.Length)	// avoid wiping XYprop1 if already past this;  replays can get here
@@ -149,9 +152,6 @@ namespace blekenbleu.OxyScope
 				Range = 0;
 				clf = VM.property % 3;
 			} else {
-				if (1 != VM.Refresh && ! VM.AutoPlot)
-					return;
-
 				// check for full buffer, redundant samples
 			  	if (Sample >= x.Length >> 2)
 				{							// this should occur only for accumulations (2 == VM.Refresh)
