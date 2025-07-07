@@ -32,6 +32,7 @@ namespace blekenbleu.OxyScope
 		readonly PropertyChangedEventArgs FXevent	= new PropertyChangedEventArgs(nameof(FilterX));
 		readonly PropertyChangedEventArgs FYevent	= new PropertyChangedEventArgs(nameof(FilterY));
 		readonly PropertyChangedEventArgs PVevent	= new PropertyChangedEventArgs(nameof(PVis));
+		readonly PropertyChangedEventArgs TRevent	= new PropertyChangedEventArgs(nameof(Text));
 		readonly PropertyChangedEventArgs XY1event	= new PropertyChangedEventArgs(nameof(XYprop1));
 		readonly PropertyChangedEventArgs XY2event	= new PropertyChangedEventArgs(nameof(XYprop2));
 		readonly PropertyChangedEventArgs Xevent	= new PropertyChangedEventArgs(nameof(Xprop));
@@ -39,13 +40,48 @@ namespace blekenbleu.OxyScope
 		readonly PropertyChangedEventArgs Y1event	= new PropertyChangedEventArgs(nameof(Y1prop));
 		readonly PropertyChangedEventArgs Y2event	= new PropertyChangedEventArgs(nameof(Y2prop));
 
+		static readonly string[] TRtext = { "Auto Replot", "Hold Plot" };
 		internal readonly ushort length = 300;
-		internal ushort		Refresh, property;
+		internal ushort		property;
 		internal ushort[]	start;									// split buffer
 		internal double[][]	min, max;
-		internal bool		AutoPlot, Restart = true;				// work gets reinitialed by Restart
+		internal bool		Restart = true;							// work gets reinitialed by Restart
 		internal bool[]		axis = { true, false, false, true };	// which axes have properties assigned
 		internal string[]	PropName = { "", "", "", "" };
+
+		private ushort _refresh;
+		internal ushort Refresh
+		{
+			get => _refresh;
+			set
+			{
+				if (_refresh != value)
+				{
+					_refresh = value;
+					SetForeVS();
+				}
+			}
+		}
+
+		internal void SetForeVS()
+		{
+			ForeVS = ((Visibility.Hidden == _unseen && 1 == _refresh) || (1 != _refresh && _autoplot)) ? "White" : "Green";
+		}
+
+		private bool _autoplot;
+		internal bool  AutoPlot
+		{
+			get => _autoplot;
+			set
+			{
+				if (_autoplot != value)
+				{
+					_autoplot = value;
+					Text = TRtext[_autoplot ? 0 : 1];
+					SetForeVS();
+				}
+			}
+		}
 
 		private string _current = "waiting for property values...";
 		public string Current										// OxyScope sets CurrentGame Car@Track
@@ -72,6 +108,19 @@ namespace blekenbleu.OxyScope
 			}
 		}
 
+		private string _text = TRtext[0];
+		public string Text
+		{ 	get => _text;				// PVis
+			set
+			{
+				if (_text != value)
+				{
+					_text = value;
+					PropertyChanged?.Invoke(this, TRevent);
+				}
+			} 
+		}
+
 		private Visibility _unseen = Visibility.Hidden;
 		public Visibility PVis
 		{ 	get => _unseen;				// PVis
@@ -81,7 +130,7 @@ namespace blekenbleu.OxyScope
 				{
 					_unseen = value;
 					PropertyChanged?.Invoke(this, PVevent);
-					ForeVS = (Visibility.Hidden == _unseen) ? "White" : "Green";
+					SetForeVS();
 				}
 			} 
 		}

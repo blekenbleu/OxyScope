@@ -29,7 +29,6 @@ namespace blekenbleu.OxyScope
 			M.start = new ushort[] { 0, M.length };
 			Xmax = new double[] { 0, 0 }; Xmin = new double[] { 0, 0 }; Ymax = 0; Ymin = 0;
 
-			TR.Text = TRtext[M.AutoPlot ? 0 : 1];
 			TH.Text = refresh[M.Refresh];
 			if (1 == M.Refresh)
 				M.property = 3;
@@ -101,10 +100,10 @@ namespace blekenbleu.OxyScope
 		// VS TextBox converted to Button
 		private void VSclick(object sender, RoutedEventArgs e)		// rotate thru properties as X-axis
 		{
-			byte currentY = xmap[0];
-
-			if (Visibility.Hidden == M.PVis || "White" == M.ForeVS)
+			if ("white" == M.ForeVS)
 				return;												// not while in RePlot()
+
+			byte currentY = xmap[0];
 
 			if (3 == currentY)
 			{
@@ -123,8 +122,7 @@ namespace blekenbleu.OxyScope
 			ButtonUpdate();
 		}
 
-		string[] TRtext = { "Auto Replot", "Hold Plot" };
-		string[] refresh = { "more range", "one shot", "grow range" };
+        readonly string[] refresh = { "more range", "one shot", "grow range" };
 		private void Refreshclick(object sender, RoutedEventArgs e)		// Refresh button
 		{
 			// 0 = max range, 1 = one shot, 2 = grow
@@ -135,13 +133,10 @@ namespace blekenbleu.OxyScope
 			if (2 == M.Refresh)
 			{
 				M.AutoPlot = M.Restart = true;
-				TR.Text = TRtext[0];
 				M.PVis = Visibility.Hidden;
 			} else {
 //				if (!M.AutoPlot && !M.Restart)
 //					M.PVis = Visibility.Visible;
-				if (0 == M.Refresh)
-					TR.Text = TRtext[0];
 				if (1 == M.Refresh)
 					M.property = 3;
 			}
@@ -153,15 +148,11 @@ namespace blekenbleu.OxyScope
 		private void Plotclick(object sender, RoutedEventArgs e)		// AutoPlot
 		{
 			M.AutoPlot = !M.AutoPlot;
-			if (M.AutoPlot)
+			if (M.AutoPlot && Visibility.Visible == M.PVis)
 			{
-				TR.Text = TRtext[0];
-				if (Visibility.Visible == M.PVis)
-				{
-					plot.Model = Plot();
-					M.PVis = Visibility.Hidden;
-				}
-			} else TR.Text = TRtext[1];
+				plot.Model = Plot();
+				M.PVis = Visibility.Hidden;
+			}
 			ButtonUpdate();
 		}
 

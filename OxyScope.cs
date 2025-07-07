@@ -149,7 +149,7 @@ namespace blekenbleu.OxyScope
 				Range = 0;
 				clf = VM.property % 3;
 			} else {
-				if (2 == VM.Refresh && ! VM.AutoPlot)
+				if (1 != VM.Refresh && ! VM.AutoPlot)
 					return;
 
 				// check for full buffer, redundant samples

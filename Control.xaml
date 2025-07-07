@@ -25,7 +25,7 @@
 				TextWrapping="Wrap" TextAlignment="Center" Name="LF"/> </Button>
 			<TextBlock Text=" "/>
 			<Button Width="50" Click="Plotclick" Name="BTR"> <TextBlock
-				TextWrapping="Wrap" TextAlignment="Center" Name="TR"/> </Button>
+				TextWrapping="Wrap" TextAlignment="Center" Text="{Binding Text}"/> </Button>
 			<Button Content="Replot" Width="48" Height="22"
 				Click="REPLOTclick" Visibility="{Binding PVis}" Background="Red" />
 		</StackPanel>
