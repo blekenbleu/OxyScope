@@ -81,7 +81,7 @@ namespace blekenbleu.OxyScope
 			Xmax[0] = 100 + Xmin[0];						// RandomPlot()
 			Ymin = min[3];
 			ymax = 100 + Ymin;
-			Length = M.length;
+			Length = M.Slength;
 			xi = 100.0 / Length;
 			for (int i = 0; i < Length; i++)				// fill RandomPlot()
 			{

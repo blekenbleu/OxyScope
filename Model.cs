@@ -16,13 +16,14 @@ namespace blekenbleu.OxyScope
 			S = os.Settings;
 			if (null == S)
 			{
-				Refresh = 1;
-				property = 3;
 				AutoPlot = false;
+				property = 3;
+				Refresh = 1;
 			} else {
-				Refresh = S.Refresh;
-				property = S.property;
 				AutoPlot = S.AutoPlot;
+				property = S.property;
+				Refresh = S.Refresh;
+				Slength = S.Slength;
 			}
 		}
 
@@ -31,6 +32,7 @@ namespace blekenbleu.OxyScope
 		readonly PropertyChangedEventArgs FVevent	= new PropertyChangedEventArgs(nameof(ForeVS));
 		readonly PropertyChangedEventArgs FXevent	= new PropertyChangedEventArgs(nameof(FilterX));
 		readonly PropertyChangedEventArgs FYevent	= new PropertyChangedEventArgs(nameof(FilterY));
+		readonly PropertyChangedEventArgs Levent	= new PropertyChangedEventArgs(nameof(Slength));
 		readonly PropertyChangedEventArgs PVevent	= new PropertyChangedEventArgs(nameof(PVis));
 		readonly PropertyChangedEventArgs TRevent	= new PropertyChangedEventArgs(nameof(Text));
 		readonly PropertyChangedEventArgs XY1event	= new PropertyChangedEventArgs(nameof(XYprop1));
@@ -41,13 +43,24 @@ namespace blekenbleu.OxyScope
 		readonly PropertyChangedEventArgs Y2event	= new PropertyChangedEventArgs(nameof(Y2prop));
 
 		static readonly string[] TRtext = { "Auto Replot", "Hold Plot" };
-		internal readonly ushort length = 300;
 		internal ushort		property;
-		internal ushort[]	start;									// split buffer
+		internal ushort[]	start = { 0, 60 };									// split buffer
 		internal double[][]	min, max;
 		internal bool		Restart = true;							// work gets reinitialed by Restart
 		internal bool[]		axis = { true, false, false, true };	// which axes have properties assigned
 		internal string[]	PropName = { "", "", "", "" };
+
+		ushort _length = 60;
+		public ushort Slength 	// must be public for xaml TitledSlider Binding
+		{
+			get => _length;
+			set
+			{
+				if (_length != value)
+					start[1] = value;
+					_length = value;
+			}
+		}
 
 		private ushort _refresh;
 		internal ushort Refresh

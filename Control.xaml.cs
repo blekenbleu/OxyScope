@@ -25,8 +25,7 @@ namespace blekenbleu.OxyScope
 		public Control(OxyScope plugin) : this()
 		{
 			DataContext = M = new Model(O = plugin);
-			O.x = new double[4, 1 + 5 * M.length];
-			M.start = new ushort[] { 0, M.length };
+			O.x = new double[4, 1501];			// based on samples per shot TitledSlider max 500
 			Xmax = new double[] { 0, 0 }; Xmin = new double[] { 0, 0 }; Ymax = 0; Ymin = 0;
 
 			TH.Text = refresh[M.Refresh];
@@ -134,12 +133,8 @@ namespace blekenbleu.OxyScope
 			{
 				M.AutoPlot = M.Restart = true;
 				M.PVis = Visibility.Hidden;
-			} else {
-//				if (!M.AutoPlot && !M.Restart)
-//					M.PVis = Visibility.Visible;
-				if (1 == M.Refresh)
-					M.property = 3;
-			}
+			} else if (1 == M.Refresh)
+				M.property = 3;
 			TH.Text = refresh[M.Refresh];
 			ButtonUpdate();
 		}

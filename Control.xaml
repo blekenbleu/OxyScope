@@ -59,10 +59,14 @@
 		<TextBox Height="25" Width="800" Name="XYprop2" Text="{Binding XYprop2}"/>
 
 		<StackPanel Orientation="Horizontal">
-			<ui:TitledSlider  Title="	 Y-axis filter" Width="400" Value="{Binding FilterY, Mode=TwoWay}"
-				 TickFrequency = "1" IsSnapToTickEnabled = "True" Maximum="10" Minimum="1" x:Name="sv"/>
-			<ui:TitledSlider Title="	 X-axis filter" Width="400" Value="{Binding FilterX, Mode=TwoWay}"
-				 TickFrequency = "1" IsSnapToTickEnabled = "True" Maximum="10" Minimum="1" x:Name="ss"/> 
+			<ui:TitledSlider Title="Y-axis filter" Width="266" Value="{Binding FilterY, Mode=TwoWay}"
+				 TickFrequency = "1" IsSnapToTickEnabled = "True" Maximum="10" Minimum="1"/>
+			<TextBlock Text=" "/>
+			<ui:TitledSlider Title="X-axis filter" Width="266" Value="{Binding FilterX, Mode=TwoWay}"
+				 TickFrequency = "1" IsSnapToTickEnabled = "True" Maximum="10" Minimum="1"/> 
+			<TextBlock Text=" "/>
+			<ui:TitledSlider Title="samples per shot" Width="266" Value="{Binding Slength, Mode=TwoWay}"
+				 TickFrequency = "1" IsSnapToTickEnabled = "True" Maximum="500" Minimum="60"/> 
 		</StackPanel>
 
 	</StackPanel>

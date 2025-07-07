@@ -208,7 +208,7 @@ namespace blekenbleu.OxyScope
 				}
 				Accrue();				// runs until buffer is full; restart by changing Refresh mode
 			}
-			else if ((++Sample - VM.start[work]) >= VM.length)	// filled?
+			else if ((++Sample - VM.start[work]) >= VM.Slength)	// filled?
 			{
 				VM.Current = $"{VM.min[work][clf]:#0.000} <= Y <= {VM.max[work][clf]:#0.000};  "
 						   + $"{VM.min[work][3]:#0.000} <= X <= {VM.max[work][3]:#0.000}";
@@ -218,7 +218,7 @@ namespace blekenbleu.OxyScope
 				 	|| (0 == VM.Refresh && (VM.max[work][VM.property] - VM.min[work][VM.property]) > Range)))
 				{
 					Range = VM.max[work][VM.property] - VM.min[work][VM.property];
-					View.Dispatcher.Invoke(() => View.Replot(VM.start[work], VM.length, VM.min[work], VM.max[work]));
+					View.Dispatcher.Invoke(() => View.Replot(VM.start[work], VM.Slength, VM.min[work], VM.max[work]));
 					work = (ushort)(1 - work);					// switch buffers
 				}
 				Sample = VM.start[work];
@@ -248,9 +248,10 @@ namespace blekenbleu.OxyScope
 		public void End(PluginManager pluginManager)
 		{
 			// Save settings
-			Settings.Refresh = VM.Refresh;
-			Settings.property = VM.property;
 			Settings.AutoPlot = VM.AutoPlot;
+			Settings.property = VM.property;
+			Settings.Refresh = VM.Refresh;
+			Settings.Slength = VM.Slength;
 			this.SaveCommonSettings("GeneralSettings", Settings);
 		}
 

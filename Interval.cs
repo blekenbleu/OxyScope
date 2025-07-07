@@ -22,7 +22,7 @@ namespace blekenbleu.OxyScope
 			Ifac = (Intervals.Count - 0.01) / Irange;
 			bucket = (short)(Ifac * (x[VM.property, Sample] -  Imin));
 			double thresh = 10 * (double)(Intervals[bucket] * Intervals.Count) / Sample;
-//			if (Intervals[bucket] < (double)Sample / Intervals.Count)	// less than average population?
+			if (Intervals[bucket] < (double)Sample / Intervals.Count)	// less than average population?
 				for (ushort p = 0; p < 3; p++)
 					if (VM.axis[p] && StdSample[p] > StdDev[p] * thresh)	// lower standard for unpopular intervals
 						return true;
