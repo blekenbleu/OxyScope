@@ -15,16 +15,8 @@ namespace blekenbleu.OxyScope
 		{
 			S = os.Settings;
 			if (null == S)
-			{
-				AutoPlot = false;
 				property = 3;
-				Refresh = 1;
-			} else {
-				AutoPlot = S.AutoPlot;
-				property = S.property;
-				Refresh = S.Refresh;
-				Slength = S.Slength;
-			}
+			else property = S.property;
 		}
 
 		readonly PropertyChangedEventArgs Cevent	= new PropertyChangedEventArgs(nameof(Current));
@@ -51,29 +43,27 @@ namespace blekenbleu.OxyScope
 		internal bool[]		axis = { true, false, false, true };	// which axes have properties assigned
 		internal string[]	PropName = { "", "", "", "" };
 
-		ushort _length = 60;
 		public ushort Slength	// must be public for xaml TitledSlider Binding
 		{
-			get => _length;
+			get => S.Slength;
 			set
 			{
-				if (_length != value)
+				if (S.Slength != value)
 					start[1] = value;
-					_length = value;
+					S.Slength = value;
 			}
 		}
 
 		static readonly string[] refresh = { "more range", "one shot", "grow range" };
-		private ushort _refresh;
 		internal ushort Refresh
 		{
-			get => _refresh;
+			get => S.Refresh;
 			set
 			{
-				if (_refresh != value)
+				if (S.Refresh != value)
 				{
-					_refresh = (ushort)(value % 3);
-					THText = refresh[_refresh];
+					S.Refresh = (ushort)(value % 3);
+					THText = refresh[S.Refresh];
 					SetFore();
 				}
 			}
@@ -94,20 +84,19 @@ namespace blekenbleu.OxyScope
 
 		internal void SetFore()
 		{
-			ForeVS = ((Visibility.Hidden == _unseen && 1 == _refresh) || (1 != _refresh && _autoplot)) ? "White" : "Green";
-			TBTRforeground = _autoplot || 1 == _refresh ? "White" : "Red"; 
+			ForeVS = ((Visibility.Hidden == _unseen && 1 == S.Refresh) || (1 != S.Refresh && S.AutoPlot)) ? "White" : "Green";
+			TBTRforeground = S.AutoPlot || 1 == S.Refresh ? "White" : "Red"; 
 		}
 
-		private bool _autoplot = false;
 		internal bool AutoPlot
 		{
-			get => _autoplot;
+			get => S.AutoPlot;
 			set
 			{
 				TRText = trtext[value ? 0 : 1];
                 SetFore();
-				if (_autoplot != value)
-					_autoplot = value;
+				if (S.AutoPlot != value)
+					S.AutoPlot = value;
 			}
 		}
 

@@ -248,10 +248,7 @@ namespace blekenbleu.OxyScope
 		public void End(PluginManager pluginManager)
 		{
 			// Save settings
-			Settings.AutoPlot = VM.AutoPlot;
 			Settings.property = VM.property;
-			Settings.Refresh = VM.Refresh;
-			Settings.Slength = VM.Slength;
 			this.SaveCommonSettings("GeneralSettings", Settings);
 		}
 
