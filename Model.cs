@@ -89,13 +89,11 @@ namespace blekenbleu.OxyScope
 			get => _autoplot;
 			set
 			{
+				TRText = trtext[_autoplot ? 0 : 1];
+				TBTRforeground = _autoplot || 1 == _refresh ? "White" : "Red"; 
+				SetForeVS();
 				if (_autoplot != value)
-				{
 					_autoplot = value;
-					TRText = trtext[_autoplot ? 0 : 1];
-					TBTRforeground = _autoplot || 1 == _refresh ? "White" : "Red"; 
-					SetForeVS();
-				}
 			}
 		}
 

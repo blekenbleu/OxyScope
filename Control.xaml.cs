@@ -28,7 +28,7 @@ namespace blekenbleu.OxyScope
 			O.x = new double[4, 1501];			// based on samples per shot TitledSlider max 500
 			Xmax = new double[] { 0, 0 }; Xmin = new double[] { 0, 0 }; Ymax = 0; Ymin = 0;
 
-			TH.Text = refresh[M.Refresh];
+            TH.Text = refresh[M.Refresh];
 			if (1 == M.Refresh)
 				M.property = 3;
 			ButtonUpdate();
@@ -51,7 +51,7 @@ namespace blekenbleu.OxyScope
 			currentX = 0;
 			M.ForeVS = "White";
 
-			if (!M.AutoPlot && Visibility.Hidden == M.PVis)
+            if (!M.AutoPlot && Visibility.Hidden == M.PVis)
 			{
 				if (2 != M.Refresh)
 					M.PVis = Visibility.Visible;	// no more updates;  hold Vplot

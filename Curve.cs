@@ -57,7 +57,7 @@ namespace blekenbleu.OxyScope
 					if (Monotonic(coef))
 					{
 						FunctionSeries function = new FunctionSeries(CubicFit, left, right,
-								 (right - left) / 50, "constrained coef fit") { Color = OxyColors.Orange };	// x increments
+								 (right - left) / 50, "constrained cubic fit") { Color = OxyColors.Orange };	// x increments
 						model.Series.Add(function);
 						return $"constrained coef:  {coef[0]:#0.0000} + {coef[1]:#0.000000}*x;  Count = {Count}"
 							 + $"+ {coef[2]:#0.000000}*x**2 + {coef[3]:#0.000000}*x**3"
