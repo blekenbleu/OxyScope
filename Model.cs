@@ -34,6 +34,7 @@ namespace blekenbleu.OxyScope
 		readonly PropertyChangedEventArgs FYevent	= new PropertyChangedEventArgs(nameof(FilterY));
 		readonly PropertyChangedEventArgs Levent	= new PropertyChangedEventArgs(nameof(Slength));
 		readonly PropertyChangedEventArgs PVevent	= new PropertyChangedEventArgs(nameof(PVis));
+		readonly PropertyChangedEventArgs THevent	= new PropertyChangedEventArgs(nameof(THText));
 		readonly PropertyChangedEventArgs TRevent	= new PropertyChangedEventArgs(nameof(TRText));
 		readonly PropertyChangedEventArgs TRFevent	= new PropertyChangedEventArgs(nameof(TBTRforeground));
 		readonly PropertyChangedEventArgs XY1event	= new PropertyChangedEventArgs(nameof(XYprop1));
@@ -43,7 +44,6 @@ namespace blekenbleu.OxyScope
 		readonly PropertyChangedEventArgs Y1event	= new PropertyChangedEventArgs(nameof(Y1prop));
 		readonly PropertyChangedEventArgs Y2event	= new PropertyChangedEventArgs(nameof(Y2prop));
 
-		static readonly string[] trtext = { "Auto Replot", "Hold Plot" };
 		internal ushort		property;
 		internal ushort[]	start = { 0, 60 };									// split buffer
 		internal double[][]	min, max;
@@ -63,6 +63,7 @@ namespace blekenbleu.OxyScope
 			}
 		}
 
+		static readonly string[] refresh = { "more range", "one shot", "grow range" };
 		private ushort _refresh;
 		internal ushort Refresh
 		{
@@ -71,27 +72,40 @@ namespace blekenbleu.OxyScope
 			{
 				if (_refresh != value)
 				{
-					_refresh = value;
-					TBTRforeground = _autoplot || 1 == _refresh ? "White" : "Red"; 
-					SetForeVS();
+					_refresh = (ushort)(value % 3);
+					THText = refresh[_refresh];
+					SetFore();
 				}
 			}
 		}
 
-		internal void SetForeVS()
-		{
-			ForeVS = ((Visibility.Hidden == _unseen && 1 == _refresh) || (1 != _refresh && _autoplot)) ? "White" : "Green";
+		private string _htext = refresh[0];
+		public string THText
+		{	get => _htext;				// Refresh
+			set
+			{
+				if (_htext != value)
+				{
+					_htext = value;
+					PropertyChanged?.Invoke(this, THevent);
+				}
+			} 
 		}
 
-		private bool _autoplot;
+		internal void SetFore()
+		{
+			ForeVS = ((Visibility.Hidden == _unseen && 1 == _refresh) || (1 != _refresh && _autoplot)) ? "White" : "Green";
+			TBTRforeground = _autoplot || 1 == _refresh ? "White" : "Red"; 
+		}
+
+		private bool _autoplot = false;
 		internal bool AutoPlot
 		{
 			get => _autoplot;
 			set
 			{
-				TRText = trtext[_autoplot ? 0 : 1];
-				TBTRforeground = _autoplot || 1 == _refresh ? "White" : "Red"; 
-				SetForeVS();
+				TRText = trtext[value ? 0 : 1];
+                SetFore();
 				if (_autoplot != value)
 					_autoplot = value;
 			}
@@ -135,6 +149,7 @@ namespace blekenbleu.OxyScope
 			}
 		}
 
+		static readonly string[] trtext = { "Auto Replot", "Hold Plot" };
 		private string _text = trtext[0];
 		public string TRText
 		{	get => _text;				// PVis
@@ -157,7 +172,7 @@ namespace blekenbleu.OxyScope
 				{
 					_unseen = value;
 					PropertyChanged?.Invoke(this, PVevent);
-					SetForeVS();
+					SetFore();
 				}
 			} 
 		}

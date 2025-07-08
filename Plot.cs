@@ -50,7 +50,7 @@ namespace blekenbleu.OxyScope
 
 			if (M.axis[1] || M.axis[2])								// 2 or 3 Y properties
 				M.D3vis = Visibility.Visible;
-			M.SetForeVS();
+			M.SetFore();
 			return model;
 		}
 

@@ -28,7 +28,6 @@ namespace blekenbleu.OxyScope
 			O.x = new double[4, 1501];			// based on samples per shot TitledSlider max 500
 			Xmax = new double[] { 0, 0 }; Xmin = new double[] { 0, 0 }; Ymax = 0; Ymin = 0;
 
-            TH.Text = refresh[M.Refresh];
 			if (1 == M.Refresh)
 				M.property = 3;
 			ButtonUpdate();
@@ -121,21 +120,19 @@ namespace blekenbleu.OxyScope
 			ButtonUpdate();
 		}
 
-		readonly string[] refresh = { "more range", "one shot", "grow range" };
 		private void Refreshclick(object sender, RoutedEventArgs e)		// Refresh button
 		{
 			// 0 = max range, 1 = one shot, 2 = grow
 			// Accrue() now always maximizes StdDev for all Yprops
 			if (2 == M.Refresh)
 				M.Restart = true;
-			M.Refresh = (ushort)((++M.Refresh) % 3);
+			M.Refresh++;
 			if (2 == M.Refresh)
 			{
 				M.AutoPlot = M.Restart = true;
 				M.PVis = Visibility.Hidden;
 			} else if (1 == M.Refresh)
 				M.property = 3;
-			TH.Text = refresh[M.Refresh];
 			ButtonUpdate();
 		}
 
