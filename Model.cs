@@ -49,8 +49,10 @@ namespace blekenbleu.OxyScope
 			set
 			{
 				if (S.Slength != value)
+				{
 					start[1] = value;
 					S.Slength = value;
+				}
 			}
 		}
 
