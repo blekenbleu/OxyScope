@@ -24,7 +24,7 @@ namespace blekenbleu.OxyScope
 		readonly PropertyChangedEventArgs FVevent	= new PropertyChangedEventArgs(nameof(ForeVS));
 		readonly PropertyChangedEventArgs FXevent	= new PropertyChangedEventArgs(nameof(FilterX));
 		readonly PropertyChangedEventArgs FYevent	= new PropertyChangedEventArgs(nameof(FilterY));
-		readonly PropertyChangedEventArgs Levent	= new PropertyChangedEventArgs(nameof(Slength));
+		readonly PropertyChangedEventArgs Levent	= new PropertyChangedEventArgs(nameof(Slength));	// VS does not detect change by XAML
 		readonly PropertyChangedEventArgs PVevent	= new PropertyChangedEventArgs(nameof(PVis));
 		readonly PropertyChangedEventArgs THevent	= new PropertyChangedEventArgs(nameof(THText));
 		readonly PropertyChangedEventArgs TRevent	= new PropertyChangedEventArgs(nameof(TRText));
