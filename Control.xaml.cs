@@ -16,9 +16,9 @@ namespace blekenbleu.OxyScope
 		static double Ymax, Ymin;				// axes limits - consolidated for all Y properties
 		static double[] Xmax, Xmin;				// axes limits = unique for configured Xprop
 		ushort start, Length, property = 3;
-		byte currentX, highY, currentP;			// index Xmin[] and Xmax[] for plot axes rotations
+		byte currentX, highY, currentP;			// index Xmin[] and Xmax[] for Vplot axes rotations
 		static double[] min, max;				// static required for CubicSlope()
-		List<byte> xmap;						// M.PropName[] indices for rotating thru plot axes
+		List<byte> xmap;						// M.PropName[] indices for rotating thru Vplot axes
 
 		public Control() => InitializeComponent();
 
@@ -54,13 +54,13 @@ namespace blekenbleu.OxyScope
 			if (!M.AutoPlot && Visibility.Hidden == M.PVis)
 			{
 				if (2 != M.Refresh)
-					M.PVis = Visibility.Visible;	// no more updates;  hold plot
+					M.PVis = Visibility.Visible;	// no more updates;  hold Vplot
 				if (1 != M.Refresh)
 					property = M.property;			// switch curve fit property selection
 				ButtonUpdate();						// color coding
 			}
 
-			double Nmax = max[0];					// plot range for up to 3 Yprops
+			double Nmax = max[0];					// Vplot range for up to 3 Yprops
 			double Nmin = min[0];
 			xmap = new List<byte> { 3, 0 };
 			highY = 0;
@@ -77,11 +77,11 @@ namespace blekenbleu.OxyScope
 				}
 
 			Xmax[1] = Ymax = Nmax;
-			// move plot points inside limits
+			// move Vplot points inside limits
 			Xmin[1] = Ymin = Nmin - 0.01 * (Nmax - Nmin);
 			Xmax[0] = max[3] + (Xmin[0] = 0.01 * (max[3] - min[3]));
 			Xmin[0] = min[3] - Xmin[0];
-			plot.Model = Plot();
+			Vplot.Model = Plot();
 		}
 
 		private void D3click(object sender, RoutedEventArgs e)		// 3D visualize button
@@ -117,11 +117,11 @@ namespace blekenbleu.OxyScope
 			}
 			currentP = 0;											// curve fitting property index
 			property = 3;											// disable curve fit until user selects
-			plot.Model = Plot();
+			Vplot.Model = Plot();
 			ButtonUpdate();
 		}
 
-        readonly string[] refresh = { "more range", "one shot", "grow range" };
+		readonly string[] refresh = { "more range", "one shot", "grow range" };
 		private void Refreshclick(object sender, RoutedEventArgs e)		// Refresh button
 		{
 			// 0 = max range, 1 = one shot, 2 = grow
@@ -145,7 +145,7 @@ namespace blekenbleu.OxyScope
 			M.AutoPlot = !M.AutoPlot;
 			if (M.AutoPlot && Visibility.Visible == M.PVis)
 			{
-				plot.Model = Plot();
+				Vplot.Model = Plot();
 				M.PVis = Visibility.Hidden;
 			}
 			ButtonUpdate();
@@ -162,7 +162,7 @@ namespace blekenbleu.OxyScope
 					property = 3;
 				}
 				else property = xmap[currentP];
-				plot.Model = Plot();
+				Vplot.Model = Plot();
 			} else for (byte b = 0; b < 3; b++)	// change M.Refresh Y property
 				if (M.axis[M.property = (ushort)((1 + M.property) % 4)])
 				{

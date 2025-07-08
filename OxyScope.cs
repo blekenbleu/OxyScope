@@ -8,7 +8,7 @@ using System.Windows.Media;
 
 namespace blekenbleu.OxyScope
 {
-	[PluginDescription("scatter plot one SimHub property vs others")]
+	[PluginDescription("scatter Vplot one SimHub property vs others")]
 	[PluginAuthor("blekenbleu")]
 	[PluginName("OxyScope")]
 	public partial class OxyScope : IPlugin, IDataPlugin, IWPFSettingsV2
@@ -72,7 +72,7 @@ namespace blekenbleu.OxyScope
 		/// <param name="data">Current game data, including current and previous data frame.</param>
 		readonly float[] f = { 0, 0, 0, 0 };		// float values from properties
 		readonly double[] IIR = { 0, 0, 0, 0 };		// filtered property values from f[]
-		internal double[,] x;						// plot samples from IIR[]
+		internal double[,] x;						// Vplot samples from IIR[]
 		private ushort work;						// arrays currently being sampled
 		private ushort Sample;						// which x[,] is currently being worked
 		bool oops = false, Bfull = false;
@@ -117,7 +117,7 @@ namespace blekenbleu.OxyScope
 			{
 				CarId = data.NewData.CarId;
 				// Title change sets Restart
-		   		VM.Title = pluginManager.GetPropertyValue("DataCorePlugin.CurrentGame")?.ToString()
+				VM.Title = pluginManager.GetPropertyValue("DataCorePlugin.CurrentGame")?.ToString()
 						 + ":  " + pluginManager.GetPropertyValue("DataCorePlugin.GameData.CarModel")?.ToString()
 						 + "@"	 + pluginManager.GetPropertyValue("DataCorePlugin.GameData.TrackName")?.ToString();
 			}
@@ -153,7 +153,7 @@ namespace blekenbleu.OxyScope
 				clf = VM.property % 3;
 			} else {
 				// check for full buffer, redundant samples
-			  	if (Sample >= x.Length >> 2)
+				if (Sample >= x.Length >> 2)
 				{							// this should occur only for accumulations (2 == VM.Refresh)
 					if (!Bfull)
 					{						// victory lap
@@ -162,7 +162,7 @@ namespace blekenbleu.OxyScope
 						VM.AutoPlot = false;// signal to Replot(): update Control property
 						View.Dispatcher.Invoke(() => View.Replot(VM.start[work], (ushort)(Sample - 1), VM.min[work], VM.max[work]));
 					}
-					return; 				// Restart sample may have been before car moved
+					return;				// Restart sample may have been before car moved
 				}
 
 				for (i = 0; i < 3; i++)
@@ -215,7 +215,7 @@ namespace blekenbleu.OxyScope
 				// Refresh: 0 = max range, 1 = snapshot, 2 = cumulative range
 				// property: 3 == no curve fitting; 0-2 correspond to Y0-Y2
 				if (Visibility.Hidden == VM.PVis && (1 == VM.Refresh
-				 	|| (0 == VM.Refresh && (VM.max[work][VM.property] - VM.min[work][VM.property]) > Range)))
+					|| (0 == VM.Refresh && (VM.max[work][VM.property] - VM.min[work][VM.property]) > Range)))
 				{
 					Range = VM.max[work][VM.property] - VM.min[work][VM.property];
 					View.Dispatcher.Invoke(() => View.Replot(VM.start[work], VM.Slength, VM.min[work], VM.max[work]));

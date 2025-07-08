@@ -17,15 +17,15 @@
 				<Hyperlink RequestNavigate="Hyperlink_RequestNavigate"
 				NavigateUri="https://blekenbleu.github.io/SimHub/oxyhelp.htm">Help</Hyperlink>
 			</TextBlock>
-			<TextBox Width="440" Name="Current" VerticalAlignment="Center" Text="{Binding Current}"/>
+			<TextBox Width="440" VerticalAlignment="Center" Text="{Binding Current}"/>
 			<Button Width="40" Click="Refreshclick"> <TextBlock
 				TextWrapping="Wrap" TextAlignment="Center" Name="TH"/> </Button>
 			<TextBlock Text=" "/>
 			<Button Width="65" Click="Propertyclick"> <TextBlock
 				TextWrapping="Wrap" TextAlignment="Center" Name="LF"/> </Button>
 			<TextBlock Text=" "/>
-			<Button Width="50" Click="Plotclick" Name="BTR"> <TextBlock
-				TextWrapping="Wrap" TextAlignment="Center" Text="{Binding Text}"/> </Button>
+			<Button Width="50" Click="Plotclick"> <TextBlock Foreground="{Binding TBTRforeground}"
+				TextWrapping="Wrap" TextAlignment="Center" Text="{Binding TRText}"/> </Button>
 			<Button Content="Replot" Width="48" Height="22"
 				Click="REPLOTclick" Visibility="{Binding PVis}" Background="Red" />
 		</StackPanel>
@@ -34,7 +34,7 @@
 			<GroupBox.Header>
 				<TextBlock Height="20" FontWeight="Bold"> Properties XY plot</TextBlock>
 			</GroupBox.Header>
-			<oxy:PlotView Name="plot">
+			<oxy:PlotView Name="Vplot">
 				<oxy:PlotView.Resources>
 					<Style TargetType="oxy:TrackerControl">
 						<Setter Property="Background" Value="Gray"/>
@@ -60,13 +60,13 @@
 
 		<StackPanel Orientation="Horizontal">
 			<ui:TitledSlider Title="Y-axis filter" Width="266" Value="{Binding FilterY, Mode=TwoWay}"
-				 TickFrequency = "1" IsSnapToTickEnabled = "True" Maximum="10" Minimum="1"/>
+				TickFrequency = "1" IsSnapToTickEnabled = "True" Maximum="10" Minimum="1"/>
 			<TextBlock Text=" "/>
 			<ui:TitledSlider Title="X-axis filter" Width="266" Value="{Binding FilterX, Mode=TwoWay}"
-				 TickFrequency = "1" IsSnapToTickEnabled = "True" Maximum="10" Minimum="1"/> 
+				TickFrequency = "1" IsSnapToTickEnabled = "True" Maximum="10" Minimum="1"/> 
 			<TextBlock Text=" "/>
 			<ui:TitledSlider Title="samples per shot" Width="266" Value="{Binding Slength, Mode=TwoWay}"
-				 TickFrequency = "1" IsSnapToTickEnabled = "True" Maximum="500" Minimum="60"/> 
+				TickFrequency = "1" IsSnapToTickEnabled = "True" Maximum="500" Minimum="60"/> 
 		</StackPanel>
 
 	</StackPanel>

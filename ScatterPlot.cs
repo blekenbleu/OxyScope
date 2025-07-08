@@ -2,7 +2,7 @@ using OxyPlot;
 using OxyPlot.Series;
 using OxyPlot.Axes;
 using System;
-using System.Windows;			   // Visibility
+using System.Windows;			// Visibility
 
 namespace blekenbleu.OxyScope
 {
@@ -61,7 +61,7 @@ namespace blekenbleu.OxyScope
 		
 		private ScatterSeries Scatter(string title, uint Yprop)	// 3 possible
 		{
-			int size = 2;	// plot dot size
+			int size = 2;	// Vplot dot size
 			ushort end = (ushort)(start + Length);
 
 			var scatterSeries = new ScatterSeries { MarkerType = MarkerType.Circle };
@@ -74,7 +74,7 @@ namespace blekenbleu.OxyScope
 
 		void RandomPlot()
 		{
-			// fill the plot with random data
+			// fill the Vplot with random data
 			Random rnd = new Random();
 			double xi;
 			Xmin[0] = min[0];								// RandomPlot()
@@ -93,7 +93,7 @@ namespace blekenbleu.OxyScope
 			Xmin[0] = min[0];								// RandomPlot()
 			PlotModel model = ScopeModel();
 			model.Series.Add(Scatter("random", 0));
-			plot.Model = model;
+			Vplot.Model = model;
 		}
 	}
 }

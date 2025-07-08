@@ -34,7 +34,8 @@ namespace blekenbleu.OxyScope
 		readonly PropertyChangedEventArgs FYevent	= new PropertyChangedEventArgs(nameof(FilterY));
 		readonly PropertyChangedEventArgs Levent	= new PropertyChangedEventArgs(nameof(Slength));
 		readonly PropertyChangedEventArgs PVevent	= new PropertyChangedEventArgs(nameof(PVis));
-		readonly PropertyChangedEventArgs TRevent	= new PropertyChangedEventArgs(nameof(Text));
+		readonly PropertyChangedEventArgs TRevent	= new PropertyChangedEventArgs(nameof(TRText));
+		readonly PropertyChangedEventArgs TRFevent	= new PropertyChangedEventArgs(nameof(TBTRforeground));
 		readonly PropertyChangedEventArgs XY1event	= new PropertyChangedEventArgs(nameof(XYprop1));
 		readonly PropertyChangedEventArgs XY2event	= new PropertyChangedEventArgs(nameof(XYprop2));
 		readonly PropertyChangedEventArgs Xevent	= new PropertyChangedEventArgs(nameof(Xprop));
@@ -42,7 +43,7 @@ namespace blekenbleu.OxyScope
 		readonly PropertyChangedEventArgs Y1event	= new PropertyChangedEventArgs(nameof(Y1prop));
 		readonly PropertyChangedEventArgs Y2event	= new PropertyChangedEventArgs(nameof(Y2prop));
 
-		static readonly string[] TRtext = { "Auto Replot", "Hold Plot" };
+		static readonly string[] trtext = { "Auto Replot", "Hold Plot" };
 		internal ushort		property;
 		internal ushort[]	start = { 0, 60 };									// split buffer
 		internal double[][]	min, max;
@@ -51,7 +52,7 @@ namespace blekenbleu.OxyScope
 		internal string[]	PropName = { "", "", "", "" };
 
 		ushort _length = 60;
-		public ushort Slength 	// must be public for xaml TitledSlider Binding
+		public ushort Slength	// must be public for xaml TitledSlider Binding
 		{
 			get => _length;
 			set
@@ -71,6 +72,7 @@ namespace blekenbleu.OxyScope
 				if (_refresh != value)
 				{
 					_refresh = value;
+					TBTRforeground = _autoplot || 1 == _refresh ? "White" : "Red"; 
 					SetForeVS();
 				}
 			}
@@ -82,7 +84,7 @@ namespace blekenbleu.OxyScope
 		}
 
 		private bool _autoplot;
-		internal bool  AutoPlot
+		internal bool AutoPlot
 		{
 			get => _autoplot;
 			set
@@ -90,8 +92,22 @@ namespace blekenbleu.OxyScope
 				if (_autoplot != value)
 				{
 					_autoplot = value;
-					Text = TRtext[_autoplot ? 0 : 1];
+					TRText = trtext[_autoplot ? 0 : 1];
+					TBTRforeground = _autoplot || 1 == _refresh ? "White" : "Red"; 
 					SetForeVS();
+				}
+			}
+		}
+
+		private string _TRfore = "White";
+		public string TBTRforeground										// OxyScope sets CurrentGame Car@Track
+		{	get => _TRfore;
+			set
+			{
+				if (_TRfore != value)
+				{
+					_TRfore = value;
+					PropertyChanged?.Invoke(this, TRFevent);
 				}
 			}
 		}
@@ -109,7 +125,7 @@ namespace blekenbleu.OxyScope
 			}
 		}
 
-		private string _title = "launch game or Replay to collect and plot property samples";
+		private string _title = "launch game or Replay to collect and Vplot property samples";
 		public string Title { get => _title;						// for PlotModel
 			set
 			{
@@ -121,9 +137,9 @@ namespace blekenbleu.OxyScope
 			}
 		}
 
-		private string _text = TRtext[0];
-		public string Text
-		{ 	get => _text;				// PVis
+		private string _text = trtext[0];
+		public string TRText
+		{	get => _text;				// PVis
 			set
 			{
 				if (_text != value)
@@ -136,7 +152,7 @@ namespace blekenbleu.OxyScope
 
 		private Visibility _unseen = Visibility.Hidden;
 		public Visibility PVis
-		{ 	get => _unseen;				// PVis
+		{	get => _unseen;				// PVis
 			set
 			{
 				if (_unseen != value)
@@ -150,7 +166,7 @@ namespace blekenbleu.OxyScope
 
 		private Visibility _un3D = Visibility.Hidden;
 		public Visibility D3vis
-		{ 	get => _un3D;
+		{	get => _un3D;
 			set
 			{
 				if (_un3D != value)
