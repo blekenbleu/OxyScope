@@ -21,7 +21,7 @@
 			<Button Width="40" Click="Refreshclick"> <TextBlock
 				TextWrapping="Wrap" TextAlignment="Center" Text="{Binding THText}"/> </Button>
 			<TextBlock Text=" "/>
-			<Button Width="70" Click="Propertyclick"> <TextBlock
+			<Button Width="140" Click="Propertyclick"> <TextBlock
 				TextWrapping="Wrap" TextAlignment="Center" Name="LF"/> </Button>
 			<TextBlock Text=" "/>
 			<Button Width="50" Click="Plotclick"> <TextBlock Foreground="{Binding TBTRforeground}"

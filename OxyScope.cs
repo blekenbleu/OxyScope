@@ -97,7 +97,7 @@ namespace blekenbleu.OxyScope
 				VM.XYprop2 += ";  continuing...";
 			}
 
-			if (1 != VM.Refresh && ! VM.AutoPlot)
+			if (1 != VM.Refresh && !VM.AutoPlot && !VM.Restart)
 				return;
 
 			if (!data.GameRunning || null == data.OldData || null == data.NewData)
