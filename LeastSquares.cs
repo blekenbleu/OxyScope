@@ -30,12 +30,12 @@ namespace blekenbleu.OxyScope
 		// https://blekenbleu.github.io/static/ImageProcessing/MonotoneCubic.htm
 		static bool Monotonic(double[] d)
 		{
-			Slope[0] = CubicSlope(d, min[3]);
-			Slope[2] = CubicSlope(d, max[3]);
+			Slope[0] = CubicSlope(d, Rmin[3]);
+			Slope[2] = CubicSlope(d, Rmax[3]);
 			if (0 <= Slope[0] * Slope[2])
 			{
 				inflection = - d[2] / (3 * d[3]);
-				Slope[1] = (max[3] < inflection || inflection < min[3]) ? 0 : CubicSlope(d, inflection);
+				Slope[1] = (Rmax[3] < inflection || inflection < Rmin[3]) ? 0 : CubicSlope(d, inflection);
 				return 0 <= Slope[0] * Slope[1];
 			} else inflection = Slope[1] = 0;
 			return false;
@@ -49,8 +49,8 @@ namespace blekenbleu.OxyScope
 		{
 			double sx, inflection;
 			Count++; 
-			if (0 <= CubicSlope(p1, p2, p3, min[3]) * (sx = CubicSlope(p1, p2, p3, max[3]))
-			 && (max[3] < (inflection = - p2 / (3 *p3)) || min[3] > inflection
+			if (0 <= CubicSlope(p1, p2, p3, Rmin[3]) * (sx = CubicSlope(p1, p2, p3, Rmax[3]))
+			 && (Rmax[3] < (inflection = - p2 / (3 *p3)) || Rmin[3] > inflection
 			 || 0 <= sx * CubicSlope(p1, p2, p3, inflection))) 
 				return p0 + x * (p1 + x * (p2 + x * p3));	// unconstrained
 			else return 2 * (0 > m ? ymax : Ymin);			// penalize NelderMeadSimplex non-monotonic solutions

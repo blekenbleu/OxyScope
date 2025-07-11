@@ -17,7 +17,7 @@ namespace blekenbleu.OxyScope
 		static double[] Xmax, Xmin;				// axes limits = unique for configured Xprop
 		ushort start, Length, property = 3;
 		byte currentX, highY, currentP;			// index Xmin[] and Xmax[] for Vplot axes rotations
-		static double[] min, max;				// static required for CubicSlope()
+		static double[] Rmin, Rmax;				// static required for CubicSlope()
 		List<byte> xmap;						// M.PropName[] indices for rotating thru Vplot axes
 
 		public Control() => InitializeComponent();
@@ -33,7 +33,7 @@ namespace blekenbleu.OxyScope
 			ButtonUpdate();
 			M.min = new double[][] { new double[] { 0, 0, 0, 0 }, new double[] { 0, 0, 0, 0 } };
 			M.max = new double[][] { new double[] { 0, 0, 0, 0 }, new double[] { 0, 0, 0, 0 } };
-			min = M.min[0];  max = M.max[0];
+			Rmin = M.min[0];  Rmax = M.max[0];
 			xmap = new List<byte> { 3, 0 };
 			start = 0;
 			RandomPlot();
@@ -46,7 +46,7 @@ namespace blekenbleu.OxyScope
 
 		internal void Replot(ushort rs, ushort rl, double[] rmin, double[] rmax)
 		{
-			start = rs; min = rmin; max = rmax; Length = rl;
+			start = rs; Rmin = rmin; Rmax = rmax; Length = rl;
 			currentX = 0;
 			M.ForeVS = "White";
 
@@ -59,8 +59,8 @@ namespace blekenbleu.OxyScope
 				ButtonUpdate();						// color coding
 			}
 
-			double Nmax = max[0];					// Vplot range for up to 3 Yprops
-			double Nmin = min[0];
+			Ymax = Rmax[0];					// Vplot range for up to 3 Yprops
+			Ymin = Rmin[0];
 			xmap = new List<byte> { 3, 0 };
 			highY = 0;
 
@@ -69,17 +69,18 @@ namespace blekenbleu.OxyScope
 				{
 					highY = i;
 					xmap.Add(i);
-					if (Nmin > min[i])
-						Nmin = min[i];
-					if (Nmax < max[i])
-						Nmax = max[i];
+					if (Ymin > Rmin[i])
+						Ymin = Rmin[i];
+					if (Ymax < Rmax[i])
+						Ymax = Rmax[i];
 				}
 
-			Xmax[1] = Ymax = Nmax;
 			// move Vplot points inside limits
-			Xmin[1] = Ymin = Nmin - 0.01 * (Nmax - Nmin);
-			Xmax[0] = max[3] + (Xmin[0] = 0.01 * (max[3] - min[3]));
-			Xmin[0] = min[3] - Xmin[0];
+			Ymin -= 0.01 * (Ymax - Ymin);
+			Xmin[1] = Ymin;
+			Xmax[1] = Ymax;
+			Xmax[0] = Rmax[3] + (Xmin[0] = 0.01 * (Rmax[3] - Rmin[3]));
+			Xmin[0] = Rmin[3] - Xmin[0];
 			Vplot.Model = Plot();
 		}
 
@@ -116,6 +117,19 @@ namespace blekenbleu.OxyScope
 			}
 			currentP = 0;											// curve fitting property index
 			property = 3;											// disable curve fit until user selects
+			Ymax = Rmax[xmap[1]];
+			Ymin = Rmin[xmap[1]];
+			for (byte b = 2; b < xmap.Count; b++)					// set Y-axis range for current properties
+			{
+				if (Ymin > Rmin[xmap[b]])
+					Ymin = Rmin[xmap[b]];
+				if (Ymax < Rmax[xmap[b]])
+					Ymax = Rmax[xmap[b]];
+			}
+			Ymin -= 0.01 * (Ymax - Ymin);
+			Xmax[1] = Rmax[xmap[0]];
+			Xmin[1] = Rmin[xmap[0]];								// set X-axis range for current Y property
+			Xmin[1] -= 0.01 * (Xmax[1] - Xmin[1]);
 			Vplot.Model = Plot();
 			ButtonUpdate();
 		}

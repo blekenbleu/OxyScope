@@ -77,9 +77,9 @@ namespace blekenbleu.OxyScope
 			// fill the Vplot with random data
 			Random rnd = new Random();
 			double xi;
-			Xmin[0] = min[0];								// RandomPlot()
+			Xmin[0] = Rmin[0];								// RandomPlot()
 			Xmax[0] = 100 + Xmin[0];						// RandomPlot()
-			Ymin = min[3];
+			Ymin = Rmin[3];
 			ymax = 100 + Ymin;
 			Length = M.Slength;
 			xi = 100.0 / Length;
@@ -90,7 +90,7 @@ namespace blekenbleu.OxyScope
 				Xmin[0] += xi;								// RandomPlot()
 			}
 
-			Xmin[0] = min[0];								// RandomPlot()
+			Xmin[0] = Rmin[0];								// RandomPlot()
 			PlotModel model = ScopeModel();
 			model.Series.Add(Scatter("random", 0));
 			Vplot.Model = model;
