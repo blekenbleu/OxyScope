@@ -75,7 +75,7 @@ namespace blekenbleu.OxyScope
 		internal double[,] x;						// Vplot samples from IIR[]
 		private ushort work;						// arrays currently being sampled
 		private ushort Sample;						// which x[,] is currently being worked
-		bool oops = false, Bfull = false;
+		bool oops = false;
 		int clf = 0;								// current Y property
 		string CarId = "";
 		double current, Range;
@@ -125,7 +125,7 @@ namespace blekenbleu.OxyScope
 			if (1 > (double)pluginManager.GetPropertyValue("DataCorePlugin.GameData.SpeedKmh")
 				|| current == data.NewData.CarSettings_CurrentDisplayedRPMPercent)
 			{
-				if (!Bfull && 30 < ++WaitCt)
+				if (!VM.Bfull && 30 < ++WaitCt)
 					VM.XYprop1 = "waiting for action";
 				return;
 			}
@@ -135,7 +135,7 @@ namespace blekenbleu.OxyScope
 			int i;
 			if (VM.Restart)
 			{
-				VM.Restart = Bfull = false;
+				VM.Restart = VM.Bfull = false;
 				VM.XYprop1 = "Restart";
 				for (i = 0; i < 4; i++)
 					IIR[i] = f[i];
@@ -155,10 +155,10 @@ namespace blekenbleu.OxyScope
 				// check for full buffer, redundant samples
 				if (Sample >= x.Length >> 2)
 				{							// this should occur only for accumulations (2 == VM.Refresh)
-					if (!Bfull)
+					if (!VM.Bfull)
 					{						// victory lap
 						VM.XYprop1 = $"sample buffer full;  {Intervals.Count} histogram buckets";
-						Bfull = true;
+						VM.Bfull = true;
 						VM.AutoPlot = false;// signal to Replot(): update Control property
 						View.Dispatcher.Invoke(() => View.Replot(VM.start[work], (ushort)(Sample - 1), VM.min[work], VM.max[work]));
 					}

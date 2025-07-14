@@ -154,10 +154,14 @@ namespace blekenbleu.OxyScope
 		private void Plotclick(object sender, RoutedEventArgs e)		// AutoPlot
 		{
 			M.AutoPlot = !M.AutoPlot;
-			if (M.AutoPlot && Visibility.Visible == M.PVis)
-			{
-				Vplot.Model = Plot();
-				M.PVis = Visibility.Hidden;
+			if (M.AutoPlot)
+ 			{
+				if(Visibility.Visible == M.PVis)
+				{
+					Vplot.Model = Plot();
+					M.PVis = Visibility.Hidden;
+				} else if (M.Bfull)
+					M.Restart = true;
 			}
 			ButtonUpdate();
 		}

@@ -37,9 +37,9 @@ namespace blekenbleu.OxyScope
 		readonly PropertyChangedEventArgs Y2event	= new PropertyChangedEventArgs(nameof(Y2prop));
 
 		internal ushort		property;
-		internal ushort[]	start = { 0, 60 };									// split buffer
+		internal ushort[]	start = { 0, 60 };						// split buffer
 		internal double[][]	min, max;
-		internal bool		Restart = true;							// work gets reinitialed by Restart
+		internal bool		Restart = true, Bfull = false;			// work gets reinitialed by Restart
 		internal bool[]		axis = { true, false, false, true };	// which axes have properties assigned
 		internal string[]	PropName = { "", "", "", "" };
 
