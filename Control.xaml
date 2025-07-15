@@ -69,7 +69,7 @@
 				TickFrequency = "1" IsSnapToTickEnabled = "True" Maximum="500" Minimum="60"/> 
 		</StackPanel>
 
-		<TextBlock Text="Lateral Acceleration scale" Visibility="{Binding LAscaleVis}"/>
+		<TextBlock Text="Lateral Acceleration rescale for SlipRate" Visibility="{Binding LAscaleVis}"/>
 		<StackPanel Orientation="Horizontal" FlowDirection="LeftToRight" Visibility="{Binding LAscaleVis}">
             <Slider Value="{Binding LAscale, Mode=TwoWay}" Maximum="1.2" Minimum="0.8" Width="750"/>
             <Button Content="{Binding LAscale}" Click="LAscaleValueChanged"/>
