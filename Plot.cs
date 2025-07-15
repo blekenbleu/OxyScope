@@ -57,8 +57,7 @@ namespace blekenbleu.OxyScope
 		// draw line fit
 		LineSeries LineDraw(double m, double B, string title)
 		{
-			LineSeries line = new LineSeries { Color = Ycolor[Yf] };
-			line.Title = title;
+			LineSeries line = new LineSeries { Color = Ycolor[Yf], Title = title };
 			// calculate min, max Y value from X values, slope m, intercept B
 			line.Points.Add(new DataPoint(Rmin[xmap[0]], B + m * Rmin[xmap[0]]));
 			line.Points.Add(new DataPoint(Rmax[xmap[0]], B + m * Rmax[xmap[0]]));

@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 using System.Windows;
 
@@ -24,7 +25,9 @@ namespace blekenbleu.OxyScope
 		readonly PropertyChangedEventArgs FVevent	= new PropertyChangedEventArgs(nameof(ForeVS));
 		readonly PropertyChangedEventArgs FXevent	= new PropertyChangedEventArgs(nameof(FilterX));
 		readonly PropertyChangedEventArgs FYevent	= new PropertyChangedEventArgs(nameof(FilterY));
+		readonly PropertyChangedEventArgs LAevent	= new PropertyChangedEventArgs(nameof(LAscale));
 		readonly PropertyChangedEventArgs Levent	= new PropertyChangedEventArgs(nameof(Slength));	// VS does not detect change by XAML
+		readonly PropertyChangedEventArgs LVevent	= new PropertyChangedEventArgs(nameof(LAscaleVis));
 		readonly PropertyChangedEventArgs PVevent	= new PropertyChangedEventArgs(nameof(PVis));
 		readonly PropertyChangedEventArgs THevent	= new PropertyChangedEventArgs(nameof(THText));
 		readonly PropertyChangedEventArgs TRevent	= new PropertyChangedEventArgs(nameof(TRText));
@@ -96,6 +99,8 @@ namespace blekenbleu.OxyScope
 			set
 			{
 				TRText = trtext[value ? 0 : 1];
+				if (value)
+					LAscaleVis = Visibility.Hidden;
                 SetFore();
 				if (S.AutoPlot != value)
 					S.AutoPlot = value;
@@ -164,6 +169,19 @@ namespace blekenbleu.OxyScope
 					_unseen = value;
 					PropertyChanged?.Invoke(this, PVevent);
 					SetFore();
+				}
+			} 
+		}
+
+		private Visibility _lav = Visibility.Hidden;
+		public Visibility LAscaleVis
+		{	get => _lav;
+			set
+			{
+				if (_lav != value)
+				{
+					_lav = value;
+					PropertyChanged?.Invoke(this, LVevent);
 				}
 			} 
 		}
@@ -279,6 +297,18 @@ namespace blekenbleu.OxyScope
 				{
 					S.FilterY = value;
 					PropertyChanged?.Invoke(this, FYevent);
+				}
+			}
+		}
+
+		public double LAscale
+		{	get => (null == S) ? 1 : S.LAscale;
+			set
+			{
+				if (S.LAscale != value)
+				{
+					S.LAscale = Math.Round(value, 3);
+					PropertyChanged?.Invoke(this, LAevent);
 				}
 			}
 		}

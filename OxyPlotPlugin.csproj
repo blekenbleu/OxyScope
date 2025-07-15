@@ -104,6 +104,7 @@
     <Compile Include="Curve.cs" />
     <Compile Include="D3.cs" />
     <Compile Include="Interval.cs" />
+    <Compile Include="LatVelCal.cs" />
     <Compile Include="LeastSquares.cs" />
     <Compile Include="Model.cs" />
     <Compile Include="OxyScope.cs" />
