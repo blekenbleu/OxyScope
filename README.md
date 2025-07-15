@@ -96,6 +96,15 @@ uniform distribution along X axis is preferred...
 	- Accrue samples for *all* Xprops outside their current 2 * StdDev  
 	- **To Do**:&nbsp; plot curves from min to max of *currently selected* Xprop  
 
+### Lateral Velocity scale experiment
+```
+//  if (abSteer < View.Model.Sthi && View.Model.LAi < ls.Length)
+//      LatVelCal(YawVel * SpeedKmh);
+LatAcc = View.Model.LAscale * YawVel * SpeedKmh; 		      	// lateral acceleration based on Yaw velocity
+SlipRate = LatAcc - SwayAcc;									// difference from actual acceleration
+LatVel += 0.1 * SlipRate;                                       // numeric integration
+LatVel -= LatVel / (4 + LatAcc * LatAcc + SwayAcc * SwayAcc);   // damping
+```
 <hr>
 <b><i>Property folder changes from default WPF project for SimHub plugins</i></b>
 <details><summary>click for differences</summary>
