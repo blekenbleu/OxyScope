@@ -37,16 +37,17 @@ namespace blekenbleu.OxyScope
 			M.LAscaleVis = 3 == pc ? Visibility.Visible : Visibility.Hidden;
 			if (save && 3 == pc)
 			{
-				original = O.x[LVi, 0];
+				original = O.x[LVi, start];
 				save = false;
 			}
 		}
 
 		void LAscaleValueChanged(object sender, RoutedEventArgs e)
 		{
-			double LatVel = original, min = original, max = original;
+			double LatVel = original, min = 0, max = 0;
+			ushort end = (ushort)(Length + start);
 			
-			for (ushort u = 0; u < Length; u++)
+			for (ushort u = start; u < end; u++)
 			{
 				// Loaded: LatAcc = 0.0001 * View.Model.LAscale * YawVel * SpeedKmh
 				double LatAcc = O.x[LAi, u];

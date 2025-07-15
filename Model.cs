@@ -18,6 +18,7 @@ namespace blekenbleu.OxyScope
 			if (null == S)
 				property = 3;
 			else property = S.property;
+			ButtonStatus();
 		}
 
 		readonly PropertyChangedEventArgs Cevent	= new PropertyChangedEventArgs(nameof(Current));
@@ -60,6 +61,12 @@ namespace blekenbleu.OxyScope
 		}
 
 		static readonly string[] refresh = { "more range", "one shot", "grow range" };
+		internal void ButtonStatus()
+		{
+			THText = refresh[S.Refresh];
+			TRText = trtext[S.AutoPlot ? 0 : 1];
+		}
+
 		internal ushort Refresh
 		{
 			get => S.Refresh;
