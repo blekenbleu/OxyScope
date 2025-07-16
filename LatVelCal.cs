@@ -1,8 +1,6 @@
 // recalculate SlipRate and LatVel based on LAscale slider changes
 // depends on LatAcc, SwayAcc
-using System;
 using System.Windows;
-using System.Windows.Forms;
 
 namespace blekenbleu.OxyScope
 {

@@ -86,7 +86,9 @@ namespace blekenbleu.OxyScope
 			Xmax[0] = Rmax[3] + (Xmin[0] = 0.01 * (Rmax[3] - Rmin[3]));
 			Xmin[0] = Rmin[3] - Xmin[0];
 			Vplot.Model = Plot();
-		}
+			if (M.AutoPlot)
+				M.busy = false;
+		}	// Replot()
 
 		private void D3click(object sender, RoutedEventArgs e)		// 3D visualize button
 		{
@@ -96,6 +98,7 @@ namespace blekenbleu.OxyScope
 
 		private void REPLOTclick(object sender, RoutedEventArgs e)		// REPLOT Button
 		{
+			M.busy = false;
 			M.PVis = Visibility.Hidden;
 			ButtonUpdate();
 		}
@@ -120,7 +123,7 @@ namespace blekenbleu.OxyScope
 		// VS TextBox converted to Button
 		private void VSclick(object sender, RoutedEventArgs e)		// rotate thru properties as X-axis
 		{
-			if ("white" == M.ForeVS)
+			if ("white" == M.ForeVS || M.AutoPlot)
 				return;												// not while in RePlot()
 
 			byte currentY = xmap[0];
@@ -171,7 +174,11 @@ namespace blekenbleu.OxyScope
 					M.PVis = Visibility.Hidden;
 				} else if (M.Bfull)
 					M.Restart = true;
-			} else LAscaleCheck();
+			} else {
+				LAscaleCheck();
+				if (2 == M.Refresh)
+					M.TRText = "Resume Auto";
+			}
 			ButtonUpdate();
 		}
 

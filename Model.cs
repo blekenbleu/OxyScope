@@ -18,6 +18,7 @@ namespace blekenbleu.OxyScope
 			if (null == S)
 				property = 3;
 			else property = S.property;
+			busy = false;
 			ButtonStatus();
 		}
 
@@ -43,7 +44,7 @@ namespace blekenbleu.OxyScope
 		internal ushort		property;
 		internal ushort[]	start = { 0, 60 };						// split buffer
 		internal double[][]	min, max;
-		internal bool		Restart = true, Bfull = false;			// work gets reinitialed by Restart
+		internal bool		Restart = true, Bfull = false, busy;			// work gets reinitialed by Restart
 		internal bool[]		axis = { true, false, false, true };	// which axes have properties assigned
 		internal string[]	PropName = { "", "", "", "" };
 
@@ -81,6 +82,20 @@ namespace blekenbleu.OxyScope
 			}
 		}
 
+		static readonly string[] trtext = { "Auto Replot", "Hold Plot" };
+		private string _text = trtext[0];
+		public string TRText
+		{	get => _text;				// PVis
+			set
+			{
+				if (_text != value)
+				{
+					_text = value;
+					PropertyChanged?.Invoke(this, TRevent);
+				}
+			} 
+		}
+
 		private string _htext = refresh[0];
 		public string THText
 		{	get => _htext;				// Refresh
@@ -107,7 +122,10 @@ namespace blekenbleu.OxyScope
 			{
 				TRText = trtext[value ? 0 : 1];
 				if (value)
+				{
+					busy = false;
 					LAscaleVis = Visibility.Hidden;
+				}
                 SetFore();
 				if (S.AutoPlot != value)
 					S.AutoPlot = value;
@@ -150,20 +168,6 @@ namespace blekenbleu.OxyScope
 					Restart = true;									// Restart OxyScope
 				}
 			}
-		}
-
-		static readonly string[] trtext = { "Auto Replot", "Hold Plot" };
-		private string _text = trtext[0];
-		public string TRText
-		{	get => _text;				// PVis
-			set
-			{
-				if (_text != value)
-				{
-					_text = value;
-					PropertyChanged?.Invoke(this, TRevent);
-				}
-			} 
 		}
 
 		private Visibility _unseen = Visibility.Hidden;
