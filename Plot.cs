@@ -10,7 +10,6 @@ namespace blekenbleu.OxyScope
 	{
 		static double[] coef;			// least squares fit coefficient[s]
 		static double ymax;				// static for ConstrainedCubic()
-		static byte Yf;					// current Y property to fit curves
 		double[] xs, ys;				// Fit.Polynomial(), Fit.Curve(), Fit.Line()
 		string lfs;
 
@@ -22,7 +21,7 @@ namespace blekenbleu.OxyScope
 		internal PlotModel Plot()
 		{
 			M.ForeVS = "White";						// disable VSclick()
-			Yf = (byte)(property % 3);
+			byte Yf = (byte)(property % 3);
 			ymax = 1.2 * (Ymax - Ymin) + Ymin;		// legend space
 			PlotModel model = ScopeModel();
 			for (byte b = 1; b < xmap.Count; b++)
@@ -39,7 +38,7 @@ namespace blekenbleu.OxyScope
 				double slope = m * (Rmax[xmap[0]] - Rmin[xmap[0]]) / (Rmax[property] - Rmin[property]);
 				double r2 = GoodnessOfFit.RSquared(xs.Select(x => B + m * x), ys);
 				M.Current += $";   R-squared = {r2:0.00}";
-				model.Series.Add(LineDraw(m, B, "line fit"));
+				model.Series.Add(LineDraw(m, B, Yf));
 				lfs = $";   line:  {B:#0.0000} + {m:#0.00000}*x;   slope = {slope:0.00}, R-squared = {r2:0.00}";
 				M.XYprop2 = Curve(Rmin[xmap[0]], Rmax[xmap[0]], model);
 			}
@@ -55,9 +54,9 @@ namespace blekenbleu.OxyScope
 		}
 
 		// draw line fit
-		LineSeries LineDraw(double m, double B, string title)
+		LineSeries LineDraw(double m, double B, byte color_code)
 		{
-			LineSeries line = new LineSeries { Color = Ycolor[Yf], Title = title };
+			LineSeries line = new LineSeries { Color = Ycolor[color_code], Title = "line fit" };
 			// calculate min, max Y value from X values, slope m, intercept B
 			line.Points.Add(new DataPoint(Rmin[xmap[0]], B + m * Rmin[xmap[0]]));
 			line.Points.Add(new DataPoint(Rmax[xmap[0]], B + m * Rmax[xmap[0]]));

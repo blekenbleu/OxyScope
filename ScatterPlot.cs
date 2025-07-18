@@ -72,7 +72,7 @@ namespace blekenbleu.OxyScope
 			return scatterSeries;
 		}
 
-		void RandomPlot()
+		PlotModel RandomPlot()
 		{
 			// fill the Vplot with random data
 			Random rnd = new Random();
@@ -93,7 +93,7 @@ namespace blekenbleu.OxyScope
 			Xmin[0] = Rmin[0];								// RandomPlot()
 			PlotModel model = ScopeModel();
 			model.Series.Add(Scatter("random", 0));
-			Vplot.Model = model;
+			return model;
 		}
 	}
 }

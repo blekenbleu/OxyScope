@@ -51,7 +51,8 @@ namespace blekenbleu.OxyScope
 						VM.Current += $", {StdDev[1]:0.0000}";
 					if (VM.axis[2])
 						VM.Current += $", {StdDev[2]:0.0000}";
-					View.Dispatcher.Invoke(() => View.Replot(VM.start[work], Sample, VM.min[work], VM.max[work]));
+					if (!VM.busy)
+						View.Dispatcher.Invoke(() => View.Replot(Sample));
 				}
 			}	else if (!backfill && 180 < ++overtime) {
 				backfill = true;

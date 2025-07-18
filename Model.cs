@@ -16,10 +16,18 @@ namespace blekenbleu.OxyScope
 		{
 			S = os.Settings;
 			if (null == S)
+			{
 				property = 3;
-			else property = S.property;
+				start[1] = start[2] = Slength;
+			} else {
+				property = S.property;
+				start[1] = start[2] = S.Slength;
+			}
+			start[2] <<= 1;
 			busy = false;
-			ButtonStatus();
+			THText = refresh[S.Refresh];
+			TRText = trtext[S.AutoPlot ? 0 : 1];
+			SetFore();
 		}
 
 		readonly PropertyChangedEventArgs Cevent	= new PropertyChangedEventArgs(nameof(Current));
@@ -33,7 +41,7 @@ namespace blekenbleu.OxyScope
 		readonly PropertyChangedEventArgs PVevent	= new PropertyChangedEventArgs(nameof(PVis));
 		readonly PropertyChangedEventArgs THevent	= new PropertyChangedEventArgs(nameof(THText));
 		readonly PropertyChangedEventArgs TRevent	= new PropertyChangedEventArgs(nameof(TRText));
-		readonly PropertyChangedEventArgs TRFevent	= new PropertyChangedEventArgs(nameof(TBTRforeground));
+		readonly PropertyChangedEventArgs TRFevent	= new PropertyChangedEventArgs(nameof(ForePlot));
 		readonly PropertyChangedEventArgs XY1event	= new PropertyChangedEventArgs(nameof(XYprop1));
 		readonly PropertyChangedEventArgs XY2event	= new PropertyChangedEventArgs(nameof(XYprop2));
 		readonly PropertyChangedEventArgs Xevent	= new PropertyChangedEventArgs(nameof(Xprop));
@@ -41,13 +49,13 @@ namespace blekenbleu.OxyScope
 		readonly PropertyChangedEventArgs Y1event	= new PropertyChangedEventArgs(nameof(Y1prop));
 		readonly PropertyChangedEventArgs Y2event	= new PropertyChangedEventArgs(nameof(Y2prop));
 
-		internal ushort		property;
-		internal ushort[]	start = { 0, 60 };						// split buffer
+		internal byte		property, plot = 0;
 		internal double[][]	min, max;
-		internal bool		Restart = true, Bfull = false, busy;			// work gets reinitialed by Restart
+		internal bool		Restart = true, Bfull = false, busy;	// work gets reinitialed by Restart
 		internal bool[]		axis = { true, false, false, true };	// which axes have properties assigned
 		internal string[]	PropName = { "", "", "", "" };
 
+		internal ushort[]	start = { 0, 60, 120 };						// swap chain buffer
 		public ushort Slength	// must be public for xaml TitledSlider Binding
 		{
 			get => S.Slength;
@@ -56,31 +64,13 @@ namespace blekenbleu.OxyScope
 				if (S.Slength != value)
 				{
 					start[1] = value;
+					start[2] = (ushort)(value + value);
 					S.Slength = value;
+					Restart = true;
 				}
 			}
 		}
 
-		static readonly string[] refresh = { "more range", "one shot", "grow range" };
-		internal void ButtonStatus()
-		{
-			THText = refresh[S.Refresh];
-			TRText = trtext[S.AutoPlot ? 0 : 1];
-		}
-
-		internal ushort Refresh
-		{
-			get => S.Refresh;
-			set
-			{
-				if (S.Refresh != value)
-				{
-					S.Refresh = (ushort)(value % 3);
-					THText = refresh[S.Refresh];
-					SetFore();
-				}
-			}
-		}
 
 		static readonly string[] trtext = { "Auto Replot", "Hold Plot" };
 		private string _text = trtext[0];
@@ -96,6 +86,7 @@ namespace blekenbleu.OxyScope
 			} 
 		}
 
+		static readonly string[] refresh = { "more range", "one shot", "grow range" };
 		private string _htext = refresh[0];
 		public string THText
 		{	get => _htext;				// Refresh
@@ -112,7 +103,21 @@ namespace blekenbleu.OxyScope
 		internal void SetFore()
 		{
 			ForeVS = ((Visibility.Hidden == _unseen && 1 == S.Refresh) || (1 != S.Refresh && S.AutoPlot)) ? "White" : "Green";
-			TBTRforeground = S.AutoPlot || 1 == S.Refresh ? "White" : "Red"; 
+			ForePlot = S.AutoPlot || 1 == S.Refresh ? "White" : "Red"; 
+		}
+
+		internal ushort Refresh
+		{
+			get => S.Refresh;
+			set
+			{
+				if (S.Refresh != value)
+				{
+					S.Refresh = (byte)(value % 3);
+					THText = refresh[S.Refresh];
+					SetFore();
+				}
+			}
 		}
 
 		internal bool AutoPlot
@@ -132,8 +137,22 @@ namespace blekenbleu.OxyScope
 			}
 		}
 
+		private Visibility _unseen = Visibility.Hidden;
+		public Visibility PVis
+		{	get => _unseen;				// PVis
+			set
+			{
+				if (_unseen != value)
+				{
+					_unseen = value;
+					PropertyChanged?.Invoke(this, PVevent);
+					SetFore();
+				}
+			} 
+		}
+
 		private string _TRfore = "White";
-		public string TBTRforeground										// OxyScope sets CurrentGame Car@Track
+		public string ForePlot										// OxyScope sets CurrentGame Car@Track
 		{	get => _TRfore;
 			set
 			{
@@ -168,20 +187,6 @@ namespace blekenbleu.OxyScope
 					Restart = true;									// Restart OxyScope
 				}
 			}
-		}
-
-		private Visibility _unseen = Visibility.Hidden;
-		public Visibility PVis
-		{	get => _unseen;				// PVis
-			set
-			{
-				if (_unseen != value)
-				{
-					_unseen = value;
-					PropertyChanged?.Invoke(this, PVevent);
-					SetFore();
-				}
-			} 
 		}
 
 		private Visibility _lav = Visibility.Hidden;

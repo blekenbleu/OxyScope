@@ -14,7 +14,6 @@ namespace blekenbleu.OxyScope
 		bool ValidateProp(int i, string prop)
 		{
 			var yp = PM.GetPropertyValue(prop);
-			string lst;
 			VM.axis[i] = null != yp && float.TryParse(yp.ToString(), out f[i]);
 			if (!VM.axis[i])
 			{
@@ -27,10 +26,7 @@ namespace blekenbleu.OxyScope
 					else VM.XYprop2 = $"invalid {foo} property:  " + prop;
 					oops = true;
 				}
-			} else if (VM.PropName[i] != (lst = Last(prop.Split('.')))) {
-				VM.Restart = true;
-				VM.PropName[i] = lst;
-			}
+			} else VM.PropName[i] = Last(prop.Split('.'));
 			return VM.axis[i];
 		}
 
@@ -48,12 +44,12 @@ namespace blekenbleu.OxyScope
 		readonly float[] f = { 0, 0, 0, 0 };		// float values from properties
 		readonly double[] IIR = { 0, 0, 0, 0 };		// filtered property values from f[]
 		internal double[,] x;						// Vplot samples from IIR[]
-		private ushort work;						// arrays currently being sampled
+		private byte work, other;					// buffers currently sampling, other non-plot buffer
 		private ushort Sample;						// which x[,] is currently being worked
-		bool oops = false;
+		bool oops = false, available = false;
 		int clf = 0;								// current Y property
 		string CarId = "";
-		double current, Range;
+		double current;
 		uint WaitCt = 0;
 		public void DataUpdate(PluginManager pluginManager, ref GameData data)
 		{
@@ -116,15 +112,17 @@ namespace blekenbleu.OxyScope
 					IIR[i] = f[i];
 				if (2 == VM.Refresh)
 				{
-					work = 0;				// Accrue() uses the full buffer
+					VM.plot = work = 0;				// Accrue() uses the full buffer
 					Total[0] = Total[1] = Total[2] = oldTotal[0] = oldTotal[1] = oldTotal[2] = 0;
 					Intervals = new List<ushort> {0,0,0,0,0,0,0,0,0,0};
 					backfill = false;
 					resume = true;
 					VM.AutoPlot = true;
+				} else {
+					work = (byte)((1 + VM.plot) % 3);
+					other = (byte)((2 + VM.plot) % 3);
 				}
 				Sample = VM.start[work];
-				Range = 0;
 				clf = VM.property % 3;
 			} else {
 				// check for full buffer, redundant samples
@@ -132,11 +130,11 @@ namespace blekenbleu.OxyScope
 				{							// this should occur only for accumulations (2 == VM.Refresh)
 					if (!VM.Bfull)
 					{						// victory lap
-						VM.XYprop1 = $"sample buffer full;  {Intervals.Count} histogram buckets";
 						VM.Bfull = true;
-						VM.AutoPlot = false;// signal to Replot(): update Control property
+						VM.XYprop1 = $"sample buffer full;  {Intervals.Count} histogram buckets";
+						VM.AutoPlot = false;			// update Control property
 						VM.TRText = "Restart Auto";
-						View.Dispatcher.Invoke(() => View.Replot(VM.start[work], (ushort)(Sample - 1), VM.min[work], VM.max[work]));
+						View.Dispatcher.Invoke(() => View.Replot((ushort)(x.Length >> 2)));
 					}
 					return;				// Restart sample may have been before car moved
 				}
@@ -173,33 +171,49 @@ namespace blekenbleu.OxyScope
 					}
 				}
 
-			if (2 == VM.Refresh)		// Accrue View.Replot() processes all samples in the buffer.
+			if (2 == VM.Refresh)		// Accrue processes all buffered samples
 			{
 				if (backfill)
 				{
 					if (mm[0])
-						PrefixIntervals(x[VM.property,Sample]);
+						PrefixIntervals(x[VM.property, Sample]);
 					else if (mm[1])
-						AppendIntervals(x[VM.property,Sample]);
+						AppendIntervals(x[VM.property, Sample]);
 				}
 				Accrue();				// runs until buffer is full; restart by changing Refresh mode
+				return;
 			}
 			else if ((++Sample - VM.start[work]) >= VM.Slength)	// filled?
 			{
+				// swap chain buffer:  buffer setup in Control.xaml.cs Control() and Model.Slength
+				// https://blekenbleu.github.io/SimHub/swapchain.htm
+				double work_range = Drange(work, VM.property);
+
 				VM.Current = $"{VM.min[work][clf]:#0.000} <= Y <= {VM.max[work][clf]:#0.000};  "
-						   + $"{VM.min[work][3]:#0.000} <= X <= {VM.max[work][3]:#0.000}";
-				// Refresh: 0 = max range, 1 = snapshot, 2 = cumulative range
+						   + ((1 == VM.Refresh) ? $"{VM.min[work][3]:#0.000} <= X <= {VM.max[work][3]:#0.000}"
+												: $"{VM.PropName[VM.property]} range {work_range}");
+
+				// Refresh: 0 = greater range, 1 = snapshot, 2 = grow range (not handled here)
 				// property: 3 == no curve fitting; 0-2 correspond to Y0-Y2
-				if (Visibility.Hidden == VM.PVis && !VM.busy && (1 == VM.Refresh
-					|| (0 == VM.Refresh && (VM.max[work][VM.property] - VM.min[work][VM.property]) > Range)))
+				if (1 == VM.Refresh || Drange(other, VM.property) < work_range)
 				{
-					VM.busy = true;
-					Range = VM.max[work][VM.property] - VM.min[work][VM.property];
-					View.Dispatcher.Invoke(() => View.Replot(VM.start[work], VM.Slength, VM.min[work], VM.max[work]));
-					work = (ushort)(1 - work);					// switch buffers
-				}
+					other = work;
+					work = (byte)(3 - (other + VM.plot));
+ 				}
+				available = 1 == VM.Refresh || Drange(VM.plot, VM.property) < Drange(other, VM.property);
 				Sample = VM.start[work];
 			}
+
+			if (available && !VM.busy)
+			{
+				available = false;
+				VM.busy = true;
+				VM.plot = other;
+				other = (byte)(3 - (VM.plot + work));
+				View.Dispatcher.Invoke(() => View.Replot(VM.Slength));
+			}
 		}														// DataUpdate()
+
+		double Drange(byte b, byte c) => (VM.max[b][c] - VM.min[b][c]);
 	}
 }

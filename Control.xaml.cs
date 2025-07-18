@@ -26,18 +26,18 @@ namespace blekenbleu.OxyScope
 		public Control(OxyScope plugin) : this()
 		{
 			DataContext = M = new Model(O = plugin);
-			O.x = new double[4, 1501];			// based on samples per shot TitledSlider max 500
+			O.x = new double[4, 1501];			// 3 x samples per shot from M.Slength TitledSlider Maximum="500"
 			Xmax = new double[] { 0, 0 }; Xmin = new double[] { 0, 0 }; Ymax = 0; Ymin = 0;
 
 			if (1 == M.Refresh)
 				M.property = 3;
 			ButtonUpdate();
-			M.min = new double[][] { new double[] { 0, 0, 0, 0 }, new double[] { 0, 0, 0, 0 } };
-			M.max = new double[][] { new double[] { 0, 0, 0, 0 }, new double[] { 0, 0, 0, 0 } };
+			M.min = new double[][] { new double[] { 0, 0, 0, 0 }, new double[] { 0, 0, 0, 0 }, new double[] { 0, 0, 0, 0 } };
+			M.max = new double[][] { new double[] { 0, 0, 0, 0 }, new double[] { 0, 0, 0, 0 }, new double[] { 0, 0, 0, 0 } };
 			Rmin = M.min[0];  Rmax = M.max[0];
 			xmap = new List<byte> { 3, 0 };
 			start = 0;
-			RandomPlot();
+			Vplot.Model = RandomPlot();
 		}
 
 		private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
@@ -45,9 +45,9 @@ namespace blekenbleu.OxyScope
 			System.Diagnostics.Process.Start(e.Uri.AbsoluteUri);
 		}
 
-		internal void Replot(ushort rs, ushort rl, double[] rmin, double[] rmax)
+		internal void Replot(ushort rl)
 		{
-			start = rs; Rmin = rmin; Rmax = rmax; Length = rl;
+			start = M.start[M.plot]; Rmin = M.min[M.plot]; Rmax = M.max[M.plot]; Length = rl;
 			currentX = 0;
 			M.ForeVS = "White";
 			save = true;
@@ -103,7 +103,7 @@ namespace blekenbleu.OxyScope
 			ButtonUpdate();
 		}
 
-		void minmax()
+		void MinMax()
 		{
 			Ymax = Rmax[xmap[1]];
 			Ymin = Rmin[xmap[1]];
@@ -141,7 +141,7 @@ namespace blekenbleu.OxyScope
 			}
 			currentP = 0;											// curve fitting property index
 			property = 3;											// disable curve fit until user selects
-			minmax();
+			MinMax();
 			Vplot.Model = Plot();
 			ButtonUpdate();
 		}
@@ -195,7 +195,7 @@ namespace blekenbleu.OxyScope
 				else property = xmap[currentP];
 				Vplot.Model = Plot();
 			} else for (byte b = 0; b < 3; b++)	// change M.Refresh Y property
-				if (M.axis[M.property = (ushort)((1 + M.property) % 4)])
+				if (M.axis[M.property = (byte)((1 + M.property) % 4)])
 				{
 					M.Restart = true;			// restart sampling with newly selected property
 					break;
