@@ -68,9 +68,6 @@ namespace blekenbleu.OxyScope
 				VM.XYprop2 += ";  continuing...";
 			}
 
-			if (2 == VM.Refresh && !VM.AutoPlot && !VM.Restart)
-				return;
-
 			if (!data.GameRunning || null == data.OldData || null == data.NewData)
 			{
 				if (0 == CarId.Length)	// avoid wiping XYprop1 if already past this;  replays can get here
@@ -92,14 +89,16 @@ namespace blekenbleu.OxyScope
 						 + ":  " + pluginManager.GetPropertyValue("DataCorePlugin.GameData.CarModel")?.ToString()
 						 + "@"	 + pluginManager.GetPropertyValue("DataCorePlugin.GameData.TrackName")?.ToString();
 			}
-
-			if (1 > (double)pluginManager.GetPropertyValue("DataCorePlugin.GameData.SpeedKmh")
+			else if (1 > (double)pluginManager.GetPropertyValue("DataCorePlugin.GameData.SpeedKmh")
 				|| current == data.NewData.CarSettings_CurrentDisplayedRPMPercent)
 			{
 				if (!VM.Bfull && 30 < ++WaitCt)
 					VM.XYprop1 = "waiting for action";
 				return;
 			}
+
+			if (2 == VM.Refresh && !VM.AutoPlot && !VM.Restart)
+				return;
 
 			current = data.NewData.CarSettings_CurrentDisplayedRPMPercent;
 
@@ -124,6 +123,10 @@ namespace blekenbleu.OxyScope
 				}
 				Sample = VM.start[work];
 				clf = VM.property % 3;
+				View.Dispatcher.Invoke(() => View.Replot(0));
+				VM.busy = false;
+				for (i = 0; i < VM.min[other].Length; i++)
+					VM.min[other][i] = VM.max[other][i] = VM.min[VM.plot][i] = VM.max[VM.plot][i] = IIR[i];
 			} else {
 				// check for full buffer, redundant samples
 				if (Sample >= x.Length >> 2)
@@ -199,7 +202,7 @@ namespace blekenbleu.OxyScope
 				{
 					other = work;
 					work = (byte)(3 - (other + VM.plot));
- 				}
+				}
 				available = 1 == VM.Refresh || Drange(VM.plot, VM.property) < Drange(other, VM.property);
 				Sample = VM.start[work];
 			}
