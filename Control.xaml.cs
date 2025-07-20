@@ -58,7 +58,6 @@ namespace blekenbleu.OxyScope
  				if (1 == M.Collect)					// Replot() !M.AutoPlot
 					M.PVis = Visibility.Visible;	// no more updates;  hold plot
 				
-				property = M.property;				// switch curve fit property selection
 				ButtonUpdate();						// color coding
 				LAscaleCheck();
 			}
