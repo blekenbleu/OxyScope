@@ -46,7 +46,7 @@ namespace blekenbleu.OxyScope
 		internal double[,] x;						// Vplot samples from IIR[]
 		private byte work, other;					// buffers currently sampling, other non-plot buffer
 		private ushort Sample;						// which x[,] is currently being worked
-		bool oops = false, available = false;
+		bool oops = false, available = false, first = false;
 		int clf = 0;								// current Y property
 		string CarId = "";
 		double current;
@@ -59,9 +59,6 @@ namespace blekenbleu.OxyScope
 				return;
 
 			ValidateProp(1, VM.Y1prop); ValidateProp(2, VM.Y2prop);
-			if (VM.Restart)
-				View.Dispatcher.Invoke(() => View.ButtonUpdate());
-
 			if (oops)
 			{
 				oops = false;
@@ -92,12 +89,18 @@ namespace blekenbleu.OxyScope
 			else if (1 > (double)pluginManager.GetPropertyValue("DataCorePlugin.GameData.SpeedKmh")
 				|| current == data.NewData.CarSettings_CurrentDisplayedRPMPercent)
 			{
-				if (!VM.Bfull && 30 < ++WaitCt)
+				if (!VM.Bfull && VM.AutoPlot && 30 < ++WaitCt)
 					VM.XYprop1 = "waiting for action";
 				return;
 			}
 
-			if (2 == VM.Refresh && !VM.AutoPlot && !VM.Restart)
+			if (0 < WaitCt)
+			{
+				VM.XYprop1 = "";
+				WaitCt = 0;
+			}
+
+			if (2 == VM.Collect && !VM.AutoPlot && !VM.Restart)
 				return;
 
 			current = data.NewData.CarSettings_CurrentDisplayedRPMPercent;
@@ -107,9 +110,10 @@ namespace blekenbleu.OxyScope
 			{
 				VM.Restart = VM.Bfull = false;
 				VM.XYprop1 = "Restart";
+				VM.PVis = 1 == VM.Collect ? Visibility.Hidden : Visibility.Visible;
 				for (i = 0; i < 4; i++)
 					IIR[i] = f[i];
-				if (2 == VM.Refresh)
+				if (2 == VM.Collect)
 				{
 					VM.plot = work = 0;				// Accrue() uses the full buffer
 					Total[0] = Total[1] = Total[2] = oldTotal[0] = oldTotal[1] = oldTotal[2] = 0;
@@ -123,35 +127,30 @@ namespace blekenbleu.OxyScope
 				}
 				Sample = VM.start[work];
 				clf = VM.property % 3;
+				first = (0 == VM.Collect);
 				View.Dispatcher.Invoke(() => View.Replot(0));
 				VM.busy = false;
-				for (i = 0; i < VM.min[other].Length; i++)
-					VM.min[other][i] = VM.max[other][i] = VM.min[VM.plot][i] = VM.max[VM.plot][i] = IIR[i];
-			} else {
-				// check for full buffer, redundant samples
+			}								// Restart
+			else							// check for full buffer, redundant samples
+			{
 				if (Sample >= x.Length >> 2)
-				{							// this should occur only for accumulations (2 == VM.Refresh)
+				{							// occurs only for accumulations (2 == VM.Collect)
 					if (!VM.Bfull)
 					{						// victory lap
 						VM.Bfull = true;
-						VM.XYprop1 = $"sample buffer full;  {Intervals.Count} histogram buckets";
-						VM.AutoPlot = false;			// update Control property
-						VM.TRText = "Restart Auto";
 						View.Dispatcher.Invoke(() => View.Replot((ushort)(x.Length >> 2)));
 					}
-					return;				// Restart sample may have been before car moved
+					return;
 				}
 
 				for (i = 0; i < 3; i++)
 					if(VM.axis[i] && System.Math.Abs(f[i] - IIR[i]) > 0.02 * (VM.max[work][i] - VM.min[work][i]))
 						break;
-				if (3 == i)					// differed from previous by < 2% ?
+				if (3 == i)					// none differed from previous by > 2% ?
 					return;
-
-				if (30 < WaitCt)
-					WaitCt = 0;
 			}
 
+			// collect into x[,] buffers
 			bool[] mm = { false, false };	// remember whether min or max change
 			for (i = 0; i < 4; i++)
 				if (VM.axis[i])
@@ -159,7 +158,11 @@ namespace blekenbleu.OxyScope
 					IIR[i] += (f[i] - IIR[i]) / VM.FilterX;
 					x[i,Sample] = IIR[i];
 					if (VM.start[work] == Sample)
+					{
+						if (first)	// first sample after Restart for 0 == Collect
+							VM.min[other][i] = VM.max[other][i] = VM.min[VM.plot][i] = VM.max[VM.plot][i] = x[i,Sample];
 						VM.min[work][i] = VM.max[work][i] = x[i,Sample];
+					}
 					else if (VM.min[work][i] > x[i,Sample])	// volume of sample values
 					{
 						if (i == VM.property)
@@ -174,7 +177,7 @@ namespace blekenbleu.OxyScope
 					}
 				}
 
-			if (2 == VM.Refresh)		// Accrue processes all buffered samples
+			if (2 == VM.Collect)		// Accrue processes all buffered samples
 			{
 				if (backfill)
 				{
@@ -183,27 +186,29 @@ namespace blekenbleu.OxyScope
 					else if (mm[1])
 						AppendIntervals(x[VM.property, Sample]);
 				}
-				Accrue();				// runs until buffer is full; restart by changing Refresh mode
+				Accrue();				// runs until buffer is full; restart by changing Collect mode
 				return;
 			}
 			else if ((++Sample - VM.start[work]) >= VM.Slength)	// filled?
 			{
+				first = false;
 				// swap chain buffer:  buffer setup in Control.xaml.cs Control() and Model.Slength
 				// https://blekenbleu.github.io/SimHub/swapchain.htm
 				double work_range = Drange(work, VM.property);
 
-				VM.Current = $"{VM.min[work][clf]:#0.000} <= Y <= {VM.max[work][clf]:#0.000};  "
-						   + ((1 == VM.Refresh) ? $"{VM.min[work][3]:#0.000} <= X <= {VM.max[work][3]:#0.000}"
-												: $"{VM.PropName[VM.property]} range {work_range}");
+				VM.Current = $"{VM.min[work][clf]:#0.00} < Y < {VM.max[work][clf]:#0.00};  "
+						   + $"{VM.min[work][3]:#0.00} < X < {VM.max[work][3]:#0.00}"	// Current
+						   + ((0 == VM.Collect) ? $";  {VM.PropName[VM.property]} range {work_range:#0.00}"	// Current
+												: "");
 
-				// Refresh: 0 = greater range, 1 = snapshot, 2 = grow range (not handled here)
+				// Collect: 0 = greater range, 1 = snapshot, 2 = grow range (not handled here)
 				// property: 3 == no curve fitting; 0-2 correspond to Y0-Y2
-				if (1 == VM.Refresh || Drange(other, VM.property) < work_range)
+				if (1 == VM.Collect || Drange(other, VM.property) < work_range)
 				{
 					other = work;
 					work = (byte)(3 - (other + VM.plot));
 				}
-				available = 1 == VM.Refresh || Drange(VM.plot, VM.property) < Drange(other, VM.property);
+				available = 1 == VM.Collect || Drange(VM.plot, VM.property) < Drange(other, VM.property);
 				Sample = VM.start[work];
 			}
 
@@ -213,6 +218,8 @@ namespace blekenbleu.OxyScope
 				VM.busy = true;
 				VM.plot = other;
 				other = (byte)(3 - (VM.plot + work));
+				if (0 == VM.Collect)
+					VM.XYprop2 = $"{VM.PropName[VM.property]} range {Drange(VM.plot, VM.property)}";
 				View.Dispatcher.Invoke(() => View.Replot(VM.Slength));
 			}
 		}														// DataUpdate()

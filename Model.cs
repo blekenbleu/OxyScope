@@ -25,9 +25,8 @@ namespace blekenbleu.OxyScope
 			}
 			start[2] <<= 1;
 			busy = false;
-			THText = refresh[S.Refresh];
-			TRText = trtext[S.AutoPlot ? 0 : 1];
-			SetFore();
+			Collect = S.Collect;
+			AutoPlot = S.AutoPlot;
 		}
 
 		readonly PropertyChangedEventArgs Cevent	= new PropertyChangedEventArgs(nameof(Current));
@@ -51,7 +50,7 @@ namespace blekenbleu.OxyScope
 
 		internal byte		property, plot = 0;
 		internal double[][]	min, max;
-		internal bool		Restart = true, Bfull = false, busy;	// work gets reinitialed by Restart
+		internal bool		Restart = true, busy;					// Restart reinitializes work
 		internal bool[]		axis = { true, false, false, true };	// which axes have properties assigned
 		internal string[]	PropName = { "", "", "", "" };
 
@@ -71,25 +70,23 @@ namespace blekenbleu.OxyScope
 			}
 		}
 
-
-		static readonly string[] trtext = { "Auto Replot", "Hold Plot" };
-		private string _text = trtext[0];
-		public string TRText
-		{	get => _text;				// PVis
+		bool _bfull = false;
+		internal bool Bfull
+		{   get => _bfull;
 			set
-			{
-				if (_text != value)
+            {
+                if (value && !_bfull)
 				{
-					_text = value;
-					PropertyChanged?.Invoke(this, TRevent);
-				}
-			} 
+					_bfull = value;
+					AutoPlot = false;
+				} else _bfull = value;
+			}
 		}
 
 		static readonly string[] refresh = { "more range", "one shot", "grow range" };
 		private string _htext = refresh[0];
 		public string THText
-		{	get => _htext;				// Refresh
+		{	get => _htext;
 			set
 			{
 				if (_htext != value)
@@ -102,22 +99,43 @@ namespace blekenbleu.OxyScope
 
 		internal void SetFore()
 		{
-			ForeVS = ((Visibility.Hidden == _unseen && 1 == S.Refresh) || (1 != S.Refresh && S.AutoPlot)) ? "White" : "Green";
-			ForePlot = S.AutoPlot || 1 == S.Refresh ? "White" : "Red"; 
+			ForeVS = busy ? "White" : "Green";
+			ForePlot = S.AutoPlot || 1 == S.Collect || !busy ? "White" : "Red"; 
 		}
 
-		internal ushort Refresh
+		internal ushort Collect
 		{
-			get => S.Refresh;
+			get => S.Collect;
 			set
 			{
-				if (S.Refresh != value)
+				S.Collect = (byte)(value % 3);
+				if (2 == S.Collect)
 				{
-					S.Refresh = (byte)(value % 3);
-					THText = refresh[S.Refresh];
-					SetFore();
-				}
+					PVis = Visibility.Hidden;
+					AutoPlot = Restart = true;
+				} else if (1 == S.Collect)
+				{
+					property = 3;
+					XYprop2 = "";				// erase Collect 0 range
+					PVis = busy ? Visibility.Visible : Visibility.Hidden;
+				} else PVis = Visibility.Visible;	// 0 == Collect
+				SetFore();
+				THText = refresh[S.Collect];
 			}
+		}
+
+		static internal readonly string[] trtext = { "Auto Replot", "Hold Plot", "Resume Auto", "Restart Auto", "Replot" };
+		private string _text = trtext[0];
+		public string TRText
+		{	get => _text;
+			set
+			{
+				if (_text != value)
+				{
+					_text = value;
+					PropertyChanged?.Invoke(this, TRevent);
+				}
+			} 
 		}
 
 		internal bool AutoPlot
@@ -125,15 +143,16 @@ namespace blekenbleu.OxyScope
 			get => S.AutoPlot;
 			set
 			{
-				TRText = trtext[value ? 0 : 1];
+				S.AutoPlot = value;
 				if (value)
 				{
+					TRText = trtext[0];
 					busy = false;
 					LAscaleVis = Visibility.Hidden;
-				}
+					if (Bfull && Visibility.Hidden == PVis)
+						Restart = true;
+				} else TRText = trtext[(1 == Collect) ? 1 : (Bfull ? 3 : 2)];
                 SetFore();
-				if (S.AutoPlot != value)
-					S.AutoPlot = value;
 			}
 		}
 
@@ -177,7 +196,7 @@ namespace blekenbleu.OxyScope
 			}
 		}
 
-		private string _title = "launch game or Replay to collect and Vplot property samples";
+		private string _title = "launch game or Replay to collect and plot property samples";
 		public string Title { get => _title;						// for PlotModel
 			set
 			{

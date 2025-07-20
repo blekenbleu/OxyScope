@@ -73,10 +73,9 @@ namespace blekenbleu.OxyScope
 			Settings = this.ReadCommonSettings<Settings>("GeneralSettings", () => new Settings());
 			if (null == Settings)
 				Settings = new Settings() {
-					Y0prop = where+sy,
-					Y1prop = "", Y2prop = "",
+					Y0prop = where+sy, Y1prop = "", Y2prop = "",
 					Xprop = where+sx,
-					FilterX = 1, FilterY = 1, Refresh = 1, property = 3
+					FilterX = 1, FilterY = 1, Collect = 1, property = 3
 				};
 			else {
 				if (0 == Settings.Y0prop.Length)

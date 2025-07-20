@@ -27,12 +27,12 @@ namespace blekenbleu.OxyScope
 			for (byte b = 1; b < xmap.Count; b++)
 				model.Series.Add(Scatter(xmap[b]));
 
-			if (3 > property && Rmin[Yf] < Rmax[Yf])	// curve fit?
+			if (3 > property && Rmin[Yf] < Rmax[Yf])    // curve fit?
 			{
 				// https://numerics.mathdotnet.com/Regression
 				ys = GetRow(O.x, property, start, Length);
 				xs = GetRow(O.x, xmap[0], start, Length);
-				(double, double)fl = Fit.Line(xs, ys);
+				(double, double) fl = Fit.Line(xs, ys);
 				B = fl.Item1;
 				m = fl.Item2;
 				double slope = m * (Rmax[xmap[0]] - Rmin[xmap[0]]) / (Rmax[property] - Rmin[property]);
@@ -42,7 +42,12 @@ namespace blekenbleu.OxyScope
 				lfs = $";   line:  {B:#0.0000} + {m:#0.00000}*x;   slope = {slope:0.00}, R-squared = {r2:0.00}";
 				M.XYprop2 = Curve(Rmin[xmap[0]], Rmax[xmap[0]], model);
 			}
-			else M.XYprop2 = lfs = "";
+			else
+			{
+                lfs = "";
+                if (0 != M.Collect)
+					M.XYprop2 = "";
+			}
 
 			M.XYprop1 = $"{Rmin[Yf]:#0.000} <= Y <= {Rmax[Yf]:#0.000};  "
 					  + $"{Rmin[ xmap[0]]:#0.000} <= X <= {Rmax[ xmap[0]]:#0.000}" + lfs;

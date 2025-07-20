@@ -29,7 +29,7 @@ namespace blekenbleu.OxyScope
 			O.x = new double[4, 1501];			// 3 x samples per shot from M.Slength TitledSlider Maximum="500"
 			Xmax = new double[] { 0, 0 }; Xmin = new double[] { 0, 0 }; Ymax = 0; Ymin = 0;
 
-			if (1 == M.Refresh)
+			if (1 == M.Collect)
 				M.property = 3;
 			ButtonUpdate();
 			M.min = new double[][] { new double[] { 0, 0, 0, 0 }, new double[] { 0, 0, 0, 0 }, new double[] { 0, 0, 0, 0 } };
@@ -38,6 +38,7 @@ namespace blekenbleu.OxyScope
 			xmap = new List<byte> { 3, 0 };
 			start = 0;
 			Vplot.Model = RandomPlot();
+			PV.Content = Model.trtext[1 == M.Collect ? 4 : 3];
 		}
 
 		private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
@@ -52,15 +53,14 @@ namespace blekenbleu.OxyScope
 			M.ForeVS = "White";
 			save = true;
 
-            if (!M.AutoPlot && Visibility.Hidden == M.PVis)
+            if (!M.AutoPlot)
 			{
-				if (2 != M.Refresh)
-					M.PVis = Visibility.Visible;	// no more updates;  hold Vplot
-				if (1 != M.Refresh)
-					property = M.property;			// switch curve fit property selection
+ 				if (1 == M.Collect)					// Replot() !M.AutoPlot
+					M.PVis = Visibility.Visible;	// no more updates;  hold plot
+				
+				property = M.property;				// switch curve fit property selection
 				ButtonUpdate();						// color coding
-				if (!M.AutoPlot)
-					LAscaleCheck();
+				LAscaleCheck();
 			}
 
 			Ymax = Rmax[0];					// Vplot range for up to 3 Yprops
@@ -99,7 +99,13 @@ namespace blekenbleu.OxyScope
 		private void REPLOTclick(object sender, RoutedEventArgs e)		// REPLOT Button
 		{
 			M.busy = false;
-			M.PVis = Visibility.Hidden;
+			if (0 == M.Collect)
+			{
+				M.Restart = true;
+				M.XYprop2 = "";
+			}
+			else if (1 == M.Collect)
+				M.PVis = Visibility.Hidden;
 			ButtonUpdate();
 		}
 
@@ -146,45 +152,33 @@ namespace blekenbleu.OxyScope
 			ButtonUpdate();
 		}
 
-		private void Refreshclick(object sender, RoutedEventArgs e)		// Refresh button
+		private void Collectclick(object sender, RoutedEventArgs e)		// Collect button
 		{
 			// 0 = max range, 1 = one shot, 2 = grow
 			// Accrue() now always maximizes StdDev for all Yprops
-			if (2 == M.Refresh)
+			if (2 == M.Collect)
 				M.Restart = true;
-			M.Refresh++;
-			if (2 == M.Refresh)
-			{
-				M.AutoPlot = M.Restart = true;
-				M.PVis = Visibility.Hidden;
-			} else if (1 == M.Refresh)
-				M.property = 3;
+			M.Collect++;			// Model applies modulo-3
+			PV.Content = Model.trtext[1 == M.Collect ? 4 : 3];
 			ButtonUpdate();
 		}
 
-		// M.AutoPlot false stalls 2 == M.Refresh
+		// M.AutoPlot false stalls 2 == M.Collect
 		private void Plotclick(object sender, RoutedEventArgs e)		// AutoPlot
 		{
 			M.AutoPlot = !M.AutoPlot;
 			if (M.AutoPlot)
  			{
-				if(Visibility.Visible == M.PVis)
-				{
-					Vplot.Model = Plot();
+				M.busy = false;
+				if(1 == M.Collect && Visibility.Visible == M.PVis)
 					M.PVis = Visibility.Hidden;
-				} else if (M.Bfull)
-					M.Restart = true;
-			} else {
-				LAscaleCheck();
-				if (2 == M.Refresh)
-					M.TRText = "Resume Auto";
-			}
+			} else LAscaleCheck();
 			ButtonUpdate();
 		}
 
 		private void Propertyclick(object sender, RoutedEventArgs e)
 		{
-			if (1 == M.Refresh || !M.AutoPlot)
+			if (1 == M.Collect || !M.AutoPlot)
 			{									// just property for curve fitting
 				currentP++;
 				if (currentP >= xmap.Count)
@@ -194,7 +188,7 @@ namespace blekenbleu.OxyScope
 				}
 				else property = xmap[currentP];
 				Vplot.Model = Plot();
-			} else for (byte b = 0; b < 3; b++)	// change M.Refresh Y property
+			} else for (byte b = 0; b < 3; b++)	// change M.Collect Y property
 				if (M.axis[M.property = (byte)((1 + M.property) % 4)])
 				{
 					M.Restart = true;			// restart sampling with newly selected property

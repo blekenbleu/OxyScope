@@ -17,7 +17,7 @@ namespace blekenbleu.OxyScope
 			  System.Windows.Media.Brushes.White
 			};
 
-			if (1 == M.Refresh || !M.AutoPlot) {
+			if (1 == M.Collect || !M.AutoPlot) {
 				LF.Text = "Fit " + ((3 > property) ? (M.PropName[property]) : "disabled");
 				LF.Foreground = color[property];	// 3: white
 			} else {
