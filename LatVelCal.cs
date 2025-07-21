@@ -8,6 +8,7 @@ namespace blekenbleu.OxyScope
 	{
 		byte LVi, LAi, SAi;		// property indices
 		double original;
+		bool angle;				// which set of properties?
 
 		// check for LatVel, LatAcc, SwayAcc properties
 		void LAscaleCheck()
@@ -31,6 +32,30 @@ namespace blekenbleu.OxyScope
 					SAi = b;
 					pc++;
 				}
+
+			if (angle = 0 == pc)
+			{
+				SideSlip.Text = "Yaw Rate rescale for Side Slip Angle";
+				for (byte b = 0; b < M.axis.Length; b++)
+					if (!M.axis[b])
+						continue;
+					else if (M.PropName[b] == "SideSlipAngleRate")
+					{
+						LVi = b;
+						pc++;
+					}
+					else if (M.PropName[b] == "YawRate")
+					{
+						LAi = b;
+						pc++;
+					}
+					else if (M.PropName[b] == "SwayAccAngle")
+					{
+						SAi = b;
+						pc++;
+					}
+			}
+			else SideSlip.Text = "Yaw LatAcc rescale for Side Slip Rate (LatVel)";
 					
 			M.LAscaleVis = 3 == pc ? Visibility.Visible : Visibility.Hidden;
 			if (save && 3 == pc)
