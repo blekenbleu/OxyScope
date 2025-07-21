@@ -219,7 +219,7 @@ namespace blekenbleu.OxyScope
 				VM.plot = other;
 				other = (byte)(3 - (VM.plot + work));
 				if (0 == VM.Collect)
-					VM.XYprop2 = $"{VM.PropName[VM.property]} range {Drange(VM.plot, VM.property)}";
+					VM.XYprop2 = $"{VM.PropName[VM.property]} range {Drange(VM.plot, VM.property):#0.000}";
 				View.Dispatcher.Invoke(() => View.Replot(VM.Slength));
 			}
 		}														// DataUpdate()

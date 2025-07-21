@@ -64,7 +64,7 @@ namespace blekenbleu.OxyScope
 			Rmax[LVi] = max;
 			Rmin[LVi] = min;
 			MinMax();
-            Vplot.Model = Plot();
+			Vplot.Model = Plot();
 			M.XYprop1 += $";  LatVel range = {max - min}";
 		}
 	}

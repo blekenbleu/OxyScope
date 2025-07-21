@@ -78,8 +78,8 @@
 
 		<TextBlock Text="Lateral Acceleration rescale for SlipRate" Visibility="{Binding LAscaleVis}"/>
 		<StackPanel Orientation="Horizontal" FlowDirection="LeftToRight" Visibility="{Binding LAscaleVis}">
-            <Slider Value="{Binding LAscale, Mode=TwoWay}" Maximum="1.25" Minimum="0.75" Width="750"/>
-            <Button Content="{Binding LAscale}" Click="LAscaleValueChanged"/>
+			<Slider Value="{Binding LAscale, Mode=TwoWay}" Maximum="1.25" Minimum="0.75" Width="750"/>
+			<Button Content="{Binding LAscale}" Click="LAscaleValueChanged"/>
 		</StackPanel>
 
 	</StackPanel>

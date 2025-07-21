@@ -8,7 +8,7 @@ namespace blekenbleu.OxyScope
 {
 	public partial class Control
 	{
-		internal void ButtonUpdate()	// LF button: property/fit select
+		internal void PropertyButton()	// LF button: property/fit select
 		{
 			System.Windows.Media.Brush[] color =
 			{ System.Windows.Media.Brushes.Red,

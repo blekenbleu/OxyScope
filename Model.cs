@@ -74,8 +74,8 @@ namespace blekenbleu.OxyScope
 		internal bool Bfull
 		{   get => _bfull;
 			set
-            {
-                if (value && !_bfull)
+			{
+				if (value && !_bfull)
 				{
 					_bfull = value;
 					AutoPlot = false;
@@ -152,7 +152,7 @@ namespace blekenbleu.OxyScope
 					if (Bfull && Visibility.Hidden == PVis)
 						Restart = true;
 				} else TRText = trtext[(1 == Collect) ? 1 : (Bfull ? 3 : 2)];
-                SetFore();
+				SetFore();
 			}
 		}
 

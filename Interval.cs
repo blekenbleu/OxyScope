@@ -6,8 +6,8 @@ namespace blekenbleu.OxyScope
 	{
 		double Imin, Imax, Ifac;
 		short bucket;
-        // because Intervals may need to be increased after SetupIntervals()
-        List<ushort> Intervals = new List<ushort> {0,0,0,0,0,0,0,0,0,0};
+		// because Intervals may need to be increased after SetupIntervals()
+		List<ushort> Intervals = new List<ushort> {0,0,0,0,0,0,0,0,0,0};
 		void SetupIntervals()
 		{
 			Imax = VM.max[work][VM.property]; Imin = VM.min[work][VM.property];

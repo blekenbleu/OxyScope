@@ -31,7 +31,6 @@ namespace blekenbleu.OxyScope
 
 			if (1 == M.Collect)
 				M.property = 3;
-			ButtonUpdate();
 			M.min = new double[][] { new double[] { 0, 0, 0, 0 }, new double[] { 0, 0, 0, 0 }, new double[] { 0, 0, 0, 0 } };
 			M.max = new double[][] { new double[] { 0, 0, 0, 0 }, new double[] { 0, 0, 0, 0 }, new double[] { 0, 0, 0, 0 } };
 			Rmin = M.min[0];  Rmax = M.max[0];
@@ -53,16 +52,16 @@ namespace blekenbleu.OxyScope
 			M.ForeVS = "White";
 			save = true;
 
-            if (!M.AutoPlot)
+			if (!M.AutoPlot)
 			{
  				if (1 == M.Collect)					// Replot() !M.AutoPlot
 					M.PVis = Visibility.Visible;	// no more updates;  hold plot
 				
-				ButtonUpdate();						// color coding
 				LAscaleCheck();
 			}
+			PropertyButton();						// color coding
 
-			Ymax = Rmax[0];					// Vplot range for up to 3 Yprops
+			Ymax = Rmax[0];							// Vplot range for up to 3 Yprops
 			Ymin = Rmin[0];
 			xmap = new List<byte> { 3, 0 };
 			highY = 0;
@@ -98,14 +97,13 @@ namespace blekenbleu.OxyScope
 		private void REPLOTclick(object sender, RoutedEventArgs e)		// REPLOT Button
 		{
 			M.busy = false;
-			if (0 == M.Collect)
+			if (1 == M.Collect)
+				M.PVis = Visibility.Hidden;
+			else
 			{
 				M.Restart = true;
-				M.XYprop2 = "";
+				M.Current = M.XYprop2 = "";
 			}
-			else if (1 == M.Collect)
-				M.PVis = Visibility.Hidden;
-			ButtonUpdate();
 		}
 
 		void MinMax()
@@ -148,7 +146,7 @@ namespace blekenbleu.OxyScope
 			property = 3;											// disable curve fit until user selects
 			MinMax();
 			Vplot.Model = Plot();
-			ButtonUpdate();
+			PropertyButton();
 		}
 
 		private void Collectclick(object sender, RoutedEventArgs e)		// Collect button
@@ -159,7 +157,8 @@ namespace blekenbleu.OxyScope
 				M.Restart = true;
 			M.Collect++;			// Model applies modulo-3
 			PV.Content = Model.trtext[1 == M.Collect ? 4 : 3];
-			ButtonUpdate();
+			M.Current = "";
+			PropertyButton();
 		}
 
 		// M.AutoPlot false stalls 2 == M.Collect
@@ -171,8 +170,12 @@ namespace blekenbleu.OxyScope
 				M.busy = false;
 				if(1 == M.Collect && Visibility.Visible == M.PVis)
 					M.PVis = Visibility.Hidden;
-			} else LAscaleCheck();
-			ButtonUpdate();
+			} else {
+				LAscaleCheck();
+				if (0 == M.Collect)
+					M.busy = true;
+			}
+			PropertyButton();
 		}
 
 		private void Propertyclick(object sender, RoutedEventArgs e)
@@ -194,7 +197,7 @@ namespace blekenbleu.OxyScope
 					break;
 				}
 
-			ButtonUpdate();
+			PropertyButton();
 		}
 	}	// class Control
 }
