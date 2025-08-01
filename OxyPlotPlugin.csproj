@@ -20,29 +20,19 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <StartAction>Program</StartAction>
+    <StartProgram>$(SIMHUB_INSTALL_PATH)SimHubWPF.exe</StartProgram>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
     <OutputPath>bin\$(Configuration)\</OutputPath>
-    <StartAction>Program</StartAction>
-    <StartProgram>..\..\SimHubWPF.exe</StartProgram>
-    <OutDir>..\..\</OutDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
     <StartAction>Program</StartAction>
     <StartProgram>$(SIMHUB_INSTALL_PATH)SimHubWPF.exe</StartProgram>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <StartAction>Program</StartAction>
-    <StartProgram>$(SIMHUB_INSTALL_PATH)SimHubWPF.exe</StartProgram>
+    <OutDir>$(SIMHUB_INSTALL_PATH)</OutDir>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GameReaderCommon">
@@ -144,7 +134,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>cd "$(SIMHUB_INSTALL_PATH)"
-if $(ConfigurationName) == Release (7z u R:\TEMP\OxyScope.zip OxyPlotPlugin.dll)</PostBuildEvent>
+    <PostBuildEvent>
+	cd "$(SIMHUB_INSTALL_PATH)"
+	if $(ConfigurationName) == Release (7z u R:\TEMP\OxyScope.zip OxyPlotPlugin.dll)</PostBuildEvent>
   </PropertyGroup>
 </Project>
